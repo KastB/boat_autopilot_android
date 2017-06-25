@@ -55,10 +55,68 @@ public class BluetoothChatFragment extends Fragment {
     private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
     private static final int REQUEST_ENABLE_BT = 3;
 
+    /* By now there is a hard coded mapping between index of data incoming and the type of that data
+        a better solution would probably be to ask for the current configuration, get an configuration
+        list and work with that. The problem of this mechanism is, that the continously incoming
+        data could corrupt the requested information. => Stopping of continuous information is needed
+        beforehand.
+        Mapping by now:
+        Millis	m_currentPosition	m_pressedButtonDebug	m_bytesToSent	CurrentPosition	CurrentDirection	TargetPosition	MSStopped	startButton	stopButton	parkingButton	m_P	m_I	m_D	m_goalType	m_goal	m_lastError	m_errorSum	m_lastFilteredYaw		yaw	pitch	roll	freq	magMin[0]	magMin[1]	magMin[2]	magMax[0]	magMax[1]	magMax[2]	m_speed	m_speed.tripMileage	m_speed.totalMileage	m_speed.waterTemp	m_lampIntensity	m_wind.apparentAngle	m_wind.apparentSpeed	m_wind.displayInKnots	m_wind.displayInMpS	m_depth.anchorAlarm	m_depth.deepAlarm	m_depth.defective	m_depth.depthBelowTransductor	m_depth.metricUnits	m_depth.shallowAlarm	m_depth.unknown	Position
+        1: Millis
+        2: m_currentPosition
+        3: m_pressedButtonDebug
+        4: m_bytesToSent
+        5: CurrentPosition
+        6: CurrentDirection
+        7: TargetPosition
+        8: MSStopped
+        9: startButton
+        10: stopButton
+        11: parkingButton
+        12: m_P
+        13: m_I
+        14: m_D
+        15: m_goalType
+        16: m_goal
+        17: m_lastError
+        18: m_errorSum
+        19: m_lastFilteredYaw
+        20: yaw
+        21: pitch
+        22: roll
+        23: freq
+        24: magMin[0]
+        25: magMin[1]
+        26: magMin[2]
+        27: magMax[0]
+        28: magMax[1]
+        29: magMax[2]
+        30: m_speed
+        31: m_speed.tripMileage
+        32: m_speed.totalMileage
+        33: m_speed.waterTemp
+        34: m_lampIntensity
+        35: m_wind.apparentAngle
+        36: m_wind.apparentSpeed
+        37: m_wind.displayInKnots
+        38: m_wind.displayInMpS
+        39: m_depth.anchorAlarm
+        40: m_depth.deepAlarm
+        41: m_depth.defective
+        42: m_depth.depthBelowTransductor
+        43: m_depth.metricUnits
+        44: m_depth.shallowAlarm
+        45: m_depth.unknown
+        46: Position
+     */
     // Layout Views
     private ListView mConversationView;
     private EditText mOutEditText;
+    private TextView mGoalView;
+
+    // Buttons #1#
     private Button mSendButton;
+    private Button mStopButton;
 
     /**
      * Name of the connected device
@@ -148,8 +206,12 @@ public class BluetoothChatFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mConversationView = (ListView) view.findViewById(R.id.in);
+        mGoalView = (TextView) view.findViewById(R.id.goal);
         mOutEditText = (EditText) view.findViewById(R.id.edit_text_out);
+
+        // connect #2#
         mSendButton = (Button) view.findViewById(R.id.button_send);
+        mStopButton = (Button) view.findViewById(R.id.button_stop);
     }
 
     /**
@@ -161,8 +223,11 @@ public class BluetoothChatFragment extends Fragment {
 
         mConversationView.setAdapter(mConversationArrayAdapter);
 
+
         // Initialize the compose field with a listener for the return key
         mOutEditText.setOnEditorActionListener(mWriteListener);
+
+        // Init #3#
 
         // Initialize the send button with a listener that for click events
         mSendButton.setOnClickListener(new View.OnClickListener() {
@@ -176,6 +241,13 @@ public class BluetoothChatFragment extends Fragment {
                 }
             }
         });
+        // Initialize the send button with a listener that for click events
+        mStopButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                sendMessage("SETROT\r\n");
+            }
+        });
+
 
         // Initialize the BluetoothChatService to perform bluetooth connections
         mChatService = new BluetoothChatService(getActivity(), mHandler);
@@ -297,6 +369,7 @@ public class BluetoothChatFragment extends Fragment {
                     // construct a string from the buffer
                     String writeMessage = new String(writeBuf);
                     mConversationArrayAdapter.add("Me:  " + writeMessage);
+
                     break;
                 case Constants.MESSAGE_READ:
                     String readMessage = (String) msg.obj;
@@ -304,6 +377,7 @@ public class BluetoothChatFragment extends Fragment {
                     if (parts.length > 25)
                     {
                         mConversationArrayAdapter.add(parts[0] + ": " + parts[21]);
+                        mGoalView.setText(parts[21]);
                     }
 
                     break;
