@@ -15,13 +15,11 @@
 */
 
 
-package com.example.android.bluetoothchat;
+package com.example.android.autopilot;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.ViewAnimator;
 
 import com.example.android.common.activities.SampleActivityBase;
 
@@ -44,7 +42,7 @@ public class MainActivity extends SampleActivityBase {
 
         if (savedInstanceState == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            BluetoothChatFragment fragment = new BluetoothChatFragment();
+            AutopilotFragment fragment = new AutopilotFragment();
             transaction.replace(R.id.sample_content_fragment, fragment);
             transaction.commit();
         }

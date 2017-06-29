@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.bluetoothchat;
+package com.example.android.autopilot;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -46,9 +46,9 @@ import android.widget.Toast;
 /**
  * This fragment controls Bluetooth to communicate with other devices.
  */
-public class BluetoothChatFragment extends Fragment {
+public class AutopilotFragment extends Fragment {
 
-    private static final String TAG = "BluetoothChatFragment";
+    private static final String TAG = "AutopilotFragment";
 
     // Intent request codes
     private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
@@ -158,7 +158,7 @@ public class BluetoothChatFragment extends Fragment {
     /**
      * Member object for the chat services
      */
-    private BluetoothChatService mChatService = null;
+    private AutopilotService mChatService = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -207,7 +207,7 @@ public class BluetoothChatFragment extends Fragment {
         // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
         if (mChatService != null) {
             // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (mChatService.getState() == BluetoothChatService.STATE_NONE) {
+            if (mChatService.getState() == AutopilotService.STATE_NONE) {
                 // Start the Bluetooth chat services
                 mChatService.start();
             }
@@ -217,7 +217,7 @@ public class BluetoothChatFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_bluetooth_chat, container, false);
+        return inflater.inflate(R.layout.fragment_overview, container, false);
     }
 
     @Override
@@ -323,8 +323,8 @@ public class BluetoothChatFragment extends Fragment {
         });
 
 
-        // Initialize the BluetoothChatService to perform bluetooth connections
-        mChatService = new BluetoothChatService(getActivity(), mHandler);
+        // Initialize the AutopilotService to perform bluetooth connections
+        mChatService = new AutopilotService(getActivity(), mHandler);
 
         // Initialize the buffer for outgoing messages
         mOutStringBuffer = new StringBuffer("");
@@ -349,14 +349,14 @@ public class BluetoothChatFragment extends Fragment {
      */
     private void sendMessage(String message) {
         // Check that we're actually connected before trying anything
-        if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
+        if (mChatService.getState() != AutopilotService.STATE_CONNECTED) {
             Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
             return;
         }
 
         // Check that there's actually something to send
         if (message.length() > 0) {
-            // Get the message bytes and tell the BluetoothChatService to write
+            // Get the message bytes and tell the AutopilotService to write
             byte[] send = message.getBytes();
             mChatService.write(send);
 
@@ -416,7 +416,7 @@ public class BluetoothChatFragment extends Fragment {
     }
 
     /**
-     * The Handler that gets information back from the BluetoothChatService
+     * The Handler that gets information back from the AutopilotService
      */
     private final Handler mHandler = new Handler() {
         @Override
@@ -425,15 +425,15 @@ public class BluetoothChatFragment extends Fragment {
             switch (msg.what) {
                 case Constants.MESSAGE_STATE_CHANGE:
                     switch (msg.arg1) {
-                        case BluetoothChatService.STATE_CONNECTED:
+                        case AutopilotService.STATE_CONNECTED:
                             setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
                             mConversationArrayAdapter.clear();
                             break;
-                        case BluetoothChatService.STATE_CONNECTING:
+                        case AutopilotService.STATE_CONNECTING:
                             setStatus(R.string.title_connecting);
                             break;
-                        case BluetoothChatService.STATE_LISTEN:
-                        case BluetoothChatService.STATE_NONE:
+                        case AutopilotService.STATE_LISTEN:
+                        case AutopilotService.STATE_NONE:
                             setStatus(R.string.title_not_connected);
                             break;
                     }
