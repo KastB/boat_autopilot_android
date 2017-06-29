@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+
+//TODO: View: change alls speeds to right side
+//TODO: highlight current mode
+//TODO: init with "-" on fields
 package com.example.android.bluetoothchat;
 
 import android.bluetooth.BluetoothAdapter;

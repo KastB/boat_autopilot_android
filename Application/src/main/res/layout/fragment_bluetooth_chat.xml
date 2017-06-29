@@ -15,7 +15,6 @@
  limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical" >
@@ -30,14 +29,36 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
+            <Button
+                android:id="@+id/button_init"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/init" />
+
+            <Button
+                android:id="@+id/button_goparking"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="@string/goparking" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
             <TextView
                 android:id="@+id/label_goal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_weight="1"
                 android:text="@string/goal"
                 android:textAlignment="viewStart"
-                android:textSize="22sp"
+                android:gravity="start"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 android:typeface="normal" />
 
@@ -45,44 +66,65 @@
                 android:id="@+id/goal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:text="2"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:text="@string/blank"
                 android:textAlignment="viewStart"
-                android:textSize="22sp" />
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/label_error"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="4"
                 android:text="@string/error"
-                android:textSize="22sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/error"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:gravity="right"
-                android:text="320"
-                android:textAlignment="viewStart"
-                android:textSize="22sp" />
+                android:layout_weight="4"
+                android:gravity="center"
+                android:text="@string/blank"
+                android:textSize="18sp" />
 
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="2">
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/label_wind_direction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/wind_direction"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/wind_direction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:text="@string/blank"
+                android:textAlignment="viewStart"
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/label_wind_speed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_weight="4"
                 android:text="@string/wind_speed"
                 android:textAlignment="viewStart"
-                android:textSize="22sp"
+                android:gravity="start"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 android:typeface="normal" />
 
@@ -90,44 +132,49 @@
                 android:id="@+id/wind_speed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:text="5"
-                android:textAlignment="viewStart"
-                android:textSize="22sp" />
-
-            <TextView
-                android:id="@+id/label_wind_direction"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/wind_direction"
-                android:textSize="22sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/wind_direction"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:gravity="right"
-                android:text="320"
+                android:layout_weight="4"
+                android:gravity="center"
+                android:text="@string/blank"
                 android:textAlignment="center"
-                android:textSize="22sp" />
+                android:textSize="18sp" />
+
+
 
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="2">
+            android:layout_weight="1">
 
             <TextView
-                android:id="@+id/label_boat_speed"
+                android:id="@+id/label_heading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_weight="1"
+                android:text="@string/heading"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/heading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:text="@string/blank"
+                android:textAlignment="viewStart"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/label_speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
                 android:text="@string/boat_speed"
                 android:textAlignment="viewStart"
-                android:textSize="22sp"
+                android:gravity="start"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 android:typeface="normal" />
 
@@ -135,115 +182,202 @@
                 android:id="@+id/speed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:text="5"
-                android:textAlignment="viewStart"
-                android:textSize="22sp" />
+                android:layout_weight="4"
+                android:gravity="center"
+                android:text="@string/blank"
+                android:textAlignment="center"
+                android:textSize="18sp" />
+
+
+
+
+        </TableRow>
+
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
             <TextView
-                android:id="@+id/label_heading"
+                android:id="@+id/label_temperature"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/temperature"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/temperature"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:text="@string/blank"
+                android:textAlignment="viewStart"
+                android:textSize="18sp" />
+            <TextView
+                android:id="@+id/label_depth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:text="@string/depth"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:typeface="normal" />
+
+            <TextView
+                android:id="@+id/depth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:gravity="center"
+                android:text="@string/blank"
+                android:textAlignment="center"
+                android:textSize="18sp" />
+
+
+
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/label_spacer1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/boat_speed"
+                android:textAlignment="center"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:typeface="normal"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/spacer1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/spacer4"
+                android:textAlignment="viewStart"
+                android:gravity="start"
+                android:textSize="22sp"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/label_spacer2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/heading"
                 android:textSize="22sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_weight="4"
+                android:visibility="invisible" />
 
             <TextView
-                android:id="@+id/heading"
+                android:id="@+id/spacer2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:gravity="right"
-                android:text="320"
+                android:gravity="end"
+                android:text="@string/spacer4"
                 android:textAlignment="viewEnd"
-                android:textSize="22sp" />
+                android:textSize="22sp"
+                android:layout_weight="4"
+                android:visibility="invisible" />
 
         </TableRow>
-
     </TableLayout>
 
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_weight="2">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/button_stop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="@string/stop" />
+
+            <Button
+                android:id="@+id/button_compass"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="@string/compass" />
+
+            <Button
+                android:id="@+id/button_wind"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="@string/wind" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/button_d10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="@string/d10" />
+
+            <Button
+                android:id="@+id/button_d"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="@string/d" />
+
+            <Button
+                android:id="@+id/button_i"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="@string/i" />
+
+            <Button
+                android:id="@+id/button_i10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="@string/i10" />
+
+        </TableRow>
 
     </TableLayout>
-
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1">
-
-        <Button
-            android:id="@+id/button_stop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="@string/stop" />
-
-        <Button
-            android:id="@+id/button_compass"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="@string/compass" />
-
-        <Button
-            android:id="@+id/button_wind"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="@string/wind" />
-
-    </TableRow>
-
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1">
-
-        <Button
-            android:id="@+id/button_d10"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="@string/d10" />
-
-        <Button
-            android:id="@+id/button_d"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="@string/d" />
-
-        <Button
-            android:id="@+id/button_i"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="@string/i" />
-
-        <Button
-            android:id="@+id/button_i10"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="@string/i10" />
-
-    </TableRow>
-
-    <ListView
-        android:id="@+id/in"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:stackFromBottom="true"
-        android:transcriptMode="alwaysScroll" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        android:visibility="invisible">
+
+        <ListView
+            android:id="@+id/in"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:stackFromBottom="true"
+            android:transcriptMode="alwaysScroll" />
 
         <EditText
             android:id="@+id/edit_text_out"

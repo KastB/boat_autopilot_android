@@ -61,26 +61,27 @@ public class BluetoothChatFragment extends Fragment {
         data could corrupt the requested information. => Stopping of continuous information is needed
         beforehand.
         Mapping by now:
-        Millis	m_currentPosition	m_pressedButtonDebug	m_bytesToSent	CurrentPosition	CurrentDirection	TargetPosition	MSStopped	startButton	stopButton	parkingButton	m_P	m_I	m_D	m_goalType	m_goal	m_lastError	m_errorSum	m_lastFilteredYaw		yaw	pitch	roll	freq	magMin[0]	magMin[1]	magMin[2]	magMax[0]	magMax[1]	magMax[2]	m_speed	m_speed.tripMileage	m_speed.totalMileage	m_speed.waterTemp	m_lampIntensity	m_wind.apparentAngle	m_wind.apparentSpeed	m_wind.displayInKnots	m_wind.displayInMpS	m_depth.anchorAlarm	m_depth.deepAlarm	m_depth.defective	m_depth.depthBelowTransductor	m_depth.metricUnits	m_depth.shallowAlarm	m_depth.unknown	Position
-        1: Millis
-        2: m_currentPosition
-        3: m_pressedButtonDebug
-        4: m_bytesToSent
-        5: CurrentPosition
-        6: CurrentDirection
-        7: TargetPosition
-        8: MSStopped
-        9: startButton
-        10: stopButton
-        11: parkingButton
-        12: m_P
-        13: m_I
-        14: m_D
-        15: m_goalType
-        16: m_goal
-        17: m_lastError
-        18: m_errorSum
-        19: m_lastFilteredYaw
+        Millis	m_currentPosition	m_pressedButtonDebug	m_bytesToSent	CurrentPosition	CurrentDirection	TargetPosition	MSStopped	startButton	stopButton	parkingButton	m_P	m_I	m_D	m_goalType	m_goal	m_lastError	m_errorSum	m_lastFilteredYaw	UI	yaw	pitch	roll	freq	magMin[0]	magMin[1]	magMin[2]	magMax[0]	magMax[1]	magMax[2]	m_speed	m_speed.tripMileage	m_speed.totalMileage	m_speed.waterTemp	m_lampIntensity	m_wind.apparentAngle	m_wind.apparentSpeed	m_wind.displayInKnots	m_wind.displayInMpS	m_depth.anchorAlarm	m_depth.deepAlarm	m_depth.defective	m_depth.depthBelowTransductor	m_depth.metricUnits	m_depth.shallowAlarm	m_depth.unknown	Position
+        0: Millis
+        1: m_currentPosition
+        2: m_pressedButtonDebug
+        3: m_bytesToSent
+        4: CurrentPosition
+        5: CurrentDirection
+        6: TargetPosition
+        7: MSStopped
+        8: startButton
+        9: stopButton
+        10: parkingButton
+        11: m_P
+        12: m_I
+        13: m_D
+        14: m_goalType
+        15: m_goal
+        16: m_lastError
+        17: m_errorSum
+        18: m_lastFilteredYaw
+        19: UI
         20: yaw
         21: pitch
         22: roll
@@ -112,11 +113,27 @@ public class BluetoothChatFragment extends Fragment {
     // Layout Views
     private ListView mConversationView;
     private EditText mOutEditText;
+
     private TextView mGoalView;
+    private TextView mErrorView;
+    private TextView mWindSpeedView;
+    private TextView mWindDirectionView;
+    private TextView mSpeedView;
+    private TextView mHeadingView;
+    private TextView mDepthView;
+    private TextView mTempView;
 
     // Buttons #1#
     private Button mSendButton;
-    private Button mStopButton;
+    private Button mInitButton;
+    private Button mGoParkingButton;
+    private Button mPositionModeButton;
+    private Button mCompassModeButton;
+    private Button mWindModeButton;
+    private Button mDecrease10Button;
+    private Button mDecreaseButton;
+    private Button mIncreaseButton;
+    private Button mIncrease10Button;
 
     /**
      * Name of the connected device
@@ -206,12 +223,29 @@ public class BluetoothChatFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mConversationView = (ListView) view.findViewById(R.id.in);
-        mGoalView = (TextView) view.findViewById(R.id.goal);
         mOutEditText = (EditText) view.findViewById(R.id.edit_text_out);
+
+        mGoalView = (TextView) view.findViewById(R.id.goal);
+        mErrorView = (TextView) view.findViewById(R.id.error);
+        mWindSpeedView = (TextView) view.findViewById(R.id.wind_speed);
+        mWindDirectionView = (TextView) view.findViewById(R.id.wind_direction);
+        mSpeedView = (TextView) view.findViewById(R.id.speed);
+        mHeadingView = (TextView) view.findViewById(R.id.heading);
+        mDepthView = (TextView) view.findViewById(R.id.depth);
+        mTempView = (TextView) view.findViewById(R.id.temperature);
 
         // connect #2#
         mSendButton = (Button) view.findViewById(R.id.button_send);
-        mStopButton = (Button) view.findViewById(R.id.button_stop);
+        mInitButton = (Button) view.findViewById(R.id.button_init);
+        mGoParkingButton = (Button) view.findViewById(R.id.button_goparking);
+        mPositionModeButton = (Button) view.findViewById(R.id.button_stop);
+        mCompassModeButton = (Button) view.findViewById(R.id.button_compass);
+        mWindModeButton = (Button) view.findViewById(R.id.button_wind);
+        mDecrease10Button = (Button) view.findViewById(R.id.button_d10);
+        mDecreaseButton = (Button) view.findViewById(R.id.button_d);
+        mIncreaseButton = (Button) view.findViewById(R.id.button_i);
+        mIncrease10Button = (Button) view.findViewById(R.id.button_i10);
+
     }
 
     /**
@@ -242,9 +276,49 @@ public class BluetoothChatFragment extends Fragment {
             }
         });
         // Initialize the send button with a listener that for click events
-        mStopButton.setOnClickListener(new View.OnClickListener() {
+        mGoParkingButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                sendMessage("SETROT\r\n");
+                sendMessage("GP\r\n");
+            }
+        });
+        mInitButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                sendMessage("I\r\n");
+            }
+        });
+        mPositionModeButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                sendMessage("S\r\n");
+            }
+        });
+        mCompassModeButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                sendMessage("M\r\n");
+            }
+        });
+        mWindModeButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                sendMessage("W\r\n");
+            }
+        });
+        mDecrease10Button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                sendMessage("D10\r\n");
+            }
+        });
+        mDecreaseButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                sendMessage("D1\r\n");
+            }
+        });
+        mIncreaseButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                sendMessage("I1\r\n");
+            }
+        });
+        mIncrease10Button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                sendMessage("I10\r\n");
             }
         });
 
@@ -374,10 +448,33 @@ public class BluetoothChatFragment extends Fragment {
                 case Constants.MESSAGE_READ:
                     String readMessage = (String) msg.obj;
                     String[] parts = readMessage.split("\t");
-                    if (parts.length > 25)
+                    if (parts.length >= 45)
                     {
-                        mConversationArrayAdapter.add(parts[0] + ": " + parts[21]);
-                        mGoalView.setText(parts[21]);
+                        mConversationArrayAdapter.add(readMessage);
+
+                        mGoalView.setText(reducePrecision(parts[15],0));
+                        mErrorView.setText(reducePrecision(parts[16], 0));
+                        mWindSpeedView.setText(reducePrecision(parts[36],1));          //TODO: calculate/check true wind speed
+                        mWindDirectionView.setText(reducePrecision(parts[35],0));
+                        mSpeedView.setText(reducePrecision(parts[30],1));
+                        mHeadingView.setText(reducePrecision(parts[20],0));
+                        mDepthView.setText(reducePrecision(parts[42],1));
+                        mTempView.setText(reducePrecision(parts[33],0));
+
+                        if (parts[14].equals("0")) {
+                            mPositionModeButton.setEnabled(false);
+                            mCompassModeButton.setEnabled(true);
+                            mWindModeButton.setEnabled(true);
+                        } else if (parts[14].equals("1")) {
+                            mPositionModeButton.setEnabled(true);
+                            mCompassModeButton.setEnabled(true);
+                            mWindModeButton.setEnabled(false);
+                        } else if (parts[14].equals("2")) {
+                            mPositionModeButton.setEnabled(true);
+                            mCompassModeButton.setEnabled(false);
+                            mWindModeButton.setEnabled(true);
+                        }
+
                     }
 
                     break;
@@ -398,6 +495,21 @@ public class BluetoothChatFragment extends Fragment {
             }
         }
     };
+    public String reducePrecision(String str, int prec) {
+        if(prec < 1) {
+            if(str.contains("."))
+                return str.substring(0,str.indexOf("."));
+            else
+                return str;
+        }
+
+        //untested
+        if(!str.contains("."))
+            str.concat(".");
+        while(str.length() - str.indexOf(".") < prec + 1)
+            str.concat("0");
+        return str.substring(0,str.indexOf(".") + prec + 1);
+    }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
