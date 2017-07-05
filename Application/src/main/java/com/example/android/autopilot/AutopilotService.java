@@ -82,6 +82,9 @@ public class AutopilotService {
         mState = STATE_NONE;
         mNewState = mState;
         mHandler = handler;
+
+        System.out.println("AutopilotService Constructor");
+
     }
 
     /**

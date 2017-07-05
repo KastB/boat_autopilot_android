@@ -48,6 +48,11 @@ import android.widget.Toast;
  */
 public class AutopilotFragment extends Fragment {
 
+
+    AutopilotFragment() {
+        System.out.println("AutopilotFragment Constructor");
+    }
+
     private static final String TAG = "AutopilotFragment";
 
     // Intent request codes
@@ -158,7 +163,7 @@ public class AutopilotFragment extends Fragment {
     /**
      * Member object for the chat services
      */
-    private AutopilotService mChatService = null;
+    private AutopilotService mAutopilotService = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -175,7 +180,6 @@ public class AutopilotFragment extends Fragment {
         }
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
@@ -185,16 +189,8 @@ public class AutopilotFragment extends Fragment {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
             // Otherwise, setup the chat session
-        } else if (mChatService == null) {
+        } else if (mAutopilotService == null) {
             setupChat();
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mChatService != null) {
-            mChatService.stop();
         }
     }
 
@@ -205,11 +201,11 @@ public class AutopilotFragment extends Fragment {
         // Performing this check in onResume() covers the case in which BT was
         // not enabled during onStart(), so we were paused to enable it...
         // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
-        if (mChatService != null) {
+        if (mAutopilotService != null) {
             // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (mChatService.getState() == AutopilotService.STATE_NONE) {
+            if (mAutopilotService.getState() == AutopilotService.STATE_NONE) {
                 // Start the Bluetooth chat services
-                mChatService.start();
+                mAutopilotService.start();
             }
         }
     }
@@ -324,7 +320,8 @@ public class AutopilotFragment extends Fragment {
 
 
         // Initialize the AutopilotService to perform bluetooth connections
-        mChatService = new AutopilotService(getActivity(), mHandler);
+//        mAutopilotService = new AutopilotService(getActivity(), mHandler);
+        mAutopilotService = ((MainActivity)getActivity()).getAutopilotService();
 
         // Initialize the buffer for outgoing messages
         mOutStringBuffer = new StringBuffer("");
@@ -349,7 +346,11 @@ public class AutopilotFragment extends Fragment {
      */
     private void sendMessage(String message) {
         // Check that we're actually connected before trying anything
-        if (mChatService.getState() != AutopilotService.STATE_CONNECTED) {
+        if (mAutopilotService == null)
+            mAutopilotService = mAutopilotService = ((MainActivity)getActivity()).getAutopilotService();
+        if (mAutopilotService == null)
+            return;
+        if (mAutopilotService.getState() != AutopilotService.STATE_CONNECTED) {
             Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -358,7 +359,7 @@ public class AutopilotFragment extends Fragment {
         if (message.length() > 0) {
             // Get the message bytes and tell the AutopilotService to write
             byte[] send = message.getBytes();
-            mChatService.write(send);
+            mAutopilotService.write(send);
 
             // Reset out string buffer to zero and clear the edit text field
             mOutStringBuffer.setLength(0);
@@ -495,6 +496,10 @@ public class AutopilotFragment extends Fragment {
             }
         }
     };
+
+    public Handler getHandler() {
+        return mHandler;
+    }
     public String reducePrecision(String str, int prec) {
         if(prec < 1) {
             if(str.contains("."))
@@ -552,7 +557,11 @@ public class AutopilotFragment extends Fragment {
         // Get the BluetoothDevice object
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         // Attempt to connect to the device
-        mChatService.connect(device, secure);
+        if (mAutopilotService == null)
+            mAutopilotService = mAutopilotService = ((MainActivity)getActivity()).getAutopilotService();
+        if (mAutopilotService == null)
+            return;
+        mAutopilotService.connect(device, secure);
     }
 
     @Override

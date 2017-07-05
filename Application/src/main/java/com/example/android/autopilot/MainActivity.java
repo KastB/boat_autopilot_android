@@ -17,6 +17,8 @@
 
 package com.example.android.autopilot;
 
+import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
@@ -33,25 +35,82 @@ import com.example.android.common.activities.SampleActivityBase;
 public class MainActivity extends SampleActivityBase {
 
     public static final String TAG = "MainActivity";
+    private AutopilotService mAutopilotService = null;
+    private AutopilotFragment mAutopilotFragment = null;
+    private BluetoothAdapter mBluetoothAdapter = null;
+
+    // Intent request codes
+    private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
+    private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
+    private static final int REQUEST_ENABLE_BT = 3;
+
+    MainActivity() {
+        System.out.println("MainActivity Constructor");
+    }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        if (mAutopilotFragment == null)
+            mAutopilotFragment = new AutopilotFragment();
+        if (mAutopilotService == null)
+            mAutopilotService = new AutopilotService(getApplicationContext(), mAutopilotFragment.getHandler());
 
         if (savedInstanceState == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            AutopilotFragment fragment = new AutopilotFragment();
-            transaction.replace(R.id.sample_content_fragment, fragment);
+
+
+
+            transaction.replace(R.id.sample_content_fragment, mAutopilotFragment);
             transaction.commit();
         }
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        // Performing this check in onResume() covers the case in which BT was
+        // not enabled during onStart(), so we were paused to enable it...
+        // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
+        if (mAutopilotService != null) {
+            // Only if the state is STATE_NONE, do we know that we haven't started already
+            if (mAutopilotService.getState() == AutopilotService.STATE_NONE) {
+                // Start the Bluetooth chat services
+                mAutopilotService.start();
+            }
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // If BT is not on, request that it be enabled.
+        // setupChat() will then be called during onActivityResult
+        if (!mBluetoothAdapter.isEnabled()) {
+            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+            // Otherwise, setup the chat session
+        } else if (mAutopilotService == null) {
+            if (mAutopilotFragment == null)
+                mAutopilotFragment = new AutopilotFragment();
+            mAutopilotService = new AutopilotService(this, mAutopilotFragment.getHandler());
+        }
+    }
+
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+
+    public AutopilotService getAutopilotService() {
+        return mAutopilotService;
     }
 
 }
