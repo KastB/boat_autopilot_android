@@ -20,10 +20,15 @@ package com.example.android.autopilot;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.view.Menu;
 
 import com.example.android.common.activities.SampleActivityBase;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple launcher activity containing a summary sample description, sample log and a custom
@@ -37,7 +42,9 @@ public class MainActivity extends SampleActivityBase {
     public static final String TAG = "MainActivity";
     private AutopilotService mAutopilotService = null;
     private AutopilotFragment mAutopilotFragment = null;
+    private DebugFragment mDebugFragment = null;
     private BluetoothAdapter mBluetoothAdapter = null;
+    private ViewPager mViewPager;
 
     // Intent request codes
     private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
@@ -57,16 +64,25 @@ public class MainActivity extends SampleActivityBase {
 
         if (mAutopilotFragment == null)
             mAutopilotFragment = new AutopilotFragment();
+        if (mDebugFragment == null)
+            mDebugFragment = new DebugFragment();
         if (mAutopilotService == null)
-            mAutopilotService = new AutopilotService(getApplicationContext(), mAutopilotFragment.getHandler());
+            mAutopilotService = new AutopilotService(getApplicationContext(), mAutopilotFragment.getHandler(), mDebugFragment.getHandler());
 
         if (savedInstanceState == null) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+            mViewPager = (ViewPager) findViewById(R.id.view_pager);
+            List<Fragment> fragments = new ArrayList<Fragment>();
+            fragments.add(mAutopilotFragment);
+            fragments.add(mDebugFragment);
+            SwipeAdaptor swipeAdaptor = new SwipeAdaptor(getSupportFragmentManager(), fragments);
+            mViewPager.setAdapter(swipeAdaptor);
+            /*FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
 
 
             transaction.replace(R.id.sample_content_fragment, mAutopilotFragment);
-            transaction.commit();
+            transaction.commit();*/
         }
     }
 
@@ -98,7 +114,7 @@ public class MainActivity extends SampleActivityBase {
         } else if (mAutopilotService == null) {
             if (mAutopilotFragment == null)
                 mAutopilotFragment = new AutopilotFragment();
-            mAutopilotService = new AutopilotService(this, mAutopilotFragment.getHandler());
+            mAutopilotService = new AutopilotService(this, mAutopilotFragment.getHandler(), mDebugFragment.getHandler());
         }
     }
 
@@ -111,6 +127,13 @@ public class MainActivity extends SampleActivityBase {
 
     public AutopilotService getAutopilotService() {
         return mAutopilotService;
+    }
+
+public void onDestroy() {
+        super.onDestroy();
+        if (mAutopilotService != null) {
+            mAutopilotService.stop();
+        }
     }
 
 }

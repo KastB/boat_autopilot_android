@@ -14,27 +14,15 @@
   limitations under the License.
   -->
 <LinearLayout
-      xmlns:android="http://schemas.android.com/apk/res/android"
-      android:orientation="horizontal"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:id="@+id/sample_main_layout">
-
-    <LinearLayout
-          android:id="@+id/sample_output"
-          android:layout_width="0px"
-          android:layout_height="match_parent"
-          android:layout_weight="1"
-          android:orientation="vertical">
-
-    </LinearLayout>
-
-    <FrameLayout
-          android:id="@+id/sample_content_fragment"
-          android:layout_weight="2"
-          android:layout_width="0px"
-          android:layout_height="match_parent" />
-
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/sample_main_layout">
+    <android.support.v4.view.ViewPager
+        android:id="@+id/view_pager"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        />
 </LinearLayout>
-
 

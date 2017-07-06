@@ -116,8 +116,8 @@ public class AutopilotFragment extends Fragment {
         46: Position
      */
     // Layout Views
-    private ListView mConversationView;
-    private EditText mOutEditText;
+
+
 
     private TextView mGoalView;
     private TextView mErrorView;
@@ -129,7 +129,6 @@ public class AutopilotFragment extends Fragment {
     private TextView mTempView;
 
     // Buttons #1#
-    private Button mSendButton;
     private Button mInitButton;
     private Button mGoParkingButton;
     private Button mPositionModeButton;
@@ -183,14 +182,12 @@ public class AutopilotFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        // If BT is not on, request that it be enabled.
-        // setupChat() will then be called during onActivityResult
         if (!mBluetoothAdapter.isEnabled()) {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
             // Otherwise, setup the chat session
         } else if (mAutopilotService == null) {
-            setupChat();
+            setup();
         }
     }
 
@@ -218,9 +215,6 @@ public class AutopilotFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        mConversationView = (ListView) view.findViewById(R.id.in);
-        mOutEditText = (EditText) view.findViewById(R.id.edit_text_out);
-
         mGoalView = (TextView) view.findViewById(R.id.goal);
         mErrorView = (TextView) view.findViewById(R.id.error);
         mWindSpeedView = (TextView) view.findViewById(R.id.wind_speed);
@@ -231,7 +225,6 @@ public class AutopilotFragment extends Fragment {
         mTempView = (TextView) view.findViewById(R.id.temperature);
 
         // connect #2#
-        mSendButton = (Button) view.findViewById(R.id.button_send);
         mInitButton = (Button) view.findViewById(R.id.button_init);
         mGoParkingButton = (Button) view.findViewById(R.id.button_goparking);
         mPositionModeButton = (Button) view.findViewById(R.id.button_stop);
@@ -247,30 +240,7 @@ public class AutopilotFragment extends Fragment {
     /**
      * Set up the UI and background operations for chat.
      */
-    private void setupChat() {
-        // Initialize the array adapter for the conversation thread
-        mConversationArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.message);
-
-        mConversationView.setAdapter(mConversationArrayAdapter);
-
-
-        // Initialize the compose field with a listener for the return key
-        mOutEditText.setOnEditorActionListener(mWriteListener);
-
-        // Init #3#
-
-        // Initialize the send button with a listener that for click events
-        mSendButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Send a message using content of the edit text widget
-                View view = getView();
-                if (null != view) {
-                    TextView textView = (TextView) view.findViewById(R.id.edit_text_out);
-                    String message = textView.getText().toString();
-                    sendMessage(message);
-                }
-            }
-        });
+    private void setup() {
         // Initialize the send button with a listener that for click events
         mGoParkingButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -320,23 +290,11 @@ public class AutopilotFragment extends Fragment {
 
 
         // Initialize the AutopilotService to perform bluetooth connections
-//        mAutopilotService = new AutopilotService(getActivity(), mHandler);
+//        mAutopilotService = new AutopilotService(getActivity(), mAutopilotHandler);
         mAutopilotService = ((MainActivity)getActivity()).getAutopilotService();
 
         // Initialize the buffer for outgoing messages
         mOutStringBuffer = new StringBuffer("");
-    }
-
-    /**
-     * Makes this device discoverable for 300 seconds (5 minutes).
-     */
-    private void ensureDiscoverable() {
-        if (mBluetoothAdapter.getScanMode() !=
-                BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
-            Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-            startActivity(discoverableIntent);
-        }
     }
 
     /**
@@ -360,28 +318,8 @@ public class AutopilotFragment extends Fragment {
             // Get the message bytes and tell the AutopilotService to write
             byte[] send = message.getBytes();
             mAutopilotService.write(send);
-
-            // Reset out string buffer to zero and clear the edit text field
-            mOutStringBuffer.setLength(0);
-            mOutEditText.setText(mOutStringBuffer);
         }
     }
-
-    /**
-     * The action listener for the EditText widget, to listen for the return key
-     */
-    private TextView.OnEditorActionListener mWriteListener
-            = new TextView.OnEditorActionListener() {
-        public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
-            // If the action is a key-up event on the return key, send the message
-            if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
-                String message = view.getText().toString();
-                sendMessage(message);
-            }
-            return true;
-        }
-    };
-
     /**
      * Updates the status on the action bar.
      *
@@ -419,7 +357,7 @@ public class AutopilotFragment extends Fragment {
     /**
      * The Handler that gets information back from the AutopilotService
      */
-    private final Handler mHandler = new Handler() {
+    private final Handler mAutopilotHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             FragmentActivity activity = getActivity();
@@ -498,7 +436,7 @@ public class AutopilotFragment extends Fragment {
     };
 
     public Handler getHandler() {
-        return mHandler;
+        return mAutopilotHandler;
     }
     public String reducePrecision(String str, int prec) {
         if(prec < 1) {
@@ -534,7 +472,7 @@ public class AutopilotFragment extends Fragment {
                 // When the request to enable Bluetooth returns
                 if (resultCode == Activity.RESULT_OK) {
                     // Bluetooth is now enabled, so set up a chat session
-                    setupChat();
+                    setup();
                 } else {
                     // User did not enable Bluetooth or an error occurred
                     Toast.makeText(getActivity(), R.string.bt_not_enabled_leaving,

@@ -57,7 +57,8 @@ public class AutopilotService {
 
     // Member fields
     private final BluetoothAdapter mAdapter;
-    private final Handler mHandler;
+    private Handler mAutopilotHandler;
+    private Handler mDebugHandler;
     private AcceptThread mSecureAcceptThread;
     private AcceptThread mInsecureAcceptThread;
     private ConnectThread mConnectThread;
@@ -75,13 +76,14 @@ public class AutopilotService {
      * Constructor. Prepares a new BluetoothChat session.
      *
      * @param context The UI Activity Context
-     * @param handler A Handler to send messages back to the UI Activity
+     * @param autopilotHandler A Handler to send messages back to the UI Activity
      */
-    public AutopilotService(Context context, Handler handler) {
+    public AutopilotService(Context context, Handler autopilotHandler, Handler debugHandler) {
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         mState = STATE_NONE;
         mNewState = mState;
-        mHandler = handler;
+        mAutopilotHandler = autopilotHandler;
+        mDebugHandler = debugHandler;
 
         System.out.println("AutopilotService Constructor");
 
@@ -95,7 +97,7 @@ public class AutopilotService {
         mNewState = mState;
 
         // Give the new state to the Handler so the UI Activity can update
-        mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, mNewState, -1).sendToTarget();
+        mAutopilotHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, mNewState, -1).sendToTarget();
     }
 
     /**
@@ -201,11 +203,11 @@ public class AutopilotService {
         mConnectedThread.start();
 
         // Send the name of the connected device back to the UI Activity
-        Message msg = mHandler.obtainMessage(Constants.MESSAGE_DEVICE_NAME);
+        Message msg = mAutopilotHandler.obtainMessage(Constants.MESSAGE_DEVICE_NAME);
         Bundle bundle = new Bundle();
         bundle.putString(Constants.DEVICE_NAME, device.getName());
         msg.setData(bundle);
-        mHandler.sendMessage(msg);
+        mAutopilotHandler.sendMessage(msg);
         // Update UI title
         updateUserInterfaceTitle();
     }
@@ -262,11 +264,11 @@ public class AutopilotService {
      */
     private void connectionFailed() {
         // Send a failure message back to the Activity
-        Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
+        Message msg = mAutopilotHandler.obtainMessage(Constants.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
         bundle.putString(Constants.TOAST, "Unable to connect device");
         msg.setData(bundle);
-        mHandler.sendMessage(msg);
+        mAutopilotHandler.sendMessage(msg);
 
         mState = STATE_NONE;
         // Update UI title
@@ -281,11 +283,11 @@ public class AutopilotService {
      */
     private void connectionLost() {
         // Send a failure message back to the Activity
-        Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
+        Message msg = mAutopilotHandler.obtainMessage(Constants.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
         bundle.putString(Constants.TOAST, "Device connection was lost");
         msg.setData(bundle);
-        mHandler.sendMessage(msg);
+        mAutopilotHandler.sendMessage(msg);
 
         mState = STATE_NONE;
         // Update UI title
@@ -484,7 +486,7 @@ public class AutopilotService {
                     index = readMessage.indexOf("\r\n");
                     if (index != -1) {
                         String tmp = readMessage.substring(0,index);
-                        mHandler.obtainMessage(Constants.MESSAGE_READ,readMessage.substring(0,index))
+                        mAutopilotHandler.obtainMessage(Constants.MESSAGE_READ,readMessage.substring(0,index))
                                 .sendToTarget();
                         if (index + 2 < readMessage.length())
                             readMessage = readMessage.substring(index+2, readMessage.length());
@@ -494,7 +496,7 @@ public class AutopilotService {
                     else {
                         index = readMessage.indexOf('\n');
                         if (index != -1) {
-                            mHandler.obtainMessage(Constants.MESSAGE_READ, readMessage.substring(0, index))
+                            mAutopilotHandler.obtainMessage(Constants.MESSAGE_READ, readMessage.substring(0, index))
                                     .sendToTarget();
                             if (index + 1 < readMessage.length())
                                 readMessage = readMessage.substring(index+1, readMessage.length());
@@ -520,7 +522,7 @@ public class AutopilotService {
                 mmOutStream.write(buffer);
 
                 // Share the sent message back to the UI Activity
-                mHandler.obtainMessage(Constants.MESSAGE_WRITE, -1, -1, buffer)
+                mAutopilotHandler.obtainMessage(Constants.MESSAGE_WRITE, -1, -1, buffer)
                         .sendToTarget();
             } catch (IOException e) {
             }
