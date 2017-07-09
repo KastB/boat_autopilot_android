@@ -272,7 +272,7 @@ public class AutopilotFragment extends Fragment {
                 sendMessage("D10\r\n");
             }
         });
-        mDecreaseButton.setOnClickListener(new View.OnClickListener() {
+        /*mDecreaseButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 sendMessage("D1\r\n");
             }
@@ -286,7 +286,24 @@ public class AutopilotFragment extends Fragment {
             public void onClick(View v) {
                 sendMessage("I10\r\n");
             }
+        });*/
+
+        mDecreaseButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                sendMessage("348050\t109\t0\t0\t109\t1\t109\t50456\t1\t1\t1\t4.00\t0.20\t3.00\t0\t240.00\t1.00\t196.54\t223.20\t229.52\t4.62\t9.73\t51.40\t-69.00\t-48.00\t-220.00\t123.00\t144.00\t55.00\t8.30\t50.00\t50.00\t21.00\t-1\t289.00\t1.70\t1\t0\t0\t0\t0\t10.70\t1\t0\t1\r\n");
+            }
         });
+        mIncreaseButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                sendMessage("348050\t109\t0\t0\t109\t1\t109\t50456\t1\t1\t1\t4.00\t0.20\t3.00\t0\t245.00\t250.0\t196.54\t223.20\t229.52\t4.62\t9.73\t51.40\t-69.00\t-48.00\t-220.00\t123.00\t144.00\t55.00\t8.30\t50.00\t50.00\t21.00\t-1\t289.00\t1.70\t1\t0\t0\t0\t0\t10.70\t1\t0\t1\r\n");
+            }
+        });
+        mIncrease10Button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                sendMessage("348050\t109\t0\t0\t109\t1\t109\t50456\t1\t1\t1\t4.00\t0.20\t3.00\t0\t250.00\t260.00\t196.54\t223.20\t229.52\t4.62\t9.73\t51.40\t-69.00\t-48.00\t-220.00\t123.00\t144.00\t55.00\t8.30\t50.00\t50.00\t21.00\t-1\t289.00\t1.70\t1\t0\t0\t0\t0\t10.70\t1\t0\t1\r\n");
+            }
+        });
+
 
 
         // Initialize the AutopilotService to perform bluetooth connections
