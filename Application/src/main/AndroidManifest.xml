@@ -48,7 +48,22 @@
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/select_device"
             android:theme="@android:style/Theme.Holo.Dialog"/>
+        <service android:name=".AutopilotService" android:label="Autopilot Bluetooth Service"/>
+
+        <receiver android:name=".DataUpdateReceiverAutopilotFragment">
+            <intent-filter>
+                <action android:name="autopilot_intent">
+                </action>
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".DataUpdateReceiverDebugFragment">
+            <intent-filter>
+                <action android:name="autopilot_intent">
+                </action>
+            </intent-filter>
+        </receiver>
 
     </application>
+
 
 </manifest>

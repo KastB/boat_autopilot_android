@@ -20,7 +20,10 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -53,12 +56,12 @@ public class AutopilotFragment extends Fragment {
         System.out.println("AutopilotFragment Constructor");
     }
 
-    private static final String TAG = "AutopilotFragment";
+    protected static final String TAG = "AutopilotFragment";
 
     // Intent request codes
-    private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
-    private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
-    private static final int REQUEST_ENABLE_BT = 3;
+    protected static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
+    protected static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
+    protected static final int REQUEST_ENABLE_BT = 3;
 
     /* By now there is a hard coded mapping between index of data incoming and the type of that data
         a better solution would probably be to ask for the current configuration, get an configuration
@@ -119,50 +122,42 @@ public class AutopilotFragment extends Fragment {
 
 
 
-    private TextView mGoalView;
-    private TextView mErrorView;
-    private TextView mWindSpeedView;
-    private TextView mWindDirectionView;
-    private TextView mSpeedView;
-    private TextView mHeadingView;
-    private TextView mDepthView;
-    private TextView mTempView;
+    protected TextView mGoalView;
+    protected TextView mErrorView;
+    protected TextView mWindSpeedView;
+    protected TextView mWindDirectionView;
+    protected TextView mSpeedView;
+    protected TextView mHeadingView;
+    protected TextView mDepthView;
+    protected TextView mTempView;
 
     // Buttons #1#
-    private Button mInitButton;
-    private Button mGoParkingButton;
-    private Button mPositionModeButton;
-    private Button mCompassModeButton;
-    private Button mWindModeButton;
-    private Button mDecrease10Button;
-    private Button mDecreaseButton;
-    private Button mIncreaseButton;
-    private Button mIncrease10Button;
+    protected Button mInitButton;
+    protected Button mGoParkingButton;
+    protected Button mPositionModeButton;
+    protected Button mCompassModeButton;
+    protected Button mWindModeButton;
+    protected Button mDecrease10Button;
+    protected Button mDecreaseButton;
+    protected Button mIncreaseButton;
+    protected Button mIncrease10Button;
 
     /**
      * Name of the connected device
      */
-    private String mConnectedDeviceName = null;
-
-    /**
-     * Array adapter for the conversation thread
-     */
-    private ArrayAdapter<String> mConversationArrayAdapter;
+    protected String mConnectedDeviceName = null;
 
     /**
      * String buffer for outgoing messages
      */
-    private StringBuffer mOutStringBuffer;
+    protected StringBuffer mOutStringBuffer;
 
     /**
      * Local Bluetooth adapter
      */
-    private BluetoothAdapter mBluetoothAdapter = null;
+    protected BluetoothAdapter mBluetoothAdapter = null;
 
-    /**
-     * Member object for the chat services
-     */
-    private AutopilotService mAutopilotService = null;
+    DataUpdateReceiverAutopilotFragment mDataUpdateReceiver;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -177,8 +172,23 @@ public class AutopilotFragment extends Fragment {
             Toast.makeText(activity, "Bluetooth is not available", Toast.LENGTH_LONG).show();
             activity.finish();
         }
+
+
+
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        try {
+            if (mDataUpdateReceiver != null) {
+                getContext().unregisterReceiver(mDataUpdateReceiver);
+            }
+        }
+        catch (java.lang.IllegalArgumentException e) {
+
+        }
+    }
     @Override
     public void onStart() {
         super.onStart();
@@ -186,26 +196,15 @@ public class AutopilotFragment extends Fragment {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
             // Otherwise, setup the chat session
-        } else if (mAutopilotService == null) {
+        } else {
             setup();
         }
+        if (mDataUpdateReceiver == null)
+            mDataUpdateReceiver = new DataUpdateReceiverAutopilotFragment(this);
+        IntentFilter intentFilter = new IntentFilter(AutopilotService.AUTOPILOT_INTENT);
+        getContext().registerReceiver(mDataUpdateReceiver, intentFilter);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        // Performing this check in onResume() covers the case in which BT was
-        // not enabled during onStart(), so we were paused to enable it...
-        // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
-        if (mAutopilotService != null) {
-            // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (mAutopilotService.getState() == AutopilotService.STATE_NONE) {
-                // Start the Bluetooth chat services
-                mAutopilotService.start();
-            }
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -240,7 +239,7 @@ public class AutopilotFragment extends Fragment {
     /**
      * Set up the UI and background operations for chat.
      */
-    private void setup() {
+    protected void setup() {
         // Initialize the send button with a listener that for click events
         mGoParkingButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -272,7 +271,7 @@ public class AutopilotFragment extends Fragment {
                 sendMessage("D10\r\n");
             }
         });
-        /*mDecreaseButton.setOnClickListener(new View.OnClickListener() {
+        mDecreaseButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 sendMessage("D1\r\n");
             }
@@ -286,8 +285,8 @@ public class AutopilotFragment extends Fragment {
             public void onClick(View v) {
                 sendMessage("I10\r\n");
             }
-        });*/
-
+        });
+/*
         mDecreaseButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 sendMessage("348050\t109\t0\t0\t109\t1\t109\t50456\t1\t1\t1\t4.00\t0.20\t3.00\t0\t240.00\t1.00\t196.54\t223.20\t229.52\t4.62\t9.73\t51.40\t-69.00\t-48.00\t-220.00\t123.00\t144.00\t55.00\t8.30\t50.00\t50.00\t21.00\t-1\t289.00\t1.70\t1\t0\t0\t0\t0\t10.70\t1\t0\t1\r\n");
@@ -303,12 +302,11 @@ public class AutopilotFragment extends Fragment {
                 sendMessage("348050\t109\t0\t0\t109\t1\t109\t50456\t1\t1\t1\t4.00\t0.20\t3.00\t0\t250.00\t260.00\t196.54\t223.20\t229.52\t4.62\t9.73\t51.40\t-69.00\t-48.00\t-220.00\t123.00\t144.00\t55.00\t8.30\t50.00\t50.00\t21.00\t-1\t289.00\t1.70\t1\t0\t0\t0\t0\t10.70\t1\t0\t1\r\n");
             }
         });
-
+*/
 
 
         // Initialize the AutopilotService to perform bluetooth connections
 //        mAutopilotService = new AutopilotService(getActivity(), mAutopilotHandler);
-        mAutopilotService = ((MainActivity)getActivity()).getAutopilotService();
 
         // Initialize the buffer for outgoing messages
         mOutStringBuffer = new StringBuffer("");
@@ -319,13 +317,11 @@ public class AutopilotFragment extends Fragment {
      *
      * @param message A string of text to send.
      */
-    private void sendMessage(String message) {
+    protected void sendMessage(String message) {
         // Check that we're actually connected before trying anything
-        if (mAutopilotService == null)
-            mAutopilotService = mAutopilotService = ((MainActivity)getActivity()).getAutopilotService();
-        if (mAutopilotService == null)
+        if (AutopilotService.getInstance() == null)
             return;
-        if (mAutopilotService.getState() != AutopilotService.STATE_CONNECTED) {
+        if (AutopilotService.getInstance().getState() != AutopilotService.STATE_CONNECTED) {
             Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -334,7 +330,7 @@ public class AutopilotFragment extends Fragment {
         if (message.length() > 0) {
             // Get the message bytes and tell the AutopilotService to write
             byte[] send = message.getBytes();
-            mAutopilotService.write(send);
+            AutopilotService.getInstance().write(send);
         }
     }
     /**
@@ -342,7 +338,7 @@ public class AutopilotFragment extends Fragment {
      *
      * @param resId a string resource ID
      */
-    private void setStatus(int resId) {
+    protected void setStatus(int resId) {
         FragmentActivity activity = getActivity();
         if (null == activity) {
             return;
@@ -359,7 +355,7 @@ public class AutopilotFragment extends Fragment {
      *
      * @param subTitle status
      */
-    private void setStatus(CharSequence subTitle) {
+    protected void setStatus(CharSequence subTitle) {
         FragmentActivity activity = getActivity();
         if (null == activity) {
             return;
@@ -371,90 +367,6 @@ public class AutopilotFragment extends Fragment {
         actionBar.setSubtitle(subTitle);
     }
 
-    /**
-     * The Handler that gets information back from the AutopilotService
-     */
-    private final Handler mAutopilotHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            FragmentActivity activity = getActivity();
-            switch (msg.what) {
-                case Constants.MESSAGE_STATE_CHANGE:
-                    switch (msg.arg1) {
-                        case AutopilotService.STATE_CONNECTED:
-                            setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
-                            mConversationArrayAdapter.clear();
-                            break;
-                        case AutopilotService.STATE_CONNECTING:
-                            setStatus(R.string.title_connecting);
-                            break;
-                        case AutopilotService.STATE_LISTEN:
-                        case AutopilotService.STATE_NONE:
-                            setStatus(R.string.title_not_connected);
-                            break;
-                    }
-                    break;
-                case Constants.MESSAGE_WRITE:
-                    byte[] writeBuf = (byte[]) msg.obj;
-                    // construct a string from the buffer
-                    String writeMessage = new String(writeBuf);
-                    mConversationArrayAdapter.add("Me:  " + writeMessage);
-
-                    break;
-                case Constants.MESSAGE_READ:
-                    String readMessage = (String) msg.obj;
-                    String[] parts = readMessage.split("\t");
-                    if (parts.length >= 45)
-                    {
-                        mConversationArrayAdapter.add(readMessage);
-
-                        mGoalView.setText(reducePrecision(parts[15],0));
-                        mErrorView.setText(reducePrecision(parts[16], 0));
-                        mWindSpeedView.setText(reducePrecision(parts[36],1));          //TODO: calculate/check true wind speed
-                        mWindDirectionView.setText(reducePrecision(parts[35],0));
-                        mSpeedView.setText(reducePrecision(parts[30],1));
-                        mHeadingView.setText(reducePrecision(parts[20],0));
-                        mDepthView.setText(reducePrecision(parts[42],1));
-                        mTempView.setText(reducePrecision(parts[33],0));
-
-                        if (parts[14].equals("0")) {
-                            mPositionModeButton.setEnabled(false);
-                            mCompassModeButton.setEnabled(true);
-                            mWindModeButton.setEnabled(true);
-                        } else if (parts[14].equals("1")) {
-                            mPositionModeButton.setEnabled(true);
-                            mCompassModeButton.setEnabled(true);
-                            mWindModeButton.setEnabled(false);
-                        } else if (parts[14].equals("2")) {
-                            mPositionModeButton.setEnabled(true);
-                            mCompassModeButton.setEnabled(false);
-                            mWindModeButton.setEnabled(true);
-                        }
-
-                    }
-
-                    break;
-                case Constants.MESSAGE_DEVICE_NAME:
-                    // save the connected device's name
-                    mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
-                    if (null != activity) {
-                        Toast.makeText(activity, "Connected to "
-                                + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
-                    }
-                    break;
-                case Constants.MESSAGE_TOAST:
-                    if (null != activity) {
-                        Toast.makeText(activity, msg.getData().getString(Constants.TOAST),
-                                Toast.LENGTH_SHORT).show();
-                    }
-                    break;
-            }
-        }
-    };
-
-    public Handler getHandler() {
-        return mAutopilotHandler;
-    }
     public String reducePrecision(String str, int prec) {
         if(prec < 1) {
             if(str.contains("."))
@@ -505,18 +417,16 @@ public class AutopilotFragment extends Fragment {
      * @param data   An {@link Intent} with {@link DeviceListActivity#EXTRA_DEVICE_ADDRESS} extra.
      * @param secure Socket Security type - Secure (true) , Insecure (false)
      */
-    private void connectDevice(Intent data, boolean secure) {
+    protected void connectDevice(Intent data, boolean secure) {
         // Get the device MAC address
         String address = data.getExtras()
                 .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
         // Get the BluetoothDevice object
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         // Attempt to connect to the device
-        if (mAutopilotService == null)
-            mAutopilotService = mAutopilotService = ((MainActivity)getActivity()).getAutopilotService();
-        if (mAutopilotService == null)
+        if (AutopilotService.getInstance() == null)
             return;
-        mAutopilotService.connect(device, secure);
+        AutopilotService.getInstance().connect(device, secure);
     }
 
     @Override

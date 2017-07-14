@@ -40,9 +40,6 @@ import java.util.List;
 public class MainActivity extends SampleActivityBase {
 
     public static final String TAG = "MainActivity";
-    private AutopilotService mAutopilotService = null;
-    private AutopilotFragment mAutopilotFragment = null;
-    private DebugFragment mDebugFragment = null;
     private BluetoothAdapter mBluetoothAdapter = null;
     private ViewPager mViewPager;
 
@@ -62,27 +59,14 @@ public class MainActivity extends SampleActivityBase {
         setContentView(R.layout.activity_main);
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        if (mAutopilotFragment == null)
-            mAutopilotFragment = new AutopilotFragment();
-        if (mDebugFragment == null)
-            mDebugFragment = new DebugFragment();
-        if (mAutopilotService == null)
-            mAutopilotService = new AutopilotService(getApplicationContext(), mAutopilotFragment.getHandler(), mDebugFragment.getHandler());
+        if (AutopilotService.getInstance() == null) {
+            startService(new Intent(this, AutopilotService.class));
+        }
 
         if (savedInstanceState == null) {
-
             mViewPager = (ViewPager) findViewById(R.id.view_pager);
-            List<Fragment> fragments = new ArrayList<Fragment>();
-            fragments.add(mAutopilotFragment);
-            fragments.add(mDebugFragment);
-            SwipeAdaptor swipeAdaptor = new SwipeAdaptor(getSupportFragmentManager(), fragments);
+            SwipeAdaptor swipeAdaptor = new SwipeAdaptor(getSupportFragmentManager());
             mViewPager.setAdapter(swipeAdaptor);
-            /*FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-
-
-            transaction.replace(R.id.sample_content_fragment, mAutopilotFragment);
-            transaction.commit();*/
         }
     }
 
@@ -93,12 +77,8 @@ public class MainActivity extends SampleActivityBase {
         // Performing this check in onResume() covers the case in which BT was
         // not enabled during onStart(), so we were paused to enable it...
         // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
-        if (mAutopilotService != null) {
-            // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (mAutopilotService.getState() == AutopilotService.STATE_NONE) {
-                // Start the Bluetooth chat services
-                mAutopilotService.start();
-            }
+        if (AutopilotService.getInstance() == null) {
+            startService(new Intent(this, AutopilotService.class));
         }
     }
 
@@ -111,29 +91,15 @@ public class MainActivity extends SampleActivityBase {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
             // Otherwise, setup the chat session
-        } else if (mAutopilotService == null) {
-            if (mAutopilotFragment == null)
-                mAutopilotFragment = new AutopilotFragment();
-            mAutopilotService = new AutopilotService(this, mAutopilotFragment.getHandler(), mDebugFragment.getHandler());
+        }
+        if (AutopilotService.getInstance() == null) {
+            startService(new Intent(this, AutopilotService.class));
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
-
-    public AutopilotService getAutopilotService() {
-        return mAutopilotService;
-    }
-
-public void onDestroy() {
-        super.onDestroy();
-        if (mAutopilotService != null) {
-            mAutopilotService.stop();
-        }
-    }
-
 }
