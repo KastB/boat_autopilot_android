@@ -130,6 +130,8 @@ public class AutopilotFragment extends Fragment {
     protected TextView mHeadingView;
     protected TextView mDepthView;
     protected TextView mTempView;
+    protected TextView mIntegralView;
+    protected TextView mRudderView;
 
     // Buttons #1#
     protected Button mInitButton;
@@ -222,6 +224,8 @@ public class AutopilotFragment extends Fragment {
         mHeadingView = (TextView) view.findViewById(R.id.heading);
         mDepthView = (TextView) view.findViewById(R.id.depth);
         mTempView = (TextView) view.findViewById(R.id.temperature);
+        mRudderView = (TextView) view.findViewById(R.id.rudder_position);
+        mIntegralView = (TextView) view.findViewById(R.id.integral);
 
         // connect #2#
         mInitButton = (Button) view.findViewById(R.id.button_init);
