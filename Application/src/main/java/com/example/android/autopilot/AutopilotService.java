@@ -16,6 +16,7 @@
 
 package com.example.android.autopilot;
 
+
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -31,6 +32,7 @@ import android.support.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.Buffer;
 import java.util.UUID;
 
 
@@ -114,6 +116,10 @@ public class AutopilotService extends Service {
 
     public static final String AUTOPILOT_INTENT = "autopilot_intent";
 
+    protected static int mRingBufferSize = 30;
+
+    MyBuffer mBuf;
+
     // Member fields
     protected final BluetoothAdapter mAdapter;
     protected ConnectThread mConnectThread;
@@ -139,6 +145,8 @@ public class AutopilotService extends Service {
         mState = STATE_NONE;
         mNewState = mState;
         System.out.println("AutopilotService Constructor");
+        mBuf = new MyBuffer(mRingBufferSize);
+
     }
 
     @Nullable
@@ -488,6 +496,11 @@ public class AutopilotService extends Service {
                     index = readMessage.indexOf("\r");
                     if (index != -1) {
                         String tmp = readMessage.substring(0,index);
+                        int index2 = tmp.indexOf("\n");
+                        if (index2 != -1)
+                        {
+                            tmp = tmp.substring(index2+1, tmp.length());
+                        }
                         //TODO
                         /*mAutopilotHandler.obtainMessage(Constants.MESSAGE_READ,readMessage.substring(0,index))
                                 .sendToTarget();*/
@@ -495,8 +508,14 @@ public class AutopilotService extends Service {
                         //in.setAction(Integer.toString(Constants.MESSAGE_READ));
                         in.setAction(AUTOPILOT_INTENT);
                         in.putExtra("intentType", Constants.MESSAGE_READ);
-                        in.putExtra(Integer.toString(Constants.MESSAGE_READ), readMessage.substring(0,index));
+                        in.putExtra(Integer.toString(Constants.MESSAGE_READ), tmp);
+
+
+                        mBuf.add(tmp);
+                        String[] s = mBuf.getAll();
+                        in.putExtra("History", s);
                         sendBroadcast(in);
+
                         if (index + 1 < readMessage.length())
                             readMessage = readMessage.substring(index+1, readMessage.length());
                         else
@@ -504,7 +523,7 @@ public class AutopilotService extends Service {
                     }
                     else {
                         index = readMessage.indexOf('\n');
-                        if (index != -1) {
+                        if (index > 0) {
                             //TODO
                             /*
                             mAutopilotHandler.obtainMessage(Constants.MESSAGE_READ, readMessage.substring(0, index))
@@ -513,6 +532,12 @@ public class AutopilotService extends Service {
                             in.setAction(AutopilotService.AUTOPILOT_INTENT);
                             in.putExtra("intentType", Constants.MESSAGE_READ);
                             in.putExtra(Integer.toString(Constants.MESSAGE_READ), readMessage.substring(0,index));
+
+                            mBuf.add(readMessage.substring(0,index));
+                            String[] s = mBuf.getAll();
+                            in.putExtra("History", s);
+                            sendBroadcast(in);
+
                             if (index + 1 < readMessage.length())
                                 readMessage = readMessage.substring(index+1, readMessage.length());
                             else

@@ -54,11 +54,6 @@ public class AutopilotFragment extends MyFragment {
 
     protected static final String TAG = "AutopilotFragment";
 
-    // Intent request codes
-    protected static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
-    protected static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
-    protected static final int REQUEST_ENABLE_BT = 3;
-
     // Layout Views
     protected TextView mGoalView;
     protected TextView mErrorView;
