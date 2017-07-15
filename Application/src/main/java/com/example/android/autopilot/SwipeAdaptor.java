@@ -11,7 +11,6 @@ import java.util.List;
  */
 
 public class SwipeAdaptor extends FragmentStatePagerAdapter {
-    List<Fragment> mFragments;
     SwipeAdaptor(android.support.v4.app.FragmentManager fm) {
         super(fm);
     }
@@ -20,8 +19,9 @@ public class SwipeAdaptor extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         if(position == 0)
             return new AutopilotFragment();
-        else
+        else //if (position == 1)
             return new DebugFragment();
+
     }
 
     @Override

@@ -32,11 +32,7 @@ import android.widget.Toast;
  * Created by bernd on 30.06.17.
  */
 
-public class DebugFragment extends Fragment {
-    /**
-     * Name of the connected device
-     */
-    protected String mConnectedDeviceName = null;
+public class DebugFragment extends MyFragment {
 
     /**
      * Array adapter for the conversation thread
@@ -48,22 +44,9 @@ public class DebugFragment extends Fragment {
      */
     protected StringBuffer mOutStringBuffer;
 
-    /**
-     * Local Bluetooth adapter
-     */
-    protected BluetoothAdapter mBluetoothAdapter = null;
-
-    DataUpdateReceiverDebugFragment mDataUpdateReceiver;
-
     protected ListView mConversationView;
     protected EditText mOutEditText;
     protected Button mSendButton;
-
-    // Intent request codes
-    protected static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
-    protected static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
-    protected static final int REQUEST_ENABLE_BT = 3;
-
 
 
     @Override
@@ -81,43 +64,9 @@ public class DebugFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-        // Get local Bluetooth adapter
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-        // If the adapter is null, then Bluetooth is not supported
-        if (mBluetoothAdapter == null) {
-            FragmentActivity activity = getActivity();
-            Toast.makeText(activity, "Bluetooth is not available", Toast.LENGTH_LONG).show();
-            activity.finish();
-        }
+    DataUpdateReceiverDebugFragment getNewDataUpdateReceiver() {
+        return new DataUpdateReceiverDebugFragment(this);
     }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        setup();
-        if (mDataUpdateReceiver == null)
-            mDataUpdateReceiver = new DataUpdateReceiverDebugFragment(this);
-        IntentFilter intentFilter = new IntentFilter(AutopilotService.AUTOPILOT_INTENT);
-        getContext().registerReceiver(mDataUpdateReceiver, intentFilter);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        try {
-            if (mDataUpdateReceiver != null) {
-                getContext().unregisterReceiver(mDataUpdateReceiver);
-            }
-        }
-        catch (java.lang.IllegalArgumentException e) {
-
-        }
-    }
-
 
     protected void setup() {
         // Initialize the array adapter for the conversation thread
@@ -151,20 +100,9 @@ public class DebugFragment extends Fragment {
      * @param message A string of text to send.
      */
     protected void sendMessage(String message) {
-        // Check that we're actually connected before trying anything
-        if (AutopilotService.getInstance() == null)
-            return;
-        if (AutopilotService.getInstance().getState() != AutopilotService.STATE_CONNECTED) {
-            Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
-            return;
-        }
+        super.sendMessage(message);
 
-        // Check that there's actually something to send
         if (message.length() > 0) {
-            // Get the message bytes and tell the AutopilotService to write
-            byte[] send = message.getBytes();
-            AutopilotService.getInstance().write(send);
-
             // Reset out string buffer to zero and clear the edit text field
             mOutStringBuffer.setLength(0);
             mOutEditText.setText(mOutStringBuffer);
@@ -185,160 +123,5 @@ public class DebugFragment extends Fragment {
             return true;
         }
     };
-
-    /**
-     * Updates the status on the action bar.
-     *
-     * @param resId a string resource ID
-     */
-    protected void setStatus(int resId) {
-        FragmentActivity activity = getActivity();
-        if (null == activity) {
-            return;
-        }
-        final ActionBar actionBar = activity.getActionBar();
-        if (null == actionBar) {
-            return;
-        }
-        actionBar.setSubtitle(resId);
-    }
-
-    /**
-     * Updates the status on the action bar.
-     *
-     * @param subTitle status
-     */
-    protected void setStatus(CharSequence subTitle) {
-        FragmentActivity activity = getActivity();
-        if (null == activity) {
-            return;
-        }
-        final ActionBar actionBar = activity.getActionBar();
-        if (null == actionBar) {
-            return;
-        }
-        actionBar.setSubtitle(subTitle);
-    }
-
-    /**
-     * The Handler that gets information back from the AutopilotService
-
-    protected final Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            FragmentActivity activity = getActivity();
-            switch (msg.what) {
-                case Constants.MESSAGE_STATE_CHANGE:
-                    switch (msg.arg1) {
-                        case AutopilotService.STATE_CONNECTED:
-                            setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
-                            mConversationArrayAdapter.clear();
-                            break;
-                        case AutopilotService.STATE_CONNECTING:
-                            setStatus(R.string.title_connecting);
-                            break;
-                        case AutopilotService.STATE_LISTEN:
-                        case AutopilotService.STATE_NONE:
-                            setStatus(R.string.title_not_connected);
-                            break;
-                    }
-                    break;
-                case Constants.MESSAGE_WRITE:
-                    byte[] writeBuf = (byte[]) msg.obj;
-                    // construct a string from the buffer
-                    String writeMessage = new String(writeBuf);
-                    mConversationArrayAdapter.add("Me:  " + writeMessage);
-
-                    break;
-                case Constants.MESSAGE_READ:
-                    String readMessage = (String) msg.obj;
-                    String[] parts = readMessage.split("\t");
-                    if (parts.length >= 45)
-                    {
-                        mConversationArrayAdapter.add(readMessage);
-                    }
-
-                    break;
-                case Constants.MESSAGE_DEVICE_NAME:
-                    // save the connected device's name
-                    mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
-                    if (null != activity) {
-                        Toast.makeText(activity, "Connected to "
-                                + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
-                    }
-                    break;
-                case Constants.MESSAGE_TOAST:
-                    if (null != activity) {
-                        Toast.makeText(activity, msg.getData().getString(Constants.TOAST),
-                                Toast.LENGTH_SHORT).show();
-                    }
-                    break;
-            }
-        }
-    };
-*/
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_CONNECT_DEVICE_SECURE:
-                // When DeviceListActivity returns with a device to connect
-                if (resultCode == Activity.RESULT_OK) {
-                    connectDevice(data, true);
-                }
-                break;
-            case REQUEST_CONNECT_DEVICE_INSECURE:
-                // When DeviceListActivity returns with a device to connect
-                if (resultCode == Activity.RESULT_OK) {
-                    connectDevice(data, false);
-                }
-                break;
-            case REQUEST_ENABLE_BT:
-                // When the request to enable Bluetooth returns
-                if (resultCode == Activity.RESULT_OK) {
-                    // Bluetooth is now enabled, so set up a chat session
-                    setup();
-                } else {
-                    // User did not enable Bluetooth or an error occurred
-                    Toast.makeText(getActivity(), R.string.bt_not_enabled_leaving,
-                            Toast.LENGTH_SHORT).show();
-                    getActivity().finish();
-                }
-        }
-    }
-
-    /**
-     * Establish connection with other device
-     *
-     * @param data   An {@link Intent} with {@link DeviceListActivity#EXTRA_DEVICE_ADDRESS} extra.
-     * @param secure Socket Security type - Secure (true) , Insecure (false)
-     */
-    protected void connectDevice(Intent data, boolean secure) {
-        // Get the device MAC address
-        String address = data.getExtras()
-                .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
-        // Get the BluetoothDevice object
-        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-        // Attempt to connect to the device
-        if (AutopilotService.getInstance() == null)
-            return;
-        AutopilotService.getInstance().connect(device, secure);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.bluetooth_chat, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.secure_connect_scan: {
-                // Launch the DeviceListActivity to see devices and do scan
-                Intent serverIntent = new Intent(getActivity(), DeviceListActivity.class);
-                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
-                return true;
-            }
-        }
-        return false;
-    }
 
 }

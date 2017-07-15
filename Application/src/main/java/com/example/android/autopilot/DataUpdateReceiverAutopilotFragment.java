@@ -13,8 +13,8 @@ import android.widget.Toast;
 public class DataUpdateReceiverAutopilotFragment extends BroadcastReceiver {
     static AutopilotFragment mAf;
 
-    public DataUpdateReceiverAutopilotFragment()
-    {
+    public DataUpdateReceiverAutopilotFragment() {
+
     }
 
     public DataUpdateReceiverAutopilotFragment(AutopilotFragment af)

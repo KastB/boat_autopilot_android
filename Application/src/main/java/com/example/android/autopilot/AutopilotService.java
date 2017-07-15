@@ -33,6 +33,65 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
+
+
+
+    /* By now there is a hard coded mapping between index of data incoming and the type of that data
+        a better solution would probably be to ask for the current configuration, get an configuration
+        list and work with that. The problem of this mechanism is, that the continously incoming
+        data could corrupt the requested information. => Stopping of continuous information is needed
+        beforehand.
+        Mapping by now:
+        Millis	m_currentPosition	m_pressedButtonDebug	m_bytesToSent	CurrentPosition	CurrentDirection	TargetPosition	MSStopped	startButton	stopButton	parkingButton	m_P	m_I	m_D	m_goalType	m_goal	m_lastError	m_errorSum	m_lastFilteredYaw	UI	yaw	pitch	roll	freq	magMin[0]	magMin[1]	magMin[2]	magMax[0]	magMax[1]	magMax[2]	m_speed	m_speed.tripMileage	m_speed.totalMileage	m_speed.waterTemp	m_lampIntensity	m_wind.apparentAngle	m_wind.apparentSpeed	m_wind.displayInKnots	m_wind.displayInMpS	m_depth.anchorAlarm	m_depth.deepAlarm	m_depth.defective	m_depth.depthBelowTransductor	m_depth.metricUnits	m_depth.shallowAlarm	m_depth.unknown	Position
+        0: Millis
+        1: m_currentPosition
+        2: m_pressedButtonDebug
+        3: m_bytesToSent
+        4: CurrentPosition
+        5: CurrentDirection
+        6: TargetPosition
+        7: MSStopped
+        8: startButton
+        9: stopButton
+        10: parkingButton
+        11: m_P
+        12: m_I
+        13: m_D
+        14: m_goalType
+        15: m_goal
+        16: m_lastError
+        17: m_errorSum
+        18: m_lastFilteredYaw
+        19: UI
+        20: yaw
+        21: pitch
+        22: roll
+        23: freq
+        24: magMin[0]
+        25: magMin[1]
+        26: magMin[2]
+        27: magMax[0]
+        28: magMax[1]
+        29: magMax[2]
+        30: m_speed
+        31: m_speed.tripMileage
+        32: m_speed.totalMileage
+        33: m_speed.waterTemp
+        34: m_lampIntensity
+        35: m_wind.apparentAngle
+        36: m_wind.apparentSpeed
+        37: m_wind.displayInKnots
+        38: m_wind.displayInMpS
+        39: m_depth.anchorAlarm
+        40: m_depth.deepAlarm
+        41: m_depth.defective
+        42: m_depth.depthBelowTransductor
+        43: m_depth.metricUnits
+        44: m_depth.shallowAlarm
+        45: m_depth.unknown
+        46: Position
+     */
+
 /**
  * This class does all the work for setting up and managing Bluetooth
  * connections with other devices. It has a thread that listens for

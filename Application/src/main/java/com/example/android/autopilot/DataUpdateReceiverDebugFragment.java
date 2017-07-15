@@ -15,6 +15,7 @@ public class DataUpdateReceiverDebugFragment extends BroadcastReceiver {
 
     public DataUpdateReceiverDebugFragment()
     {
+
     }
 
     public DataUpdateReceiverDebugFragment(DebugFragment df)
