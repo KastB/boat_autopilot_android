@@ -3,6 +3,7 @@ package com.example.android.autopilot;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
@@ -60,36 +61,65 @@ public class DataUpdateReceiverGraphFragment extends BroadcastReceiver {
                             String readMessage = intent.getStringExtra(Integer.toString(Constants.MESSAGE_READ));
                             String[] parts = readMessage.split("\t");
                             if (parts.length >= 45) {
-                                DataPoint p = getDataPoint(parts);
-                                mGf.mGoalSeries.appendData(p,true, 120);
+                                double x = 0;
+                                for(int i = 0; i < mGf.mSeries.length; i++)
+                                {
+                                    DataPoint p = getDataPoint(parts, mGf.mDataSets[i].mIndex);
+                                    x = p.getX();
+                                    try {
+                                        mGf.mSeries[i].appendData(p, true, 120);
+                                    }
+                                        catch (java.lang.IllegalArgumentException e)
+                                    {
+                                        mGf.mSeriesValid = false;
+                                    }
+                                }
                                 mGf.mGraph.getViewport().setXAxisBoundsManual(true);
-                                mGf.mGraph.getViewport().setMinX(p.getX()-120.0);
-                                mGf.mGraph.getViewport().setMaxX(p.getX() + 2.0);
+                                mGf.mGraph.getViewport().setMinX(x - 120.0);
+                                mGf.mGraph.getViewport().setMaxX(x + 2.0);
                             }
                         }
                         else {
                             String[] s;
                             s = intent.getStringArrayExtra("History");
                             if (s != null) {
-                                DataPoint[] data = new DataPoint[s.length];
+                                DataPoint[][] data = new DataPoint[s.length][mGf.mDataSets.length];
                                 int counter = 0;
 
                                 for (int i = 0; i < s.length; i++) {
                                     String[] parts = s[i].split("\t");
                                     if (parts.length >= 45) {
-                                        data[counter] = getDataPoint(parts);
-                                        counter++;
+                                        try {
+                                            for (int z = 0; z < mGf.mDataSets.length; z++) {
+                                                data[counter][z] = getDataPoint(parts, mGf.mDataSets[z].mIndex);
+                                            }
+                                            counter++;
+                                        }
+                                        catch (java.lang.NumberFormatException e )
+                                        {
+                                            System.out.println("Warning: invalid data received#2");
+                                        }
+
                                     } else {
                                         System.out.println("Warning: invalid data received");
                                     }
                                 }
-                                DataPoint[] cleaned_data = new DataPoint[counter];
+                                DataPoint[][] cleaned_data = new DataPoint[mGf.mDataSets.length][counter];
                                 for (int i = 0; i < counter; i++) {
-                                    cleaned_data[counter - i-1] = data[i];
-                                    System.out.println(data[i].getX());
+                                    for(int z = 0; z < mGf.mDataSets.length; z++) {
+                                        cleaned_data[z][counter - i - 1] = data[i][z];
+                                     }
                                 }
                                 mGf.mSeriesValid = true;
-                                mGf.mGoalSeries.resetData(cleaned_data);
+                                for(int z = 0; z < mGf.mDataSets.length; z++) {
+                                    try {
+                                        mGf.mSeries[z].resetData(cleaned_data[z]);
+                                    }
+                                    catch (java.lang.IllegalArgumentException e)
+                                    {
+                                        mGf.mSeriesValid = false;
+                                    }
+                                }
                             }
                         }
 
@@ -115,9 +145,8 @@ public class DataUpdateReceiverGraphFragment extends BroadcastReceiver {
         }
     }
 
-    public DataPoint getDataPoint(String[] parts)
+    public DataPoint getDataPoint(String[] parts, int index)
     {
-        DataPoint p = new DataPoint((double) Integer.parseInt(parts[0]) / 1000, Double.parseDouble(parts[15]));
-        return p;
+        return new DataPoint((double) Integer.parseInt(parts[0]) / 1000, Double.parseDouble(parts[index]));
     }
 }

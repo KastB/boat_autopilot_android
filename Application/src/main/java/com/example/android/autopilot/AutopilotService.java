@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringDef;
 
 
 import java.io.IOException;
@@ -116,7 +117,7 @@ public class AutopilotService extends Service {
 
     public static final String AUTOPILOT_INTENT = "autopilot_intent";
 
-    protected static int mRingBufferSize = 30;
+    protected static int mRingBufferSize = 120;
 
     MyBuffer mBuf;
 
@@ -126,6 +127,7 @@ public class AutopilotService extends Service {
     protected ConnectedThread mConnectedThread;
     protected int mState;
     protected int mNewState;
+    protected String mDeviceName;
 
     // Constants that indicate the current connection state
     public static final int STATE_NONE = 0;       // we're doing nothing
@@ -146,7 +148,7 @@ public class AutopilotService extends Service {
         mNewState = mState;
         System.out.println("AutopilotService Constructor");
         mBuf = new MyBuffer(mRingBufferSize);
-
+        mDeviceName = "";
     }
 
     @Nullable
@@ -162,10 +164,16 @@ public class AutopilotService extends Service {
         mState = getState();
         mNewState = mState;
 
+        Intent in = new Intent(AutopilotService.AUTOPILOT_INTENT);
+        in.setAction(AutopilotService.AUTOPILOT_INTENT);
+        in.putExtra("intentType", Constants.MESSAGE_DEVICE_NAME);
+        in.putExtra(Integer.toString(Constants.MESSAGE_DEVICE_NAME), mDeviceName);
+        sendBroadcast(in);
+
         // Give the new state to the Handler so the UI Activity can update
         // TODO:
         // mAutopilotHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, mNewState, -1).sendToTarget();
-        Intent in = new Intent(AutopilotService.AUTOPILOT_INTENT);
+        in = new Intent(AutopilotService.AUTOPILOT_INTENT);
         in.setAction(AutopilotService.AUTOPILOT_INTENT);
         in.putExtra("intentType", Constants.MESSAGE_STATE_CHANGE);
         in.putExtra(Integer.toString(Constants.MESSAGE_STATE_CHANGE), mNewState);
@@ -281,11 +289,8 @@ public class AutopilotService extends Service {
         bundle.putString(Constants.DEVICE_NAME, device.getName());
         msg.setData(bundle);
         mAutopilotHandler.sendMessage(msg);*/
-        Intent in = new Intent(AutopilotService.AUTOPILOT_INTENT);
-        in.setAction(AutopilotService.AUTOPILOT_INTENT);
-        in.putExtra("intentType", Constants.MESSAGE_DEVICE_NAME);
-        in.putExtra(Integer.toString(Constants.MESSAGE_DEVICE_NAME), device.getName());
-        sendBroadcast(in);
+
+        mDeviceName = device.getName();
 
         // Update UI title
         updateUserInterfaceTitle();
@@ -581,4 +586,5 @@ public class AutopilotService extends Service {
             }
         }
     }
+
 }

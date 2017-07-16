@@ -16,6 +16,7 @@
 
 package com.example.android.autopilot;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -25,6 +26,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
@@ -39,9 +41,8 @@ public class GraphFragment extends MyFragment {
 
     // Layout Views
     GraphView mGraph;
-    LineGraphSeries<DataPoint> mGoalSeries;
-    LineGraphSeries<DataPoint> mErrorSeries;
-    LineGraphSeries<DataPoint> mWindDirectionSeries;
+    LineGraphSeries<DataPoint>[] mSeries;
+    DataSet[] mDataSets;
     boolean mSeriesValid;
 
     @Override
@@ -65,20 +66,24 @@ public class GraphFragment extends MyFragment {
      * Set up the UI and background operations for chat.
      */
     protected void setup() {
-        mGoalSeries= new LineGraphSeries<>(new DataPoint[] {});
-        mErrorSeries= new LineGraphSeries<>(new DataPoint[] {});
-        mWindDirectionSeries= new LineGraphSeries<>(new DataPoint[] {});
+        mDataSets = new DataSet[] {
+                new DataSet("Ziel", 15, Color.BLACK, true, 5, 3),
+                new DataSet("Windrichtung", 35, Color.BLUE, true, 5, 3),
+                new DataSet("Fehler", 16, Color.RED, true, 5, 3)
+        };
+        mSeries = new LineGraphSeries[mDataSets.length];
+        for(int i = 0; i < mDataSets.length; i++)
+        {
+            mSeries[i] = new LineGraphSeries<>(new DataPoint[]{});
+            mSeries[i].setTitle(mDataSets[i].mTitle);
+            mSeries[i].setColor(mDataSets[i].mColor);
+            mSeries[i].setDataPointsRadius(mDataSets[i].mPointRadius);
+            mSeries[i].setDrawDataPoints(mDataSets[i].mDrawDataPoints);
+            mSeries[i].setThickness(mDataSets[i].mThickness);
+            mGraph.addSeries(mSeries[i]);
+        }
+        mGraph.getLegendRenderer().setVisible(true);
+        mGraph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
         mSeriesValid = false;
-        mGraph.addSeries(mGoalSeries);
-        mGraph.addSeries(mWindDirectionSeries);
-        DataPoint[] a = new DataPoint[] {
-                new DataPoint(0, 1),
-                new DataPoint(1, 5),
-                new DataPoint(2, 3),
-                new DataPoint(3, 2),
-                new DataPoint(4, 6)};
-        mWindDirectionSeries.resetData(a);
-        //mGraph.getViewport().setScalable(true);
-        //mGraph.getViewport().setScrollable(true);
     }
 }
