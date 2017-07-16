@@ -58,5 +58,6 @@
     <string name="spacer4">-180</string>
     <string name="rudder_position">Ruder [tiks]</string>
     <string name="integral">Integral [°s]</string>
+    <string name="disconnect">Trennen</string>
 
 </resources>

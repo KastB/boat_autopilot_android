@@ -216,6 +216,10 @@ abstract class MyFragment extends Fragment {
                 startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
                 return true;
             }
+            case R.id.disconnect: {
+                AutopilotService.getInstance().stop();
+                return true;
+            }
         }
         return false;
     }
