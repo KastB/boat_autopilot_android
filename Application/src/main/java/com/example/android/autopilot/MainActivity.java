@@ -80,6 +80,8 @@ public class MainActivity extends SampleActivityBase {
         if (AutopilotService.getInstance() == null) {
             startService(new Intent(this, AutopilotService.class));
         }
+        if(AutopilotService.getInstance() != null)
+            AutopilotService.getInstance().updateUserInterfaceTitle();
     }
 
     @Override
