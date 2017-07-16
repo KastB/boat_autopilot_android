@@ -69,7 +69,7 @@ public class GraphFragment extends MyFragment {
         mDataSets = new DataSet[] {
                 new DataSet("Ziel", 15, Color.BLACK, true, 5, 3),
                 new DataSet("Windrichtung", 35, Color.BLUE, true, 5, 3),
-                new DataSet("Fehler", 16, Color.RED, true, 5, 3)
+                new DataSet("Fehler", 16, Color.RED, true, 5, 3, true)
         };
         mSeries = new LineGraphSeries[mDataSets.length];
         for(int i = 0; i < mDataSets.length; i++)
@@ -80,10 +80,18 @@ public class GraphFragment extends MyFragment {
             mSeries[i].setDataPointsRadius(mDataSets[i].mPointRadius);
             mSeries[i].setDrawDataPoints(mDataSets[i].mDrawDataPoints);
             mSeries[i].setThickness(mDataSets[i].mThickness);
-            mGraph.addSeries(mSeries[i]);
+            if (mDataSets[i].mSecondScale)
+            {
+                mGraph.getSecondScale().addSeries(mSeries[i]);
+            }
+            else {
+                mGraph.addSeries(mSeries[i]);
+            }
         }
         mGraph.getLegendRenderer().setVisible(true);
         mGraph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
+        mGraph.getSecondScale().setMinY(-20);
+        mGraph.getSecondScale().setMaxY(20);
         mSeriesValid = false;
     }
 }
