@@ -20,9 +20,9 @@ public class SwipeAdaptor extends FragmentStatePagerAdapter {
         if(position == 0)
             return new AutopilotFragment();
         else if (position == 1)
-            return new DebugFragment();
-        else
             return new GraphFragment();
+        else
+            return new DebugFragment();
 
     }
 

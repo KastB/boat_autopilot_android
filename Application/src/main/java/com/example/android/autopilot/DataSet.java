@@ -13,13 +13,23 @@ public class DataSet {
     float mPointRadius;
     int mThickness;
     int mIndex;
+    boolean mSecondScale;
 
     DataSet(String title, int index, int color, boolean drawDataPoints, float pointRadius, int thickness) {
+        DataSet(title, index, color, drawDataPoints, pointRadius, thickness, false);
+    }
+
+    DataSet(String title, int index, int color, boolean drawDataPoints, float pointRadius, int thickness, boolean secondScale) {
+        DataSet(title, index, color, drawDataPoints, pointRadius, thickness, secondScale);
+    }
+
+    private void DataSet(String title, int index, int color, boolean drawDataPoints, float pointRadius, int thickness, boolean secondScale) {
         mTitle = title;
         mColor = color;
         mDrawDataPoints = drawDataPoints;
         mPointRadius = pointRadius;
         mThickness = thickness;
         mIndex = index;
+        mSecondScale = secondScale;
     }
 }
