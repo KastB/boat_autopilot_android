@@ -60,6 +60,8 @@
     <string name="spacer4">-180</string>
     <string name="rudder_position">Ruder [tiks]</string>
     <string name="integral">Integral [°s]</string>
+    <string name="heel">Kränung [°s]</string>
+    <string name="pitch">Pitch [°s]</string>
     <string name="disconnect">Trennen</string>
 
 </resources>

@@ -65,6 +65,8 @@ public class AutopilotFragment extends MyFragment {
     protected TextView mTempView;
     protected TextView mIntegralView;
     protected TextView mRudderView;
+    protected TextView mPitchView;
+    protected TextView mHeelView;
 
     // Buttons #1#
     protected Button mInitButton;
@@ -103,6 +105,8 @@ public class AutopilotFragment extends MyFragment {
         mTempView = (TextView) view.findViewById(R.id.temperature);
         mRudderView = (TextView) view.findViewById(R.id.rudder_position);
         mIntegralView = (TextView) view.findViewById(R.id.integral);
+        mHeelView = (TextView) view.findViewById(R.id.heel);
+        mPitchView = (TextView) view.findViewById(R.id.pitch);
 
         // connect #2#
         mInitButton = (Button) view.findViewById(R.id.button_init);
