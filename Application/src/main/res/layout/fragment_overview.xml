@@ -44,6 +44,26 @@
                 android:text="@string/goparking" />
 
         </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/button_reinit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/reinit" />
+
+            <Button
+                android:id="@+id/button_unlock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/unlock" />
+
+        </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
@@ -337,6 +357,8 @@
                 android:visibility="invisible" />
 
         </TableRow>
+
+
     </TableLayout>
 
     <TableLayout

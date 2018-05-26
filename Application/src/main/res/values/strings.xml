@@ -53,6 +53,8 @@
     <string name="depth">Tiefe [m]:</string>
     <string name="temperature">Temp [°C]:</string>
     <string name="init">Initialisieren</string>
+    <string name="reinit">Re-Initialisieren</string>
+    <string name="unlock">Entsperren</string>
     <string name="goparking">Parken</string>
     <string name="blank">-</string>
     <string name="spacer4">-180</string>

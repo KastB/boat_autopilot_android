@@ -44,7 +44,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.os.CountDownTimer;
 
 /**
  * This fragment controls Bluetooth to communicate with other devices.
@@ -68,6 +68,8 @@ public class AutopilotFragment extends MyFragment {
 
     // Buttons #1#
     protected Button mInitButton;
+    protected Button mReInitButton;
+    protected Button mUnlockButton;
     protected Button mGoParkingButton;
     protected Button mPositionModeButton;
     protected Button mCompassModeButton;
@@ -104,6 +106,8 @@ public class AutopilotFragment extends MyFragment {
 
         // connect #2#
         mInitButton = (Button) view.findViewById(R.id.button_init);
+        mReInitButton = (Button) view.findViewById(R.id.button_reinit);
+        mUnlockButton = (Button) view.findViewById(R.id.button_unlock);
         mGoParkingButton = (Button) view.findViewById(R.id.button_goparking);
         mPositionModeButton = (Button) view.findViewById(R.id.button_stop);
         mCompassModeButton = (Button) view.findViewById(R.id.button_compass);
@@ -113,6 +117,9 @@ public class AutopilotFragment extends MyFragment {
         mIncreaseButton = (Button) view.findViewById(R.id.button_i);
         mIncrease10Button = (Button) view.findViewById(R.id.button_i10);
 
+        mInitButton.setEnabled(false);
+        mReInitButton.setEnabled(false);
+        mGoParkingButton.setEnabled(false);
     }
 
     /**
@@ -128,6 +135,30 @@ public class AutopilotFragment extends MyFragment {
         mInitButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 sendMessage("I\r\n");
+            }
+        });
+        mReInitButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                sendMessage("RI\r\n");
+            }
+        });
+        mUnlockButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mInitButton.setEnabled(true);
+                mReInitButton.setEnabled(true);
+                mGoParkingButton.setEnabled(true);
+
+                new CountDownTimer(3000, 10) {
+                    public void onTick(long millisUntilFinished) {
+                    }
+                    @Override
+                    public void onFinish() {
+                        mInitButton.setEnabled(false);
+                        mReInitButton.setEnabled(false);
+                        mGoParkingButton.setEnabled(false);
+                    }
+                }.start();
+
             }
         });
         mPositionModeButton.setOnClickListener(new View.OnClickListener() {
