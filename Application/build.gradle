@@ -28,7 +28,7 @@ dependencies {
     implementation "com.android.support:gridlayout-v7:27.1.1"
     implementation "com.android.support:cardview-v7:27.1.1"
     implementation "com.android.support:appcompat-v7:27.1.1"
-    implementation 'com.jjoe64:graphview:4.2.1'
+    implementation 'com.jjoe64:graphview:4.2.2'
 }
 
 // The sample build uses multiple directories to
