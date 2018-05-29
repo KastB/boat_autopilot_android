@@ -5,28 +5,23 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
-
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.widget.EditText;
+import android.text.InputType;
 
 /**
  * Created by bernd on 30.06.17.
@@ -49,7 +44,6 @@ abstract class MyFragment extends Fragment {
     protected static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
     protected static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
     protected static final int REQUEST_ENABLE_BT = 3;
-
 
     abstract BroadcastReceiver  getNewDataUpdateReceiver();
 
@@ -109,7 +103,8 @@ abstract class MyFragment extends Fragment {
         // Check that we're actually connected before trying anything
         if (AutopilotService.getInstance() == null)
             return;
-        if (AutopilotService.getInstance().getState() != AutopilotService.STATE_CONNECTED) {
+        if (AutopilotService.getInstance().getState() != AutopilotService.STATE_CONNECTED_BT &&
+            AutopilotService.getInstance().getState() != AutopilotService.STATE_CONNECTED_TCP) {
             Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -159,15 +154,15 @@ abstract class MyFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_CONNECT_DEVICE_SECURE:
-                // When DeviceListActivity returns with a device to connect
+                // When DeviceListActivity returns with a device to connectBt
                 if (resultCode == Activity.RESULT_OK) {
-                    connectDevice(data, true);
+                    connectDeviceBt(data, true);
                 }
                 break;
             case REQUEST_CONNECT_DEVICE_INSECURE:
-                // When DeviceListActivity returns with a device to connect
+                // When DeviceListActivity returns with a device to connectBt
                 if (resultCode == Activity.RESULT_OK) {
-                    connectDevice(data, false);
+                    connectDeviceBt(data, false);
                 }
                 break;
             case REQUEST_ENABLE_BT:
@@ -184,22 +179,53 @@ abstract class MyFragment extends Fragment {
         }
     }
 
+    protected void connectDeviceTcp() {
+        if (AutopilotService.getInstance() == null)
+            return;
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext());
+        builder.setTitle("Please enter ip:port");
+        final EditText input = new EditText(this.getContext());
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        input.setText("192.168.178.26:2948");
+        builder.setView(input);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String text;
+                text = input.getText().toString();
+                System.out.println(text);
+                String ip = text.substring(0, text.indexOf(":"));
+                int port = Integer.parseInt(text.substring(ip.length() + 1, text.length()));
+                AutopilotService.getInstance().connectTcp(ip, port);
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
     /**
      * Establish connection with other device
      *
      * @param data   An {@link Intent} with {@link DeviceListActivity#EXTRA_DEVICE_ADDRESS} extra.
      * @param secure Socket Security type - Secure (true) , Insecure (false)
      */
-    protected void connectDevice(Intent data, boolean secure) {
+    protected void connectDeviceBt(Intent data, boolean secure) {
         // Get the device MAC address
         String address = data.getExtras()
                 .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
         // Get the BluetoothDevice object
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-        // Attempt to connect to the device
+        // Attempt to connectBt to the device
         if (AutopilotService.getInstance() == null)
             return;
-        AutopilotService.getInstance().connect(device, secure);
+        AutopilotService.getInstance().connectBt(device, secure);
     }
 
     @Override
@@ -220,6 +246,10 @@ abstract class MyFragment extends Fragment {
                 AutopilotService.getInstance().stop();
                 return true;
             }
+            case R.id.connect_tcp: {
+                connectDeviceTcp();
+            }
+
         }
         return false;
     }
@@ -240,5 +270,4 @@ abstract class MyFragment extends Fragment {
             str.concat("0");
         return str.substring(0,str.indexOf(".") + prec + 1);
     }
-
 }

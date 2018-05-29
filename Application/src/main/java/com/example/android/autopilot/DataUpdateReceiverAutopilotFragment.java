@@ -31,13 +31,19 @@ public class DataUpdateReceiverAutopilotFragment extends BroadcastReceiver {
                 switch (intent.getIntExtra("intentType", -1)) {
                     case Constants.MESSAGE_STATE_CHANGE:
                         switch (intent.getIntExtra(Integer.toString(Constants.MESSAGE_STATE_CHANGE), -1)) {
-                            case AutopilotService.STATE_CONNECTED:
+                            case AutopilotService.STATE_CONNECTED_BT:
                                 mAf.setStatus(mAf.getString(R.string.title_connected_to, mAf.mConnectedDeviceName));
                                 break;
-                            case AutopilotService.STATE_CONNECTING:
-                                mAf.setStatus(R.string.title_connecting);
+                            case AutopilotService.STATE_CONNECTING_BT:
+                                mAf.setStatus(R.string.title_connecting_bt);
                                 break;
-                            case AutopilotService.STATE_LISTEN:
+                            case AutopilotService.STATE_LISTEN_BT:
+                            case AutopilotService.STATE_CONNECTED_TCP:
+                                mAf.setStatus(mAf.getString(R.string.title_connected_to, mAf.mConnectedDeviceName));
+                                break;
+                            case AutopilotService.STATE_CONNECTING_TCP:
+                                mAf.setStatus(R.string.title_connecting_tcp);
+                                break;
                             case AutopilotService.STATE_NONE:
                                 mAf.setStatus(R.string.title_not_connected);
                                 break;
