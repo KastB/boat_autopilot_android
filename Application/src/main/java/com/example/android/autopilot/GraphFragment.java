@@ -22,14 +22,11 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
-
 
 /**
  * This fragment controls Bluetooth to communicate with other devices.
@@ -97,6 +94,10 @@ public class GraphFragment extends MyFragment {
         mGraph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
         mGraph.getSecondScale().setMinY(-20);
         mGraph.getSecondScale().setMaxY(20);
+        mGraph.getGridLabelRenderer().setHorizontalLabelsAngle(90);
+
+        mGraph.getGridLabelRenderer().setPadding(64);
+
         mSeriesValid = false;
     }
 }
