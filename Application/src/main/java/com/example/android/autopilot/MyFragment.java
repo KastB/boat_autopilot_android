@@ -64,7 +64,7 @@ abstract class MyFragment extends Fragment {
         // If the adapter is null, then Bluetooth is not supported
         if (mBluetoothAdapter == null) {
             FragmentActivity activity = getActivity();
-            Toast.makeText(activity, "Bluetooth is not verfügbar", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, "Bluetooth is not available", Toast.LENGTH_LONG).show();
             activity.finish();
         }
     }
@@ -91,6 +91,15 @@ abstract class MyFragment extends Fragment {
         catch (IllegalArgumentException e) {
 
         }
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if (mDataUpdateReceiver == null)
+            mDataUpdateReceiver = getNewDataUpdateReceiver();
+        IntentFilter intentFilter = new IntentFilter(AutopilotService.AUTOPILOT_INTENT);
+        getContext().registerReceiver(mDataUpdateReceiver, intentFilter);
     }
 
 
@@ -230,13 +239,16 @@ abstract class MyFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.bluetooth_chat, menu);
+        inflater.inflate(R.menu.buttons, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.secure_connect_scan: {
+
+                AutopilotService.getInstance().stop();
+
                 // Launch the DeviceListActivity to see devices and do scan
                 Intent serverIntent = new Intent(getActivity(), DeviceListActivity.class);
                 startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
@@ -247,9 +259,9 @@ abstract class MyFragment extends Fragment {
                 return true;
             }
             case R.id.connect_tcp: {
+                AutopilotService.getInstance().stop();
                 connectDeviceTcp();
             }
-
         }
         return false;
     }

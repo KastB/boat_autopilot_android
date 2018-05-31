@@ -30,16 +30,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
-import java.net.InetAddress;
 import java.net.Socket;
 
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-
-import java.nio.charset.Charset;
 
     /* By now there is a hard coded mapping between index of data incoming and the type of that data
         a better solution would probably be to ask for the current configuration, get an configuration
@@ -119,13 +113,12 @@ public class AutopilotService extends Service {
 
     // Member fields
     protected final BluetoothAdapter mAdapterBt;
-    protected ConnectThreadBt mConnectThreadBt;
     protected ConnectedThreadBt mConnectedThreadBt;
 
-    protected ConnectThreadTcp mConnectThreadTcp;
+    protected WritableThread mConnectThread;
 
     protected int mState;
-    protected int mNewStateBt;
+    protected int mNewState;
     protected String mDeviceName;
 
     // Constants that indicate the current connection state
@@ -136,6 +129,16 @@ public class AutopilotService extends Service {
     public static final int STATE_CONNECTING_TCP = 4; // now initiating an outgoing connection
     public static final int STATE_CONNECTED_TCP = 5;  // now connected to a remote device
 
+    public static final int BT = 6;
+    public static final int TCP = 7;
+
+
+    private String mLastIp;
+    private int mLastPort;
+    private BluetoothDevice mLastDevice;
+
+    private int mLastType = STATE_NONE;
+
     // https://stackoverflow.com/questions/2463175/how-to-have-android-service-communicate-with-activity
     protected static AutopilotService sInstance;
 
@@ -145,7 +148,7 @@ public class AutopilotService extends Service {
     public AutopilotService() {
         mAdapterBt = BluetoothAdapter.getDefaultAdapter();
         mState = STATE_NONE;
-        mNewStateBt = mState;
+        mNewState = mState;
         System.out.println("AutopilotService Constructor");
         mBuf = new MyBuffer(mRingBufferSize);
         mDeviceName = "";
@@ -162,22 +165,32 @@ public class AutopilotService extends Service {
      */
     protected synchronized void updateUserInterfaceTitle() {
         mState = getState();
-        mNewStateBt = mState;
-
         Intent in = new Intent(AutopilotService.AUTOPILOT_INTENT);
-        in.setAction(AutopilotService.AUTOPILOT_INTENT);
         in.putExtra("intentType", Constants.MESSAGE_DEVICE_NAME);
         in.putExtra(Integer.toString(Constants.MESSAGE_DEVICE_NAME), mDeviceName);
         sendBroadcast(in);
 
-        // Give the new state to the Handler so the UI Activity can update
-        // TODO:
-        // mAutopilotHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, mNewStateBt, -1).sendToTarget();
-        in = new Intent(AutopilotService.AUTOPILOT_INTENT);
-        in.setAction(AutopilotService.AUTOPILOT_INTENT);
         in.putExtra("intentType", Constants.MESSAGE_STATE_CHANGE);
-        in.putExtra(Integer.toString(Constants.MESSAGE_STATE_CHANGE), mNewStateBt);
+        in.putExtra(Integer.toString(Constants.MESSAGE_STATE_CHANGE), mState);
         sendBroadcast(in);
+
+        if (mState == STATE_CONNECTED_BT || mState == STATE_CONNECTED_TCP)
+        {
+            in.putExtra("intentType", Constants.MESSAGE_DEVICE_NAME);
+            in.putExtra(Integer.toString(Constants.MESSAGE_DEVICE_NAME), mDeviceName);
+        }
+        else if (mState == STATE_CONNECTING_BT || mState == STATE_CONNECTING_TCP)
+        {
+            in.putExtra("intentType", Constants.MESSAGE_TOAST);
+            in.putExtra(Integer.toString(Constants.MESSAGE_TOAST), "connecting to " + mDeviceName);
+        }
+        else
+        {
+            in.putExtra("intentType", Constants.MESSAGE_TOAST);
+            in.putExtra(Integer.toString(Constants.MESSAGE_TOAST), "disconnected");
+        }
+        sendBroadcast(in);
+        mNewState = mState;
     }
 
     @Override
@@ -205,13 +218,13 @@ public class AutopilotService extends Service {
         return mState;
     }
 
-
     private void cancel()
     {
+        mState = STATE_NONE;
         // Cancel any thread attempting to make a connection
-        if (mConnectThreadBt != null) {
-            mConnectThreadBt.cancel();
-            mConnectThreadBt = null;
+        if (mConnectThread != null) {
+            mConnectThread.cancel();
+            mConnectThread = null;
         }
 
         // Cancel any thread currently running a connection
@@ -219,12 +232,7 @@ public class AutopilotService extends Service {
             mConnectedThreadBt.cancel();
             mConnectedThreadBt = null;
         }
-
-        if (mConnectThreadTcp != null) {
-            mConnectThreadTcp.cancel();
-            mConnectThreadTcp = null;
-        }
-
+        updateUserInterfaceTitle();
     }
     /**
      * Start the chat service. Specifically start AcceptThread to begin a
@@ -232,8 +240,9 @@ public class AutopilotService extends Service {
      */
     public synchronized void start() {
         this.cancel();
-        // Update UI title
-        updateUserInterfaceTitle();
+        if (this.mConnectThread != null) {
+            this.mConnectThread.start();
+        }
     }
 
     /**
@@ -244,20 +253,25 @@ public class AutopilotService extends Service {
      */
     public synchronized void connectBt(BluetoothDevice device, boolean secure) {
         this.cancel();
+        this.mLastDevice = device;
+        this.mLastType = BT;
 
         // Start the thread to connectBt with the given device
-        mConnectThreadBt = new ConnectThreadBt(device, secure);
-        mConnectThreadBt.start();
+        mConnectThread = new ConnectThreadBt(device, secure);
+        mConnectThread.start();
         // Update UI title
         updateUserInterfaceTitle();
     }
 
     public synchronized void connectTcp(String ip, Integer port) {
-        this.cancel();
+        AutopilotService.this.cancel();
+        this.mLastIp = ip;
+        this.mLastPort = port;
+        this.mLastType = TCP;
 
         // Start the thread to connectBt with the given device
-        mConnectThreadTcp = new ConnectThreadTcp(ip, port);
-        mConnectThreadTcp.start();
+        mConnectThread = new ConnectThreadTcp(ip, port);
+        mConnectThread.start();
         // Update UI title
         updateUserInterfaceTitle();
     }
@@ -266,9 +280,10 @@ public class AutopilotService extends Service {
      * Stop all threads
      */
     public synchronized void stop() {
+        mLastType = STATE_NONE;
         this.cancel();
+        mLastType = STATE_NONE;
 
-        mState = STATE_NONE;
         // Update UI title
         updateUserInterfaceTitle();
     }
@@ -288,7 +303,7 @@ public class AutopilotService extends Service {
                 r = mConnectedThreadBt;
             }
             else if (mState == STATE_CONNECTED_TCP) {
-                r = mConnectThreadTcp;
+                r = mConnectThread;
             }
             else
                 {
@@ -300,54 +315,19 @@ public class AutopilotService extends Service {
     }
 
     /**
-     * Indicate that the connection attempt failed and notify the UI Activity.
-     */
-    protected void connectionFailed() {
-        // Send a failure message back to the Activity
-        Intent in = new Intent(AutopilotService.AUTOPILOT_INTENT);
-        in.setAction(AutopilotService.AUTOPILOT_INTENT);
-        in.putExtra("intentType", Constants.TOAST);
-        in.putExtra(Constants.TOAST, "Unable to connectBt device");
-        sendBroadcast(in);
-
-        mState = STATE_NONE;
-        // Update UI title
-        updateUserInterfaceTitle();
-
-        // Start the service over to restart listening mode
-        AutopilotService.this.start();
-    }
-
-    /**
-     * Indicate that the connection was lost and notify the UI Activity.
-     */
-    protected void connectionLost() {
-        Intent in = new Intent(AutopilotService.AUTOPILOT_INTENT);
-        in.setAction(AutopilotService.AUTOPILOT_INTENT);
-        in.putExtra("intentType", Constants.TOAST);
-        in.putExtra(Constants.TOAST, "Device connection was lost");
-        sendBroadcast(in);
-        mState = STATE_NONE;
-        // Update UI title
-        updateUserInterfaceTitle();
-
-        // Start the service over to restart listening mode
-        AutopilotService.this.start();
-    }
-
-
-    /**
      * This thread runs while attempting to make an outgoing connection
      * with a device. It runs straight through; the connection either
      * succeeds or fails.
      */
-    protected class ConnectThreadBt extends Thread {
+    protected class ConnectThreadBt extends Thread implements WritableThread {
         protected final BluetoothSocket mmSocket;
         protected final BluetoothDevice mmDevice;
         protected String mSocketType;
 
         public ConnectThreadBt(BluetoothDevice device, boolean secure) {
+
             mmDevice = device;
+            mDeviceName = mmDevice.getName();
             BluetoothSocket tmp = null;
             mSocketType = secure ? "Secure" : "Insecure";
 
@@ -365,9 +345,12 @@ public class AutopilotService extends Service {
             }
             mmSocket = tmp;
             mState = STATE_CONNECTING_BT;
+            mDeviceName = mmDevice.getName();
+            updateUserInterfaceTitle();
         }
 
         public void run() {
+
             setName("ConnectThreadBt" + mSocketType);
 
             // Always cancel discovery because it will slow down a connection
@@ -384,13 +367,14 @@ public class AutopilotService extends Service {
                     mmSocket.close();
                 } catch (IOException e2) {
                 }
-                connectionFailed();
+                mState = STATE_NONE;
+                updateUserInterfaceTitle();
                 return;
             }
 
             // Reset the ConnectThreadBt because we're done
             synchronized (AutopilotService.this) {
-                mConnectThreadBt = null;
+                mConnectThread = null;
             }
 
             // Start the connected thread
@@ -404,6 +388,7 @@ public class AutopilotService extends Service {
 
             // Update UI title
             updateUserInterfaceTitle();
+
         }
 
         public void cancel() {
@@ -411,6 +396,11 @@ public class AutopilotService extends Service {
                 mmSocket.close();
             } catch (IOException e) {
             }
+        }
+
+        @Override
+        public void write(byte[] buffer) {
+
         }
     }
 
@@ -473,7 +463,8 @@ public class AutopilotService extends Service {
                         readMessage = "";
                     broadcast_msg(tmp);
                 } catch (IOException e) {
-                    connectionLost();
+                    mState = STATE_NONE;
+                    updateUserInterfaceTitle();
                     break;
                 }
             }
@@ -534,47 +525,62 @@ public class AutopilotService extends Service {
         protected final int mPort;
         Socket mmSocket;
 
-        private PrintWriter mmOutStream;
+        private OutputStream mmOutStream;
         private BufferedReader mmInStream;
 
         public ConnectThreadTcp(String ip, int port) {
             mIp = ip;
             mPort = port;
             mState = STATE_CONNECTING_TCP;
+            mDeviceName = mIp + ":" + mPort;
+
+            updateUserInterfaceTitle();
         }
 
         public void run() {
             setName("ConnectThreadTcp" + mIp + ":" + mPort);
-            mDeviceName = mIp + ":" + mPort;
 
-            try {
-                mmSocket = new Socket(mIp, mPort);
-            } catch (IOException e) {
-                connectionFailed();
-                return;
-            }
-            mState = STATE_CONNECTED_TCP;
-            // Update UI title
-            updateUserInterfaceTitle();
-
-            try {
-                mmOutStream = new PrintWriter(new BufferedWriter(new OutputStreamWriter(mmSocket.getOutputStream())), true);
-                mmInStream = new BufferedReader(new InputStreamReader(mmSocket.getInputStream()));
-            }
-            catch (IOException e){
-                connectionFailed();
-                return;
-            }
-
-            while(mState == STATE_CONNECTED_TCP)
-            {
+            while(mState == STATE_CONNECTING_TCP) {
                 try {
-                    String msg = mmInStream.readLine();
-                    broadcast_msg(msg);
+                    mmSocket = new Socket(mIp, mPort);
+                } catch (IOException e) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e3) {
+                        return;
+                    }
+                    continue;
                 }
-                catch (IOException e) {
-                    mState = STATE_NONE;
-                    updateUserInterfaceTitle();
+                mState = STATE_CONNECTED_TCP;
+
+                try {
+                    mmOutStream = mmSocket.getOutputStream();
+                    mmInStream = new BufferedReader(new InputStreamReader(mmSocket.getInputStream()));
+                } catch (IOException e) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e2) {
+                        return;
+                    }
+                    continue;
+                }
+                updateUserInterfaceTitle();
+
+                while (mState == STATE_CONNECTED_TCP) {
+                    try {
+                        String msg = mmInStream.readLine();
+                        broadcast_msg(msg);
+                    } catch (IOException e) {
+                        if (mState == STATE_CONNECTED_TCP) {
+                            mState = STATE_CONNECTING_TCP;
+                        }
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e2) {
+                            return;
+                        }
+                        updateUserInterfaceTitle();
+                    }
                 }
             }
         }
@@ -585,27 +591,38 @@ public class AutopilotService extends Service {
          * @param buffer The bytes to write
          */
         public void write(final byte[] buffer) {
-            final String msg = new String( buffer, Charset.forName("ASCII"));
-
             new Thread(new Runnable() {
 
                 @Override
                 public void run() {
-                    mmOutStream.write(msg);
-                    mmOutStream.flush();
+                    try {
+                        mmOutStream.write(buffer);
+                        mmOutStream.flush();
+                    }
+                    catch (IOException e){
+                        mState = STATE_CONNECTING_TCP;
+                        updateUserInterfaceTitle();
+                    }
                 }
             }).start();
-
             broadcast_sent_msg(buffer);
         }
 
         public void cancel() {
             try {
-                mmOutStream.flush();
-                mmOutStream.close();
-                mmInStream.close();
-                mmSocket.close();
+                if(mmOutStream != null) {
+                    mmOutStream.flush();
+                    mmOutStream.close();
+                }
+                if(mmInStream != null) {
+                    mmInStream.close();
+                }
+                if(mmSocket != null) {
+                    mmSocket.close();
+                }
             } catch (IOException e) {
+                mState = STATE_NONE;
+                updateUserInterfaceTitle();
             }
         }
     }
@@ -613,4 +630,6 @@ public class AutopilotService extends Service {
 
 interface WritableThread {
     void write(byte[] buffer);
+    void cancel();
+    void start();
 }
