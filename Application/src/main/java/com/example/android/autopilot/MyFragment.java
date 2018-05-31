@@ -22,7 +22,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.widget.EditText;
 import android.text.InputType;
-
+import android.content.SharedPreferences;
+import android.content.Context;
 /**
  * Created by bernd on 30.06.17.
  */
@@ -196,13 +197,27 @@ abstract class MyFragment extends Fragment {
         builder.setTitle("Please enter ip:port");
         final EditText input = new EditText(this.getContext());
         input.setInputType(InputType.TYPE_CLASS_TEXT);
-        input.setText("192.168.178.26:2948");
+        String text = "192.168.178.26:2948";
+        try {
+            SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+            text = sharedPref.getString("last_tcp_server", text);
+        }
+        catch (NullPointerException e){}
+        input.setText(text);
         builder.setView(input);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String text;
                 text = input.getText().toString();
+
+                //save text in preferences
+                try {
+                    SharedPreferences sharedPref = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+                    sharedPref.edit().putString("last_tcp_server", text).apply();
+                }
+                catch (NullPointerException e){}
+
                 System.out.println(text);
                 String ip = text.substring(0, text.indexOf(":"));
                 int port = Integer.parseInt(text.substring(ip.length() + 1, text.length()));
