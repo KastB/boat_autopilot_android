@@ -12,8 +12,7 @@ public class BaseApplicationWrapper extends Application {
     public BluetoothAdapter mBluetoothAdapter;
 
     @Override
-    public void onCreate()
-    {
+    public void onCreate() {
         super.onCreate();
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     }

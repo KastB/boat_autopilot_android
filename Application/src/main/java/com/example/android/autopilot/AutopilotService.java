@@ -25,15 +25,13 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.UUID;
-
-import java.net.Socket;
-
 import java.io.InputStreamReader;
-import java.io.BufferedReader;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.util.UUID;
 
     /* By now there is a hard coded mapping between index of data incoming and the type of that data
         a better solution would probably be to ask for the current configuration, get an configuration
@@ -91,6 +89,14 @@ import java.io.BufferedReader;
         46: Position
      */
 
+interface WritableThread {
+    void write(byte[] buffer);
+
+    void cancel();
+
+    void start();
+}
+
 /**
  * This class does all the work for setting up and managing Bluetooth and Network
  * connections with other devices. It has a thread that listens for
@@ -99,28 +105,7 @@ import java.io.BufferedReader;
  */
 public class AutopilotService extends Service {
 
-    // Unique UUID for this application
-    protected static final UUID MY_UUID_SECURE =
-            UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-    protected static final UUID MY_UUID_INSECURE =
-            UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-
     public static final String AUTOPILOT_INTENT = "autopilot_intent";
-
-    protected static int mRingBufferSize = 1024;
-
-    MyBuffer mBuf;
-
-    // Member fields
-    protected final BluetoothAdapter mAdapterBt;
-    protected ConnectedThreadBt mConnectedThreadBt;
-
-    protected WritableThread mConnectThread;
-
-    protected int mState;
-    protected int mNewState;
-    protected String mDeviceName;
-
     // Constants that indicate the current connection state
     public static final int STATE_NONE = 0;       // we're doing nothing
     public static final int STATE_LISTEN_BT = 1;     // now listening for incoming connections
@@ -128,19 +113,28 @@ public class AutopilotService extends Service {
     public static final int STATE_CONNECTED_BT = 3;  // now connected to a remote device
     public static final int STATE_CONNECTING_TCP = 4; // now initiating an outgoing connection
     public static final int STATE_CONNECTED_TCP = 5;  // now connected to a remote device
-
     public static final int BT = 6;
     public static final int TCP = 7;
-
-
+    // Unique UUID for this application
+    protected static final UUID MY_UUID_SECURE =
+            UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    protected static final UUID MY_UUID_INSECURE =
+            UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    protected static int mRingBufferSize = 1024;
+    // https://stackoverflow.com/questions/2463175/how-to-have-android-service-communicate-with-activity
+    protected static AutopilotService sInstance;
+    // Member fields
+    protected final BluetoothAdapter mAdapterBt;
+    protected ConnectedThreadBt mConnectedThreadBt;
+    protected WritableThread mConnectThread;
+    protected int mState;
+    protected int mNewState;
+    protected String mDeviceName;
+    MyBuffer mBuf;
     private String mLastIp;
     private int mLastPort;
     private BluetoothDevice mLastDevice;
-
     private int mLastType = STATE_NONE;
-
-    // https://stackoverflow.com/questions/2463175/how-to-have-android-service-communicate-with-activity
-    protected static AutopilotService sInstance;
 
     /**
      * Constructor. Prepares a new sessions.
@@ -152,6 +146,10 @@ public class AutopilotService extends Service {
         System.out.println("AutopilotService Constructor");
         mBuf = new MyBuffer(mRingBufferSize);
         mDeviceName = "";
+    }
+
+    static AutopilotService getInstance() {
+        return sInstance;
     }
 
     @Nullable
@@ -174,18 +172,13 @@ public class AutopilotService extends Service {
         in.putExtra(Integer.toString(Constants.MESSAGE_STATE_CHANGE), mState);
         sendBroadcast(in);
 
-        if (mState == STATE_CONNECTED_BT || mState == STATE_CONNECTED_TCP)
-        {
+        if (mState == STATE_CONNECTED_BT || mState == STATE_CONNECTED_TCP) {
             in.putExtra("intentType", Constants.MESSAGE_DEVICE_NAME);
             in.putExtra(Integer.toString(Constants.MESSAGE_DEVICE_NAME), mDeviceName);
-        }
-        else if (mState == STATE_CONNECTING_BT || mState == STATE_CONNECTING_TCP)
-        {
+        } else if (mState == STATE_CONNECTING_BT || mState == STATE_CONNECTING_TCP) {
             in.putExtra("intentType", Constants.MESSAGE_TOAST);
             in.putExtra(Integer.toString(Constants.MESSAGE_TOAST), "connecting to " + mDeviceName);
-        }
-        else
-        {
+        } else {
             in.putExtra("intentType", Constants.MESSAGE_TOAST);
             in.putExtra(Integer.toString(Constants.MESSAGE_TOAST), "disconnected");
         }
@@ -206,11 +199,6 @@ public class AutopilotService extends Service {
         super.onDestroy();
     }
 
-
-    static AutopilotService getInstance() {
-        return sInstance;
-    }
-
     /**
      * Return the current connection state.
      */
@@ -218,8 +206,7 @@ public class AutopilotService extends Service {
         return mState;
     }
 
-    private void cancel()
-    {
+    private void cancel() {
         mState = STATE_NONE;
         // Cancel any thread attempting to make a connection
         if (mConnectThread != null) {
@@ -234,6 +221,7 @@ public class AutopilotService extends Service {
         }
         updateUserInterfaceTitle();
     }
+
     /**
      * Start the chat service. Specifically start AcceptThread to begin a
      * session in listening (server) mode. Called by the Activity onResume()
@@ -301,17 +289,36 @@ public class AutopilotService extends Service {
         synchronized (this) {
             if (mState == STATE_CONNECTED_BT) {
                 r = mConnectedThreadBt;
-            }
-            else if (mState == STATE_CONNECTED_TCP) {
+            } else if (mState == STATE_CONNECTED_TCP) {
                 r = mConnectThread;
-            }
-            else
-                {
+            } else {
                 return;
             }
         }
         // Perform the write unsynchronized
         r.write(out);
+    }
+
+    private void broadcast_sent_msg(byte[] buffer) {
+        Intent in = new Intent(AutopilotService.AUTOPILOT_INTENT);
+        in.setAction(AutopilotService.AUTOPILOT_INTENT);
+        in.putExtra("intentType", Constants.MESSAGE_WRITE);
+        in.putExtra(Integer.toString(Constants.MESSAGE_WRITE), buffer);
+    }
+
+    private void broadcast_msg(String tmp) {
+        if (tmp != null) {
+            Intent in = new Intent(AutopilotService.AUTOPILOT_INTENT);
+            in.setAction(AUTOPILOT_INTENT);
+            in.putExtra("intentType", Constants.MESSAGE_READ);
+            in.putExtra(Integer.toString(Constants.MESSAGE_READ), tmp);
+
+
+            mBuf.add(tmp);
+            String[] s = mBuf.getAll();
+            in.putExtra("History", s);
+            sendBroadcast(in);
+        }
     }
 
     /**
@@ -450,8 +457,7 @@ public class AutopilotService extends Service {
                         if (index2 != -1) {
                             tmp = tmp.substring(index2 + 1, tmp.length());
                         }
-                    }
-                    else {
+                    } else {
                         index = readMessage.indexOf('\n');
                         if (index > 0) {
                             tmp = readMessage.substring(0, index);
@@ -492,29 +498,6 @@ public class AutopilotService extends Service {
         }
     }
 
-    private void broadcast_sent_msg(byte[] buffer) {
-        Intent in = new Intent(AutopilotService.AUTOPILOT_INTENT);
-        in.setAction(AutopilotService.AUTOPILOT_INTENT);
-        in.putExtra("intentType", Constants.MESSAGE_WRITE);
-        in.putExtra(Integer.toString(Constants.MESSAGE_WRITE), buffer);
-    }
-
-    private void broadcast_msg(String tmp) {
-        if (tmp != null) {
-            Intent in = new Intent(AutopilotService.AUTOPILOT_INTENT);
-            in.setAction(AUTOPILOT_INTENT);
-            in.putExtra("intentType", Constants.MESSAGE_READ);
-            in.putExtra(Integer.toString(Constants.MESSAGE_READ), tmp);
-
-
-            mBuf.add(tmp);
-            String[] s = mBuf.getAll();
-            in.putExtra("History", s);
-            sendBroadcast(in);
-        }
-    }
-
-
     /**
      * This thread runs while attempting to make an outgoing connection
      * with a device. It runs straight through; the connection either
@@ -540,7 +523,7 @@ public class AutopilotService extends Service {
         public void run() {
             setName("ConnectThreadTcp" + mIp + ":" + mPort);
 
-            while(mState == STATE_CONNECTING_TCP) {
+            while (mState == STATE_CONNECTING_TCP) {
                 try {
                     mmSocket = new Socket(mIp, mPort);
                 } catch (IOException e) {
@@ -598,8 +581,7 @@ public class AutopilotService extends Service {
                     try {
                         mmOutStream.write(buffer);
                         mmOutStream.flush();
-                    }
-                    catch (IOException e){
+                    } catch (IOException e) {
                         mState = STATE_CONNECTING_TCP;
                         updateUserInterfaceTitle();
                     }
@@ -610,14 +592,14 @@ public class AutopilotService extends Service {
 
         public void cancel() {
             try {
-                if(mmOutStream != null) {
+                if (mmOutStream != null) {
                     mmOutStream.flush();
                     mmOutStream.close();
                 }
-                if(mmInStream != null) {
+                if (mmInStream != null) {
                     mmInStream.close();
                 }
-                if(mmSocket != null) {
+                if (mmSocket != null) {
                     mmSocket.close();
                 }
             } catch (IOException e) {
@@ -626,10 +608,4 @@ public class AutopilotService extends Service {
             }
         }
     }
-}
-
-interface WritableThread {
-    void write(byte[] buffer);
-    void cancel();
-    void start();
 }

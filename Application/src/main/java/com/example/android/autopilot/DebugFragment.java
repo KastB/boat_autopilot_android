@@ -1,22 +1,9 @@
 package com.example.android.autopilot;
 
-import android.app.ActionBar;
-import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -25,7 +12,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 /**
@@ -47,7 +33,20 @@ public class DebugFragment extends MyFragment {
     protected ListView mConversationView;
     protected EditText mOutEditText;
     protected Button mSendButton;
-
+    /**
+     * The action listener for the EditText widget, to listen for the return key
+     */
+    protected TextView.OnEditorActionListener mWriteListener
+            = new TextView.OnEditorActionListener() {
+        public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
+            // If the action is a key-up event on the return key, send the message
+            if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
+                String message = view.getText().toString();
+                sendMessage(message);
+            }
+            return true;
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -108,20 +107,5 @@ public class DebugFragment extends MyFragment {
             mOutEditText.setText(mOutStringBuffer);
         }
     }
-
-    /**
-     * The action listener for the EditText widget, to listen for the return key
-     */
-    protected TextView.OnEditorActionListener mWriteListener
-            = new TextView.OnEditorActionListener() {
-        public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
-            // If the action is a key-up event on the return key, send the message
-            if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
-                String message = view.getText().toString();
-                sendMessage(message);
-            }
-            return true;
-        }
-    };
 
 }

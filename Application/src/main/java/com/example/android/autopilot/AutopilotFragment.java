@@ -16,35 +16,14 @@
 
 package com.example.android.autopilot;
 
-import android.app.ActionBar;
-import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.os.CountDownTimer;
 
 /**
  * This fragment controls Bluetooth to communicate with other devices.
@@ -155,6 +134,7 @@ public class AutopilotFragment extends MyFragment {
                 new CountDownTimer(3000, 10) {
                     public void onTick(long millisUntilFinished) {
                     }
+
                     @Override
                     public void onFinish() {
                         mInitButton.setEnabled(false);

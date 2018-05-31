@@ -13,18 +13,17 @@ import android.widget.Toast;
 public class DataUpdateReceiverDebugFragment extends BroadcastReceiver {
     static DebugFragment mDf;
 
-    public DataUpdateReceiverDebugFragment()
-    {
+    public DataUpdateReceiverDebugFragment() {
 
     }
 
-    public DataUpdateReceiverDebugFragment(DebugFragment df)
-    {
+    public DataUpdateReceiverDebugFragment(DebugFragment df) {
         mDf = df;
     }
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        if(mDf == null)
+        if (mDf == null)
             return;
         try {
             if (intent.getAction().equals(AutopilotService.AUTOPILOT_INTENT)) {
@@ -79,9 +78,7 @@ public class DataUpdateReceiverDebugFragment extends BroadcastReceiver {
                         break;
                 }
             }
-        }
-        catch (java.lang.IllegalStateException e)
-        {
+        } catch (java.lang.IllegalStateException e) {
             System.out.println(e.toString());
         }
     }

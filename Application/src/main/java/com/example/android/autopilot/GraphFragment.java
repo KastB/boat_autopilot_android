@@ -65,7 +65,7 @@ public class GraphFragment extends MyFragment {
     protected void setup() {
         mGraph.removeAllSeries();
         mGraph.getSecondScale().removeAllSeries();
-        mDataSets = new DataSet[] {
+        mDataSets = new DataSet[]{
                 new DataSet("Ziel", 15, Color.BLACK, false, 5, 3),
                 new DataSet("Kurs", 20, Color.DKGRAY, false, 5, 3),
                 new DataSet("Geschwindigkeit", 30, Color.GREEN, false, 5, 3, true),
@@ -74,19 +74,16 @@ public class GraphFragment extends MyFragment {
                 new DataSet("Fehler", 16, Color.RED, false, 5, 3, true)
         };
         mSeries = new LineGraphSeries[mDataSets.length];
-        for(int i = 0; i < mDataSets.length; i++)
-        {
+        for (int i = 0; i < mDataSets.length; i++) {
             mSeries[i] = new LineGraphSeries<>(new DataPoint[]{});
             mSeries[i].setTitle(mDataSets[i].mTitle);
             mSeries[i].setColor(mDataSets[i].mColor);
             mSeries[i].setDataPointsRadius(mDataSets[i].mPointRadius);
             mSeries[i].setDrawDataPoints(mDataSets[i].mDrawDataPoints);
             mSeries[i].setThickness(mDataSets[i].mThickness);
-            if (mDataSets[i].mSecondScale)
-            {
+            if (mDataSets[i].mSecondScale) {
                 mGraph.getSecondScale().addSeries(mSeries[i]);
-            }
-            else {
+            } else {
                 mGraph.addSeries(mSeries[i]);
             }
         }

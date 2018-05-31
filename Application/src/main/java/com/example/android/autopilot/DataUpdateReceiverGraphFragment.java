@@ -13,9 +13,9 @@ import com.jjoe64.graphview.series.DataPoint;
  */
 
 public class DataUpdateReceiverGraphFragment extends BroadcastReceiver {
-    static GraphFragment mGf;
     static private final int mTimeHorizon = 120;
     static private final int mMaxDataPoints = 1024;
+    static GraphFragment mGf;
 
     public DataUpdateReceiverGraphFragment() {
 
@@ -48,75 +48,66 @@ public class DataUpdateReceiverGraphFragment extends BroadcastReceiver {
                                 mGf.setStatus(R.string.title_not_connected);
                                 break;
                         }
-                                break;
+                        break;
                     case Constants.MESSAGE_WRITE:
                         String writeMessage = intent.getStringExtra(Integer.toString(Constants.MESSAGE_WRITE));
                         break;
                     case Constants.MESSAGE_READ:
-                                if(mGf.mSeriesValid)
-                                {
-                                    String readMessage = intent.getStringExtra(Integer.toString(Constants.MESSAGE_READ));
-                                    String[] parts = readMessage.split("\t");
+                        if (mGf.mSeriesValid) {
+                            String readMessage = intent.getStringExtra(Integer.toString(Constants.MESSAGE_READ));
+                            String[] parts = readMessage.split("\t");
+                            if (parts.length >= 45) {
+                                double x = -1.0;
+                                for (int i = 0; i < mGf.mSeries.length; i++) {
+                                    DataPoint p = getDataPoint(parts, mGf.mDataSets[i].mIndex);
+                                    x = p.getX();
+                                    try {
+                                        mGf.mSeries[i].appendData(p, true, mMaxDataPoints);
+                                    } catch (java.lang.IllegalArgumentException e) {
+                                        mGf.mSeriesValid = false;
+                                    }
+                                }
+                                mGf.mGraph.getViewport().setXAxisBoundsManual(true);
+                                mGf.mGraph.getViewport().setMinX(x - mTimeHorizon);
+                                mGf.mGraph.getViewport().setMaxX(x + 2.0);
+                            }
+                        } else {
+                            String[] s;
+                            s = intent.getStringArrayExtra("History");
+                            if (s != null) {
+                                DataPoint[][] data = new DataPoint[s.length][mGf.mDataSets.length];
+                                int counter = 0;
+                                for (int i = 0; i < s.length; i++) {
+                                    String[] parts = s[i].split("\t");
                                     if (parts.length >= 45) {
-                                        double x = -1.0;
-                                        for(int i = 0; i < mGf.mSeries.length; i++)
-                                        {
-                                            DataPoint p = getDataPoint(parts, mGf.mDataSets[i].mIndex);
-                                            x = p.getX();
-                                            try {
-                                                mGf.mSeries[i].appendData(p, true, mMaxDataPoints);
+                                        try {
+                                            for (int z = 0; z < mGf.mDataSets.length; z++) {
+                                                data[counter][z] = getDataPoint(parts, mGf.mDataSets[z].mIndex);
                                             }
-                                            catch (java.lang.IllegalArgumentException e)
-                                            {
-                                                mGf.mSeriesValid = false;
-                                            }
+                                            counter++;
+                                        } catch (java.lang.NumberFormatException e) {
+                                            System.out.println("Warning: invalid data received#2");
                                         }
-                                        mGf.mGraph.getViewport().setXAxisBoundsManual(true);
-                                        mGf.mGraph.getViewport().setMinX(x - mTimeHorizon);
-                                        mGf.mGraph.getViewport().setMaxX(x + 2.0);
+                                    } else {
+                                        System.out.println("Warning: invalid data received");
                                     }
                                 }
-                                else {
-                                    String[] s;
-                                    s = intent.getStringArrayExtra("History");
-                                    if (s != null) {
-                                        DataPoint[][] data = new DataPoint[s.length][mGf.mDataSets.length];
-                                        int counter = 0;
-                                        for (int i = 0; i < s.length; i++) {
-                                            String[] parts = s[i].split("\t");
-                                            if (parts.length >= 45) {
-                                                try {
-                                                    for (int z = 0; z < mGf.mDataSets.length; z++) {
-                                                        data[counter][z] = getDataPoint(parts, mGf.mDataSets[z].mIndex);
-                                                    }
-                                                    counter++;
-                                                }
-                                                catch (java.lang.NumberFormatException e )
-                                                {
-                                                    System.out.println("Warning: invalid data received#2");
-                                                }
-                                            } else {
-                                                System.out.println("Warning: invalid data received");
-                                            }
-                                        }
-                                        DataPoint[][] cleaned_data = new DataPoint[mGf.mDataSets.length][counter];
-                                        for (int i = 0; i < counter; i++) {
-                                            for(int z = 0; z < mGf.mDataSets.length; z++) {
-                                                cleaned_data[z][counter - i - 1] = data[i][z];
-                                            }
-                                        }
-                                        mGf.mSeriesValid = true;
-                                        for(int z = 0; z < mGf.mDataSets.length; z++) {
-                                            try {
-                                                mGf.mSeries[z].resetData(cleaned_data[z]);
-                                            }
-                                            catch (java.lang.IllegalArgumentException e)
-                                            {
-                                                mGf.mSeriesValid = false;
-                                            }
-                                        }
+                                DataPoint[][] cleaned_data = new DataPoint[mGf.mDataSets.length][counter];
+                                for (int i = 0; i < counter; i++) {
+                                    for (int z = 0; z < mGf.mDataSets.length; z++) {
+                                        cleaned_data[z][counter - i - 1] = data[i][z];
                                     }
                                 }
+                                mGf.mSeriesValid = true;
+                                for (int z = 0; z < mGf.mDataSets.length; z++) {
+                                    try {
+                                        mGf.mSeries[z].resetData(cleaned_data[z]);
+                                    } catch (java.lang.IllegalArgumentException e) {
+                                        mGf.mSeriesValid = false;
+                                    }
+                                }
+                            }
+                        }
 
                         break;
                     case Constants.MESSAGE_DEVICE_NAME:
@@ -140,8 +131,7 @@ public class DataUpdateReceiverGraphFragment extends BroadcastReceiver {
         }
     }
 
-    public DataPoint getDataPoint(String[] parts, int index)
-    {
+    public DataPoint getDataPoint(String[] parts, int index) {
         return new DataPoint((Integer) Integer.parseInt(parts[0]) / 1000, Double.parseDouble(parts[index]));
     }
 }

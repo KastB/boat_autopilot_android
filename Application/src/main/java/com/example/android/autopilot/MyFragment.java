@@ -2,56 +2,54 @@ package com.example.android.autopilot;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.widget.EditText;
-import android.text.InputType;
-import android.content.SharedPreferences;
-import android.content.Context;
+import android.widget.Toast;
+
 /**
  * Created by bernd on 30.06.17.
  */
 
 abstract class MyFragment extends Fragment {
-    /**
-     * Name of the connected device
-     */
-    protected String mConnectedDeviceName = null;
-
-    /**
-     * Local Bluetooth adapter
-     */
-    protected BluetoothAdapter mBluetoothAdapter = null;
-
-    BroadcastReceiver mDataUpdateReceiver;
-
     // Intent request codes
     protected static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
     protected static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
     protected static final int REQUEST_ENABLE_BT = 3;
+    /**
+     * Name of the connected device
+     */
+    protected String mConnectedDeviceName = null;
+    /**
+     * Local Bluetooth adapter
+     */
+    protected BluetoothAdapter mBluetoothAdapter = null;
+    BroadcastReceiver mDataUpdateReceiver;
 
-    abstract BroadcastReceiver  getNewDataUpdateReceiver();
+    abstract BroadcastReceiver getNewDataUpdateReceiver();
 
     abstract void setup();
 
     abstract public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                          @Nullable Bundle savedInstanceState);
+                                      @Nullable Bundle savedInstanceState);
 
     abstract public void onViewCreated(View view, @Nullable Bundle savedInstanceState);
 
@@ -88,14 +86,13 @@ abstract class MyFragment extends Fragment {
             if (mDataUpdateReceiver != null) {
                 getContext().unregisterReceiver(mDataUpdateReceiver);
             }
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
 
         }
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         if (mDataUpdateReceiver == null)
             mDataUpdateReceiver = getNewDataUpdateReceiver();
@@ -114,7 +111,7 @@ abstract class MyFragment extends Fragment {
         if (AutopilotService.getInstance() == null)
             return;
         if (AutopilotService.getInstance().getState() != AutopilotService.STATE_CONNECTED_BT &&
-            AutopilotService.getInstance().getState() != AutopilotService.STATE_CONNECTED_TCP) {
+                AutopilotService.getInstance().getState() != AutopilotService.STATE_CONNECTED_TCP) {
             Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -201,8 +198,8 @@ abstract class MyFragment extends Fragment {
         try {
             SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
             text = sharedPref.getString("last_tcp_server", text);
+        } catch (NullPointerException e) {
         }
-        catch (NullPointerException e){}
         input.setText(text);
         builder.setView(input);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -215,8 +212,8 @@ abstract class MyFragment extends Fragment {
                 try {
                     SharedPreferences sharedPref = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
                     sharedPref.edit().putString("last_tcp_server", text).apply();
+                } catch (NullPointerException e) {
                 }
-                catch (NullPointerException e){}
 
                 System.out.println(text);
                 String ip = text.substring(0, text.indexOf(":"));
@@ -283,18 +280,18 @@ abstract class MyFragment extends Fragment {
 
 
     public String reducePrecision(String str, int prec) {
-        if(prec < 1) {
-            if(str.contains("."))
-                return str.substring(0,str.indexOf("."));
+        if (prec < 1) {
+            if (str.contains("."))
+                return str.substring(0, str.indexOf("."));
             else
                 return str;
         }
 
         //untested
-        if(!str.contains("."))
+        if (!str.contains("."))
             str.concat(".");
-        while(str.length() - str.indexOf(".") < prec + 1)
+        while (str.length() - str.indexOf(".") < prec + 1)
             str.concat("0");
-        return str.substring(0,str.indexOf(".") + prec + 1);
+        return str.substring(0, str.indexOf(".") + prec + 1);
     }
 }

@@ -17,10 +17,10 @@ public class DataUpdateReceiverAutopilotFragment extends BroadcastReceiver {
 
     }
 
-    public DataUpdateReceiverAutopilotFragment(AutopilotFragment af)
-    {
+    public DataUpdateReceiverAutopilotFragment(AutopilotFragment af) {
         mAf = af;
     }
+
     @Override
     public void onReceive(Context context, Intent intent) {
         if (mAf == null)
@@ -105,9 +105,7 @@ public class DataUpdateReceiverAutopilotFragment extends BroadcastReceiver {
                         break;
                 }
             }
-        }
-        catch (java.lang.IllegalStateException e)
-        {
+        } catch (java.lang.IllegalStateException e) {
             System.out.println(e.toString());
         }
     }

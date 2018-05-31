@@ -1,7 +1,5 @@
 package com.example.android.autopilot;
 
-import android.graphics.Color;
-
 /**
  * Created by bernd on 15.07.17.
  */
