@@ -43,4 +43,9 @@ public class MyBuffer {
         }
         return res;
     }
+
+    synchronized String[] addGetAll(String s) {
+        this.add(s);
+        return this.getAll();
+    }
 }

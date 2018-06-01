@@ -314,8 +314,7 @@ public class AutopilotService extends Service {
             in.putExtra(Integer.toString(Constants.MESSAGE_READ), tmp);
 
 
-            mBuf.add(tmp);
-            String[] s = mBuf.getAll();
+            String[] s = mBuf.addGetAll(tmp);
             in.putExtra("History", s);
             sendBroadcast(in);
         }
