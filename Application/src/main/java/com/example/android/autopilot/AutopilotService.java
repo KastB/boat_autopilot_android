@@ -24,6 +24,7 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -128,7 +129,7 @@ public class AutopilotService extends Service {
     protected ConnectedThreadBt mConnectedThreadBt;
     protected WritableThread mConnectThread;
     protected int mState;
-    protected int mNewState;
+    protected int mOldState;
     protected String mDeviceName;
     MyBuffer mBuf;
     private String mLastIp;
@@ -142,7 +143,7 @@ public class AutopilotService extends Service {
     public AutopilotService() {
         mAdapterBt = BluetoothAdapter.getDefaultAdapter();
         mState = STATE_NONE;
-        mNewState = mState;
+        mOldState = mState;
         System.out.println("AutopilotService Constructor");
         mBuf = new MyBuffer(mRingBufferSize);
         mDeviceName = "";
@@ -162,16 +163,14 @@ public class AutopilotService extends Service {
      * Update UI title according to the current state of the chat connection
      */
     protected synchronized void updateUserInterfaceTitle() {
-        mState = getState();
         Intent in = new Intent(AutopilotService.AUTOPILOT_INTENT);
         in.putExtra("intentType", Constants.MESSAGE_DEVICE_NAME);
         in.putExtra(Integer.toString(Constants.MESSAGE_DEVICE_NAME), mDeviceName);
-        sendBroadcast(in);
+        LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(in);
 
         in.putExtra("intentType", Constants.MESSAGE_STATE_CHANGE);
         in.putExtra(Integer.toString(Constants.MESSAGE_STATE_CHANGE), mState);
-        sendBroadcast(in);
-
+        LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(in);
         if (mState == STATE_CONNECTED_BT || mState == STATE_CONNECTED_TCP) {
             in.putExtra("intentType", Constants.MESSAGE_DEVICE_NAME);
             in.putExtra(Integer.toString(Constants.MESSAGE_DEVICE_NAME), mDeviceName);
@@ -182,8 +181,8 @@ public class AutopilotService extends Service {
             in.putExtra("intentType", Constants.MESSAGE_TOAST);
             in.putExtra(Integer.toString(Constants.MESSAGE_TOAST), "disconnected");
         }
-        sendBroadcast(in);
-        mNewState = mState;
+        LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(in);
+        mOldState = mState;
     }
 
     @Override
@@ -304,6 +303,7 @@ public class AutopilotService extends Service {
         in.setAction(AutopilotService.AUTOPILOT_INTENT);
         in.putExtra("intentType", Constants.MESSAGE_WRITE);
         in.putExtra(Integer.toString(Constants.MESSAGE_WRITE), buffer);
+        // LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(in);
     }
 
     private void broadcast_msg(String tmp) {
@@ -316,7 +316,7 @@ public class AutopilotService extends Service {
 
             String[] s = mBuf.addGetAll(tmp);
             in.putExtra("History", s);
-            sendBroadcast(in);
+            LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(in);
         }
     }
 
@@ -357,7 +357,7 @@ public class AutopilotService extends Service {
 
         public void run() {
 
-            setName("ConnectThreadBt" + mSocketType);
+            setName("de.kast.autopilot.ConnectThreadBt" + mSocketType);
 
             // Always cancel discovery because it will slow down a connection
             mAdapterBt.cancelDiscovery();
@@ -437,6 +437,7 @@ public class AutopilotService extends Service {
         }
 
         public void run() {
+            setName("de.kast.autopilot.ConnectThreadBT");
             byte[] buffer = new byte[1024];
             int bytes;
             String readMessage = "";
@@ -520,7 +521,7 @@ public class AutopilotService extends Service {
         }
 
         public void run() {
-            setName("ConnectThreadTcp" + mIp + ":" + mPort);
+            setName("de.kast.autopilot.ConnectThreadTcp" + mIp + ":" + mPort);
 
             while (mState == STATE_CONNECTING_TCP) {
                 try {
@@ -577,6 +578,7 @@ public class AutopilotService extends Service {
 
                 @Override
                 public void run() {
+                    setName("de.kast.autopilot.tcp_writer");
                     try {
                         mmOutStream.write(buffer);
                         mmOutStream.flush();

@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -76,7 +77,7 @@ abstract class MyFragment extends Fragment {
         if (mDataUpdateReceiver == null)
             mDataUpdateReceiver = getNewDataUpdateReceiver();
         IntentFilter intentFilter = new IntentFilter(AutopilotService.AUTOPILOT_INTENT);
-        getContext().registerReceiver(mDataUpdateReceiver, intentFilter);
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(mDataUpdateReceiver, intentFilter);
     }
 
     @Override
@@ -84,7 +85,7 @@ abstract class MyFragment extends Fragment {
         super.onPause();
         try {
             if (mDataUpdateReceiver != null) {
-                getContext().unregisterReceiver(mDataUpdateReceiver);
+                LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mDataUpdateReceiver);
             }
         } catch (IllegalArgumentException e) {
 
@@ -97,7 +98,7 @@ abstract class MyFragment extends Fragment {
         if (mDataUpdateReceiver == null)
             mDataUpdateReceiver = getNewDataUpdateReceiver();
         IntentFilter intentFilter = new IntentFilter(AutopilotService.AUTOPILOT_INTENT);
-        getContext().registerReceiver(mDataUpdateReceiver, intentFilter);
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(mDataUpdateReceiver, intentFilter);
     }
 
 

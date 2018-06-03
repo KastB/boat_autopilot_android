@@ -66,6 +66,6 @@
     <string name="pitch">Pitch [°s]</string>
     <string name="disconnect">Trennen</string>
 
-    <string name="preference_file_key">autopilot</string>
+    <string name="preference_file_key">de.kast.autopilot</string>
 
 </resources>
