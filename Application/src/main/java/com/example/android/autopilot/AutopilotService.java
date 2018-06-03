@@ -384,7 +384,7 @@ public class AutopilotService extends Service {
             }
 
             // Start the connected thread
-            this.cancel();
+            AutopilotService.this.cancel();
 
             // Start the thread to manage the connection and perform transmissions
             mConnectedThreadBt = new ConnectedThreadBt(mmSocket);
