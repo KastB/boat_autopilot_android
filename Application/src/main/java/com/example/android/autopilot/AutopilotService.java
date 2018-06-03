@@ -168,9 +168,12 @@ public class AutopilotService extends Service {
         in.putExtra(Integer.toString(Constants.MESSAGE_DEVICE_NAME), mDeviceName);
         LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(in);
 
+        in = new Intent(AutopilotService.AUTOPILOT_INTENT);
         in.putExtra("intentType", Constants.MESSAGE_STATE_CHANGE);
         in.putExtra(Integer.toString(Constants.MESSAGE_STATE_CHANGE), mState);
         LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(in);
+
+        in = new Intent(AutopilotService.AUTOPILOT_INTENT);
         if (mState == STATE_CONNECTED_BT || mState == STATE_CONNECTED_TCP) {
             in.putExtra("intentType", Constants.MESSAGE_DEVICE_NAME);
             in.putExtra(Integer.toString(Constants.MESSAGE_DEVICE_NAME), mDeviceName);
@@ -300,7 +303,6 @@ public class AutopilotService extends Service {
 
     private void broadcast_sent_msg(byte[] buffer) {
         Intent in = new Intent(AutopilotService.AUTOPILOT_INTENT);
-        in.setAction(AutopilotService.AUTOPILOT_INTENT);
         in.putExtra("intentType", Constants.MESSAGE_WRITE);
         in.putExtra(Integer.toString(Constants.MESSAGE_WRITE), buffer);
         // LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(in);
@@ -309,10 +311,8 @@ public class AutopilotService extends Service {
     private void broadcast_msg(String tmp) {
         if (tmp != null) {
             Intent in = new Intent(AutopilotService.AUTOPILOT_INTENT);
-            in.setAction(AUTOPILOT_INTENT);
             in.putExtra("intentType", Constants.MESSAGE_READ);
             in.putExtra(Integer.toString(Constants.MESSAGE_READ), tmp);
-
 
             String[] s = mBuf.addGetAll(tmp);
             in.putExtra("History", s);
@@ -385,12 +385,15 @@ public class AutopilotService extends Service {
 
             // Start the connected thread
             AutopilotService.this.cancel();
+            mState = STATE_CONNECTING_BT;
+            updateUserInterfaceTitle();
 
             // Start the thread to manage the connection and perform transmissions
             mConnectedThreadBt = new ConnectedThreadBt(mmSocket);
             mConnectedThreadBt.start();
 
             mDeviceName = mmDevice.getName();
+
 
             // Update UI title
             updateUserInterfaceTitle();
@@ -434,6 +437,7 @@ public class AutopilotService extends Service {
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
             mState = STATE_CONNECTED_BT;
+            updateUserInterfaceTitle();
         }
 
         public void run() {
