@@ -50,9 +50,6 @@ public class DataUpdateReceiverAutopilotFragment extends BroadcastReceiver {
                         }
                         break;
                     case Constants.MESSAGE_WRITE:
-
-                        String writeMessage = intent.getStringExtra(Integer.toString(Constants.MESSAGE_WRITE));
-
                         break;
                     case Constants.MESSAGE_READ:
                         String readMessage = intent.getStringExtra(Integer.toString(Constants.MESSAGE_READ));
