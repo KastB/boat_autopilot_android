@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.autopilot;
+package de.kast.android.autopilot;
 
 import android.graphics.Color;
 import android.os.Bundle;

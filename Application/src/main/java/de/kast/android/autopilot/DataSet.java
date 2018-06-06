@@ -1,4 +1,4 @@
-package com.example.android.autopilot;
+package de.kast.android.autopilot;
 
 /**
  * Created by bernd on 15.07.17.

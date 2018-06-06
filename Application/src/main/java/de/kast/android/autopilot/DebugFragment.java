@@ -1,4 +1,4 @@
-package com.example.android.autopilot;
+package de.kast.android.autopilot;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

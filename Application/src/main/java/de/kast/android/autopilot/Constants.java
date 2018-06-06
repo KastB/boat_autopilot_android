@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.autopilot;
+package de.kast.android.autopilot;
 
 /**
  * Defines several constants used between {@link AutopilotService} and the UI.

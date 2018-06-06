@@ -15,7 +15,7 @@
  */
 
 
-package com.example.android.autopilot;
+package de.kast.android.autopilot;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
@@ -23,7 +23,7 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 
-import com.example.android.common.activities.SampleActivityBase;
+import de.kast.android.common.activities.SampleActivityBase;
 
 /**
  * A simple launcher activity containing a summary sample description, sample log and a custom

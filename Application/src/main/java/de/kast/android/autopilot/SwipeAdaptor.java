@@ -1,4 +1,4 @@
-package com.example.android.autopilot;
+package de.kast.android.autopilot;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.autopilot;
+package de.kast.android.autopilot;
 
 import android.os.Bundle;
 import android.os.CountDownTimer;
