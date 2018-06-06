@@ -22,16 +22,22 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.os.Environment;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.UUID;
 
     /* By now there is a hard coded mapping between index of data incoming and the type of that data
@@ -136,6 +142,8 @@ public class AutopilotService extends Service {
     private int mLastPort;
     private BluetoothDevice mLastDevice;
     private int mLastType = STATE_NONE;
+    private File mLogFile;
+    private FileOutputStream mLogFileStream;
 
     /**
      * Constructor. Prepares a new sessions.
@@ -147,6 +155,8 @@ public class AutopilotService extends Service {
         System.out.println("AutopilotService Constructor");
         mBuf = new MyBuffer(mRingBufferSize);
         mDeviceName = "";
+        mLogFile = null;
+        mLogFileStream = null;
     }
 
     static AutopilotService getInstance() {
@@ -189,11 +199,28 @@ public class AutopilotService extends Service {
     public void onCreate() {
         super.onCreate();
         sInstance = this;
+        File dir = new File (Environment.getExternalStorageDirectory().getAbsolutePath() + "/Autopilot");
+        dir.mkdirs();
+        mLogFile = new File(dir, "autopilot_" + DateFormat.getDateTimeInstance().format(new Date()) + ".log");
+        try {
+            mLogFileStream = new FileOutputStream(mLogFile,true);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            mLogFileStream = null;
+        }
     }
 
     @Override
     public void onDestroy() {
         stop();
+        if(mLogFileStream != null) {
+            try {
+                mLogFileStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mLogFileStream = null;
+        }
         sInstance = null;
         super.onDestroy();
     }
@@ -313,10 +340,18 @@ public class AutopilotService extends Service {
             in.putExtra("intentType", Constants.MESSAGE_READ);
             in.putExtra(Integer.toString(Constants.MESSAGE_READ), tmp);
 
-
             String[] s = mBuf.addGetAll(tmp);
             in.putExtra("History", s);
             LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(in);
+
+            if(mLogFileStream != null) {
+                try {
+                    mLogFileStream.write(tmp.getBytes());
+                    mLogFileStream.write('\n');
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
