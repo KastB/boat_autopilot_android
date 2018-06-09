@@ -132,6 +132,20 @@ public class DataUpdateReceiverGraphFragment extends BroadcastReceiver {
     }
 
     public DataPoint getDataPoint(String[] parts, int index) {
-        return new DataPoint((Integer) Integer.parseInt(parts[0]) / 1000, Double.parseDouble(parts[index]));
+        Double time;
+        Double value;
+        try {
+            time = Double.parseDouble(parts[0]) / 1000.0;
+        }
+        catch (java.lang.NumberFormatException e){
+            time = 0.0;
+        }
+        try {
+            value = Double.parseDouble(parts[index]);
+        }
+        catch (java.lang.NumberFormatException e){
+            value = 0.0;
+        }
+        return new DataPoint(time, value);
     }
 }
