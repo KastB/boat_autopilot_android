@@ -169,6 +169,11 @@ public class AutopilotService extends Service {
         return null;
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_STICKY;
+    }
+
     /**
      * Update UI title according to the current state of the chat connection
      */
