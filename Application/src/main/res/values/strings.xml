@@ -60,10 +60,10 @@
     <string name="goparking">Parken</string>
     <string name="blank">-</string>
     <string name="spacer4">-180</string>
-    <string name="rudder_position">Ruder [tiks]</string>
-    <string name="integral">Integral [°s]</string>
-    <string name="heel">Kränung [°s]</string>
-    <string name="pitch">Pitch [°s]</string>
+    <string name="rudder_position">Ruder [tiks]:</string>
+    <string name="integral">Integral [°s]:</string>
+    <string name="heel">Krängung [°]:</string>
+    <string name="pitch">Pitch [°]:</string>
     <string name="disconnect">Trennen</string>
 
     <string name="preference_file_key">de.kast.autopilot</string>
