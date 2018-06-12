@@ -66,8 +66,8 @@ public class DataUpdateReceiverAutopilotFragment extends BroadcastReceiver {
                             mAf.mTempView.setText(mAf.reducePrecision(parts[33], 0));
                             mAf.mRudderView.setText(mAf.reducePrecision(parts[1], 0));
                             mAf.mIntegralView.setText(mAf.reducePrecision(parts[17], 0));
-                            mAf.mHeelView.setText(mAf.reducePrecision(parts[22], 1));
-                            mAf.mPitchView.setText(mAf.reducePrecision(parts[21], 1));
+                            mAf.mHeelView.setText(mAf.reducePrecision(parts[21],1));
+                            mAf.mPitchView.setText(mAf.reducePrecision(parts[22], 1));
 
                             if (parts[14].equals("0")) {
                                 mAf.mPositionModeButton.setEnabled(false);
