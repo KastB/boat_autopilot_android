@@ -19,7 +19,9 @@ package de.kast.android.autopilot;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.method.Touch;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -87,7 +89,7 @@ public class GraphFragment extends MyFragment {
                 mGraph.addSeries(mSeries[i]);
             }
         }
-        mGraph.getLegendRenderer().setVisible(true);
+        // mGraph.getLegendRenderer().setVisible(true);
         mGraph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
         mGraph.getSecondScale().setMinY(-20);
         mGraph.getSecondScale().setMaxY(20);
@@ -95,6 +97,30 @@ public class GraphFragment extends MyFragment {
 
         mGraph.getGridLabelRenderer().setPadding(64);
 
+        mGraph.getViewport().setScalable(true);
+
         mSeriesValid = false;
+
+
+        mGraph.setOnTouchListener(new TouchListener(this));
+    }
+
+    private class TouchListener implements View.OnTouchListener {
+        private final GraphFragment graphFragment;
+
+        TouchListener(GraphFragment gf) {
+            this.graphFragment = gf;
+        }
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            if (event.getAction() == event.ACTION_DOWN) {
+                if (this.graphFragment.mGraph.getLegendRenderer().isVisible()) {
+                    this.graphFragment.mGraph.getLegendRenderer().setVisible(false);
+                } else {
+                    this.graphFragment.mGraph.getLegendRenderer().setVisible(true);
+                }
+            }
+            return false;
+        }
     }
 }
