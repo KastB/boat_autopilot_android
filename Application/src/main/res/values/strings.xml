@@ -64,6 +64,8 @@
     <string name="integral">Integral [°s]:</string>
     <string name="heel">Krängung [°]:</string>
     <string name="pitch">Pitch [°]:</string>
+    <string name="trip_milage">Trip [nm]:</string>
+    <string name="total_milage">Total [nm]:</string>
     <string name="disconnect">Trennen</string>
 
     <string name="preference_file_key">de.kast.autopilot</string>

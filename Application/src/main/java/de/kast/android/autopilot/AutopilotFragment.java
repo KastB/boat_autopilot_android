@@ -46,6 +46,8 @@ public class AutopilotFragment extends MyFragment {
     protected TextView mRudderView;
     protected TextView mPitchView;
     protected TextView mHeelView;
+    protected  TextView mTripView;
+    protected TextView mTotalView;
 
     // Buttons #1#
     protected Button mInitButton;
@@ -59,6 +61,7 @@ public class AutopilotFragment extends MyFragment {
     protected Button mDecreaseButton;
     protected Button mIncreaseButton;
     protected Button mIncrease10Button;
+
 
     @Override
     public DataUpdateReceiverAutopilotFragment getNewDataUpdateReceiver() {
@@ -86,6 +89,8 @@ public class AutopilotFragment extends MyFragment {
         mIntegralView = (TextView) view.findViewById(R.id.integral);
         mHeelView = (TextView) view.findViewById(R.id.heel);
         mPitchView = (TextView) view.findViewById(R.id.pitch);
+        mTripView = (TextView) view.findViewById(R.id.trip);
+        mTotalView = (TextView) view.findViewById(R.id.total_milage);
 
         // connect #2#
         mInitButton = (Button) view.findViewById(R.id.button_init);
