@@ -56,28 +56,28 @@ public class DataUpdateReceiverAutopilotFragment extends BroadcastReceiver {
                         String[] parts = readMessage.split("\t");
                         if (parts.length >= 45) {
 
-                            mAf.mGoalView.setText(mAf.reducePrecision(parts[15], 0));
-                            mAf.mErrorView.setText(mAf.reducePrecision(parts[16], 0));
-                            mAf.mWindSpeedView.setText(mAf.reducePrecision(parts[36], 1));          //TODO: calculate/check true wind speed
-                            mAf.mWindDirectionView.setText(mAf.reducePrecision(parts[35], 0));
-                            mAf.mSpeedView.setText(mAf.reducePrecision(parts[30], 1));
-                            mAf.mHeadingView.setText(mAf.reducePrecision(parts[20], 0));
-                            mAf.mDepthView.setText(mAf.reducePrecision(parts[42], 1));
-                            mAf.mTempView.setText(mAf.reducePrecision(parts[33], 0));
+                            mAf.mGoalView.setText(mAf.reducePrecision(parts[17], 0));
+                            mAf.mErrorView.setText(mAf.reducePrecision(parts[18], 0));
+                            mAf.mWindSpeedView.setText(mAf.reducePrecision(parts[38], 1));          //TODO: calculate/check true wind speed
+                            mAf.mWindDirectionView.setText(mAf.reducePrecision(parts[37], 0));
+                            mAf.mSpeedView.setText(mAf.reducePrecision(parts[32], 1));
+                            mAf.mHeadingView.setText(mAf.reducePrecision(parts[22], 0));
+                            mAf.mDepthView.setText(mAf.reducePrecision(parts[44], 1));
+                            mAf.mTempView.setText(mAf.reducePrecision(parts[35], 0));
                             mAf.mRudderView.setText(mAf.reducePrecision(parts[1], 0));
-                            mAf.mIntegralView.setText(mAf.reducePrecision(parts[17], 0));
-                            mAf.mHeelView.setText(mAf.reducePrecision(parts[21],1));
-                            mAf.mPitchView.setText(mAf.reducePrecision(parts[22], 1));
+                            mAf.mIntegralView.setText(mAf.reducePrecision(parts[19], 0));
+                            mAf.mHeelView.setText(mAf.reducePrecision(parts[23],1));
+                            mAf.mPitchView.setText(mAf.reducePrecision(parts[24], 1));
 
-                            if (parts[14].equals("0")) {
+                            if (parts[16].equals("0")) {
                                 mAf.mPositionModeButton.setEnabled(false);
                                 mAf.mCompassModeButton.setEnabled(true);
                                 mAf.mWindModeButton.setEnabled(true);
-                            } else if (parts[14].equals("1")) {
+                            } else if (parts[16].equals("1")) {
                                 mAf.mPositionModeButton.setEnabled(true);
                                 mAf.mCompassModeButton.setEnabled(true);
                                 mAf.mWindModeButton.setEnabled(false);
-                            } else if (parts[14].equals("2")) {
+                            } else if (parts[16].equals("2")) {
                                 mAf.mPositionModeButton.setEnabled(true);
                                 mAf.mCompassModeButton.setEnabled(false);
                                 mAf.mWindModeButton.setEnabled(true);

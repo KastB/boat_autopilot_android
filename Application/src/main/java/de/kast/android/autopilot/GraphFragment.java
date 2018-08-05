@@ -68,12 +68,12 @@ public class GraphFragment extends MyFragment {
         mGraph.removeAllSeries();
         mGraph.getSecondScale().removeAllSeries();
         mDataSets = new DataSet[]{
-                new DataSet("Ziel", 15, Color.BLACK, false, 5, 3),
-                new DataSet("Kurs", 20, Color.DKGRAY, false, 5, 3),
+                new DataSet("Ziel", 17, Color.BLACK, false, 5, 3),
+                new DataSet("Kurs", 22, Color.DKGRAY, false, 5, 3),
                 new DataSet("Geschwindigkeit", 30, Color.GREEN, false, 5, 3, true),
-                new DataSet("Windrichtung", 35, Color.BLUE, false, 5, 3),
-                new DataSet("Windgeschwindigkeit", 36, Color.CYAN, false, 5, 3, true),
-                new DataSet("Fehler", 16, Color.RED, false, 5, 3, true)
+                new DataSet("Windrichtung", 37, Color.BLUE, false, 5, 3),
+                new DataSet("Windgeschwindigkeit", 38, Color.CYAN, false, 5, 3, true),
+                new DataSet("Fehler", 18, Color.RED, false, 5, 3, true)
         };
         mSeries = new LineGraphSeries[mDataSets.length];
         for (int i = 0; i < mDataSets.length; i++) {
