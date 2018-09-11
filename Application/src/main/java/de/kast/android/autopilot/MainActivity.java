@@ -42,7 +42,7 @@ public class MainActivity extends SampleActivityBase {
     private BluetoothAdapter mBluetoothAdapter = null;
     private ViewPager mViewPager;
 
-    MainActivity() {
+    public MainActivity() {
         System.out.println("MainActivity Constructor");
     }
 
@@ -81,13 +81,6 @@ public class MainActivity extends SampleActivityBase {
     @Override
     public void onStart() {
         super.onStart();
-        // If BT is not on, request that it be enabled.
-        // setupChat() will then be called during onActivityResult
-        if (!mBluetoothAdapter.isEnabled()) {
-            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-            // Otherwise, setup the chat session
-        }
         if (AutopilotService.getInstance() == null) {
             startService(new Intent(this, AutopilotService.class));
         }
