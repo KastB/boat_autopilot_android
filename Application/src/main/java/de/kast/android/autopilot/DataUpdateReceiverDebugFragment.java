@@ -42,7 +42,7 @@ public class DataUpdateReceiverDebugFragment extends BroadcastReceiver {
                                 mDf.setStatus(mDf.getString(R.string.title_connected_to, mDf.mConnectedDeviceName));
                                 break;
                             case AutopilotService.STATE_CONNECTING_TCP:
-                                mDf.setStatus(R.string.title_connecting_bt);
+                                mDf.setStatus(R.string.title_connecting_tcp);
                                 break;
                             case AutopilotService.STATE_NONE:
                                 mDf.setStatus(R.string.title_not_connected);

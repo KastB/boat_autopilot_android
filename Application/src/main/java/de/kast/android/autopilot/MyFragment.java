@@ -65,8 +65,8 @@ abstract class MyFragment extends Fragment {
         if (mBluetoothAdapter == null) {
             FragmentActivity activity = getActivity();
             Toast.makeText(activity, "Bluetooth is not available", Toast.LENGTH_LONG).show();
-            activity.finish();
         }
+        getActivity().getActionBar().show();
     }
 
 
