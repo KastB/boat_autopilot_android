@@ -210,13 +210,17 @@ public class AutopilotService extends Service {
         super.onCreate();
         sInstance = this;
         File dir = new File (Environment.getExternalStorageDirectory().getAbsolutePath() + "/Autopilot");
-        dir.mkdirs();
-        mLogFile = new File(dir, "autopilot_" + DateFormat.getDateTimeInstance().format(new Date()) + ".log");
-        try {
-            mLogFileStream = new FileOutputStream(mLogFile,true);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            mLogFileStream = null;
+        if (dir.mkdirs()) {
+            mLogFile = new File(dir, "autopilot_" + DateFormat.getDateTimeInstance().format(new Date()) + ".log".replace(":", "_").replace(" ", "__"));
+            try {
+                mLogFileStream = new FileOutputStream(mLogFile, true);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                mLogFileStream = null;
+            }
+        }
+        else {
+            System.out.println("Probably insufficient permissions to write file");
         }
     }
 
