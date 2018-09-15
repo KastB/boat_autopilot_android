@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -70,6 +71,14 @@ abstract class MyFragment extends Fragment {
             Toast.makeText(activity, "Bluetooth is not available", Toast.LENGTH_LONG).show();
         }
         getActivity().getActionBar().show();
+
+        int mode = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+        try {
+            SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+            mode = sharedPref.getInt("screen_orientation", mode);
+        } catch (NullPointerException ignore) {
+        }
+        this.getActivity().setRequestedOrientation(mode);
     }
 
 
@@ -202,7 +211,7 @@ abstract class MyFragment extends Fragment {
         try {
             SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
             text = sharedPref.getString("last_tcp_server", text);
-        } catch (NullPointerException e) {
+        } catch (NullPointerException ignore) {
         }
         input.setText(text);
         builder.setView(input);
@@ -216,7 +225,7 @@ abstract class MyFragment extends Fragment {
                 try {
                     SharedPreferences sharedPref = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
                     sharedPref.edit().putString("last_tcp_server", text).apply();
-                } catch (NullPointerException e) {
+                } catch (NullPointerException ignore) {
                 }
 
                 System.out.println(text);
@@ -277,6 +286,25 @@ abstract class MyFragment extends Fragment {
             case R.id.connect_tcp: {
                 AutopilotService.getInstance().stop();
                 connectDeviceTcp();
+            }
+            case R.id.rotate: {
+                int mode = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                try {
+                    SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+                    mode = sharedPref.getInt("screen_orientation", mode);
+                } catch (NullPointerException ignore) {
+                }
+                int new_mode = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                if (mode == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+                    new_mode = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                }
+                this.getActivity().setRequestedOrientation(new_mode);
+
+                try {
+                    SharedPreferences sharedPref = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+                    sharedPref.edit().putInt("screen_orientation", new_mode).apply();
+                } catch (NullPointerException ignore) {
+                }
             }
         }
         return false;

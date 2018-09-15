@@ -65,6 +65,7 @@
     <string name="heel">Krängung [°]:</string>
     <string name="pitch">Pitch [°]:</string>
     <string name="disconnect">Trennen</string>
+    <string name="rotate">Rotieren</string>
 
     <string name="preference_file_key">de.kast.autopilot</string>
 

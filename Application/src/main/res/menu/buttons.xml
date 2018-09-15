@@ -13,22 +13,28 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/rotate"
+        android:icon="@drawable/ic_disconnect"
+        android:title="@string/rotate"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/disconnect"
         android:icon="@drawable/ic_disconnect"
-        android:showAsAction="ifRoom"
-        android:title="@string/disconnect" />
+        android:title="@string/disconnect"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/secure_connect_scan"
         android:icon="@drawable/ic_connect_bt"
-        android:showAsAction="ifRoom"
-        android:title="@string/secure_connect"/>
+        android:title="@string/secure_connect"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/connect_tcp"
         android:icon="@drawable/ic_connect_wifi"
-        android:showAsAction="ifRoom"
-        android:title="@string/connect_tcp"/>
+        android:title="@string/connect_tcp"
+        app:showAsAction="ifRoom" />
 
 </menu>
