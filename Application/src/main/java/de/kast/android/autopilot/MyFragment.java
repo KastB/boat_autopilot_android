@@ -26,6 +26,9 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
  * Created by bernd on 30.06.17.
  */
@@ -45,14 +48,14 @@ abstract class MyFragment extends Fragment {
     protected BluetoothAdapter mBluetoothAdapter = null;
     BroadcastReceiver mDataUpdateReceiver;
 
-    abstract BroadcastReceiver getNewDataUpdateReceiver();
-
     abstract void setup();
 
     abstract public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                                       @Nullable Bundle savedInstanceState);
 
     abstract public void onViewCreated(View view, @Nullable Bundle savedInstanceState);
+
+    abstract public void setData(String rawMessage, HashMap<String, Double> data, ArrayList<HashMap<String, Double>> history);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,7 +78,7 @@ abstract class MyFragment extends Fragment {
         super.onStart();
         setup();
         if (mDataUpdateReceiver == null)
-            mDataUpdateReceiver = getNewDataUpdateReceiver();
+            mDataUpdateReceiver = new DataUpdateReceiverFragment(this);
         IntentFilter intentFilter = new IntentFilter(AutopilotService.AUTOPILOT_INTENT);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(mDataUpdateReceiver, intentFilter);
     }
@@ -96,7 +99,7 @@ abstract class MyFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (mDataUpdateReceiver == null)
-            mDataUpdateReceiver = getNewDataUpdateReceiver();
+            mDataUpdateReceiver = new DataUpdateReceiverFragment(this);
         IntentFilter intentFilter = new IntentFilter(AutopilotService.AUTOPILOT_INTENT);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(mDataUpdateReceiver, intentFilter);
     }
@@ -277,22 +280,5 @@ abstract class MyFragment extends Fragment {
             }
         }
         return false;
-    }
-
-
-    public String reducePrecision(String str, int prec) {
-        if (prec < 1) {
-            if (str.contains("."))
-                return str.substring(0, str.indexOf("."));
-            else
-                return str;
-        }
-
-        //untested
-        if (!str.contains("."))
-            str.concat(".");
-        while (str.length() - str.indexOf(".") < prec + 1)
-            str.concat("0");
-        return str.substring(0, str.indexOf(".") + prec + 1);
     }
 }

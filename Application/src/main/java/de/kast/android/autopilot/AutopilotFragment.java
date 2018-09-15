@@ -25,6 +25,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
  * This fragment controls Bluetooth to communicate with other devices.
  */
@@ -59,12 +62,6 @@ public class AutopilotFragment extends MyFragment {
     protected Button mDecreaseButton;
     protected Button mIncreaseButton;
     protected Button mIncrease10Button;
-
-    @Override
-    public DataUpdateReceiverAutopilotFragment getNewDataUpdateReceiver() {
-        return new DataUpdateReceiverAutopilotFragment(this);
-    }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -180,5 +177,38 @@ public class AutopilotFragment extends MyFragment {
                 sendMessage("I10\r\n");
             }
         });
+    }
+
+    @Override
+    public void setData(String rawMessage, HashMap<String, Double> data, ArrayList<HashMap<String, Double>> history) {
+        this.mGoalView.setText(String.format("%.0f", data.get("m_goal")));
+        this.mErrorView.setText(String.format("%.0f", data.get("m_lastError")));
+        this.mWindSpeedView.setText(String.format("%.1f", data.get("m_wind.apparentSpeed")));
+        this.mWindDirectionView.setText(String.format("%.0f", data.get("m_wind.apparentAngle")));
+        this.mSpeedView.setText(String.format("%.1f", data.get("m_speed")));
+        this.mHeadingView.setText(String.format("%.0f", data.get("yaw")));
+        this.mDepthView.setText(String.format("%.1f", data.get("m_depth.depthBelowTransductor")));
+        this.mTempView.setText(String.format("%.1f", data.get("m_speed.waterTemp")));
+        this.mRudderView.setText(String.format("%.0f", data.get("m_currentPosition")));
+        this.mIntegralView.setText(String.format("%.0f", data.get("m_errorSum")));
+        this.mHeelView.setText(String.format("%.1f", data.get("roll")));
+        this.mPitchView.setText(String.format("%.1f", data.get("pitch")));
+        switch (data.get("m_goalType").intValue()) {
+            case 0:
+                this.mPositionModeButton.setEnabled(false);
+                this.mCompassModeButton.setEnabled(true);
+                this.mWindModeButton.setEnabled(true);
+                break;
+            case 1:
+                this.mPositionModeButton.setEnabled(true);
+                this.mCompassModeButton.setEnabled(true);
+                this.mWindModeButton.setEnabled(false);
+                break;
+            case 2:
+                this.mPositionModeButton.setEnabled(true);
+                this.mCompassModeButton.setEnabled(false);
+                this.mWindModeButton.setEnabled(true);
+                break;
+        }
     }
 }

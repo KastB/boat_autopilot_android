@@ -19,7 +19,6 @@ package de.kast.android.autopilot;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.method.Touch;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,25 +29,22 @@ import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
  * This fragment controls Bluetooth to communicate with other devices.
  */
 public class GraphFragment extends MyFragment {
-
-
     protected static final String TAG = "GraphFragment";
+    static private final int mTimeHorizon = 120;
+    static private final int mMaxDataPoints = 1024;
 
     // Layout Views
     GraphView mGraph;
     LineGraphSeries<DataPoint>[] mSeries;
     DataSet[] mDataSets;
     boolean mSeriesValid;
-
-    @Override
-    public DataUpdateReceiverGraphFragment getNewDataUpdateReceiver() {
-        return new DataUpdateReceiverGraphFragment(this);
-    }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -61,6 +57,42 @@ public class GraphFragment extends MyFragment {
         mGraph = (GraphView) view.findViewById(R.id.graph);
     }
 
+    @Override
+    public void setData(String rawMessage, HashMap<String, Double> data, ArrayList<HashMap<String, Double>> history) {
+        if (this.mSeriesValid) {
+            double x = -1.0;
+            for (int i = 0; i < this.mSeries.length; i++) {
+                DataPoint p = new DataPoint(data.get("Millis") / 1000.0f, data.get(this.mDataSets[i].mIndex));
+                x = p.getX();
+                try {
+                    this.mSeries[i].appendData(p, true, mMaxDataPoints);
+                } catch (java.lang.IllegalArgumentException e) {
+                    this.mSeriesValid = false;
+                }
+            }
+            this.mGraph.getViewport().setXAxisBoundsManual(true);
+            this.mGraph.getViewport().setMinX(x - mTimeHorizon);
+            this.mGraph.getViewport().setMaxX(x + 2.0);
+        } else {
+            DataPoint[][] dataPoints = new DataPoint[this.mDataSets.length][history.size()];
+            int counter = 0;
+            for (HashMap<String, Double> h : history) {
+                for (int z = 0; z < this.mDataSets.length; z++) {
+                    dataPoints[z][counter] = new DataPoint(h.get("Millis") / 1000.0f, h.get(this.mDataSets[z].mIndex));
+                }
+                counter++;
+            }
+            this.mSeriesValid = true;
+            for (int z = 0; z < this.mDataSets.length; z++) {
+                try {
+                    this.mSeries[z].resetData(dataPoints[z]);
+                } catch (java.lang.IllegalArgumentException e) {
+                    this.mSeriesValid = false;
+                }
+            }
+        }
+    }
+
     /**
      * Set up the UI and background operations for chat.
      */
@@ -68,12 +100,12 @@ public class GraphFragment extends MyFragment {
         mGraph.removeAllSeries();
         mGraph.getSecondScale().removeAllSeries();
         mDataSets = new DataSet[]{
-                new DataSet("Ziel", 17, Color.BLACK, false, 5, 3),
-                new DataSet("Kurs", 22, Color.DKGRAY, false, 5, 3),
-                new DataSet("Geschwindigkeit", 30, Color.GREEN, false, 5, 3, true),
-                new DataSet("Windrichtung", 37, Color.BLUE, false, 5, 3),
-                new DataSet("Windgeschwindigkeit", 38, Color.CYAN, false, 5, 3, true),
-                new DataSet("Fehler", 18, Color.RED, false, 5, 3, true)
+                new DataSet("Ziel", "m_goal", Color.BLACK, false, 5, 3),
+                new DataSet("Kurs", "yaw", Color.DKGRAY, false, 5, 3),
+                new DataSet("Geschwindigkeit", "m_speed", Color.GREEN, false, 5, 3, true),
+                new DataSet("Windrichtung", "m_wind.apparentAngle", Color.BLUE, false, 5, 3),
+                new DataSet("Windgeschwindigkeit", "m_wind.apparentSpeed", Color.CYAN, false, 5, 3, true),
+                new DataSet("Fehler", "m_lastError", Color.RED, false, 5, 3, true)
         };
         mSeries = new LineGraphSeries[mDataSets.length];
         for (int i = 0; i < mDataSets.length; i++) {
@@ -113,7 +145,7 @@ public class GraphFragment extends MyFragment {
         }
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            if (event.getAction() == event.ACTION_DOWN) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 if (this.graphFragment.mGraph.getLegendRenderer().isVisible()) {
                     this.graphFragment.mGraph.getLegendRenderer().setVisible(false);
                 } else {
