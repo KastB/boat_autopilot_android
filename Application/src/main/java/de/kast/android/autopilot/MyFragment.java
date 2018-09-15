@@ -18,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.InputType;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,10 +26,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import static java.lang.Math.max;
 
 /**
  * Created by bernd on 30.06.17.
@@ -72,12 +76,7 @@ abstract class MyFragment extends Fragment {
         }
         getActivity().getActionBar().show();
 
-        int mode = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-        try {
-            SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-            mode = sharedPref.getInt("screen_orientation", mode);
-        } catch (NullPointerException ignore) {
-        }
+        int mode = getPreference("screen_orientation", ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         this.getActivity().setRequestedOrientation(mode);
     }
 
@@ -286,27 +285,81 @@ abstract class MyFragment extends Fragment {
             case R.id.connect_tcp: {
                 AutopilotService.getInstance().stop();
                 connectDeviceTcp();
+                return true;
             }
             case R.id.rotate: {
-                int mode = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-                try {
-                    SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-                    mode = sharedPref.getInt("screen_orientation", mode);
-                } catch (NullPointerException ignore) {
-                }
+                String preference = "screen_orientation";
+                int mode = getPreference(preference, ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
                 int new_mode = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
                 if (mode == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
                     new_mode = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
                 }
                 this.getActivity().setRequestedOrientation(new_mode);
 
-                try {
-                    SharedPreferences sharedPref = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-                    sharedPref.edit().putInt("screen_orientation", new_mode).apply();
-                } catch (NullPointerException ignore) {
-                }
+                setPreference(preference, new_mode);
+                return true;
+            }
+            case R.id.increase_font_size: {
+                String preference = "font_size";
+                int font_size = getPreference(preference, 32);
+                font_size += 1;
+                setPreference(preference, font_size);
+                updateFontSizes();
+                return true;
+            }
+            case R.id.decrease_font_size: {
+                String preference = "font_size";
+                int font_size = getPreference(preference, 32);
+                font_size -= 1;
+                font_size = max(0, font_size);
+                setPreference(preference, font_size);
+                updateFontSizes();
+                return true;
             }
         }
         return false;
+    }
+
+    private void updateFontSizes() {
+        int font_size = getPreference("font_size", 22);
+        ViewGroup root_view = (ViewGroup) getView().getRootView();
+        updateFontSize(getContext(), root_view, font_size);
+    }
+
+    public static void updateFontSize(Context context, View v, int font_size){
+        try {
+            if (v instanceof ViewGroup) {
+                ViewGroup vg = (ViewGroup) v;
+                for (int i = 0; i < vg.getChildCount(); i++) {
+                    View child = vg.getChildAt(i);
+                    //you can recursively call this method
+                    updateFontSize(context, child, font_size);
+                }
+            } else if (v instanceof TextView) {
+                //do whatever you want ...
+                ((TextView) v).setTextSize(TypedValue.COMPLEX_UNIT_DIP, font_size);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setPreference(String preference, int new_mode) {
+        try {
+            SharedPreferences sharedPref = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+            sharedPref.edit().putInt(preference, new_mode).apply();
+        } catch (NullPointerException ignore) {
+        }
+    }
+
+    private int getPreference(String preference, int default_value) {
+        int mode = default_value;
+        try {
+            SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+            mode = sharedPref.getInt(preference, mode);
+        } catch (NullPointerException ignore) {
+        }
+        return mode;
     }
 }

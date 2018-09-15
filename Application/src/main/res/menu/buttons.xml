@@ -15,6 +15,18 @@
 -->
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/increase_font_size"
+        android:icon="@drawable/ic_disconnect"
+        android:title="@string/increase_font_size"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/decrease_font_size"
+        android:icon="@drawable/ic_disconnect"
+        android:title="@string/decrease_font_size"
+        app:showAsAction="ifRoom" />
+
     <item
         android:id="@+id/rotate"
         android:icon="@drawable/ic_disconnect"
