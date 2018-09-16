@@ -60,7 +60,7 @@ abstract class MyFragment extends Fragment {
 
     abstract public void onViewCreated(View view, @Nullable Bundle savedInstanceState);
 
-    abstract public void setData(String rawMessage, HashMap<String, Double> data, ArrayList<HashMap<String, Double>> history);
+    abstract public boolean setData(String rawMessage, HashMap<String, Double> data, ArrayList<HashMap<String, Double>> history);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -264,6 +264,9 @@ abstract class MyFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.buttons, menu);
+        if (mBluetoothAdapter == null) {
+            menu.findItem(R.id.secure_connect_scan).setEnabled(false);
+        }
     }
 
     @Override

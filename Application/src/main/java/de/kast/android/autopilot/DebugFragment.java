@@ -107,8 +107,9 @@ public class DebugFragment extends MyFragment {
     }
 
     @Override
-    public void setData(String rawMessage, HashMap<String, Double> data, ArrayList<HashMap<String, Double>> history) {
+    public boolean setData(String rawMessage, HashMap<String, Double> data, ArrayList<HashMap<String, Double>> history) {
         this.mConversationArrayAdapter.add(rawMessage);
+        return true;
     }
 
 }

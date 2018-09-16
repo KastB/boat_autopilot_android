@@ -60,16 +60,19 @@ public class DataUpdateReceiverFragment extends BroadcastReceiver {
                         try {
                             HashMap<String, Double> msg = decodeRawData(readMessage);
                             String[] h = intent.getStringArrayExtra("History");
-                            ArrayList<HashMap<String, Double>> history = new ArrayList<>();
-                            if (h != null) {
-                                for (String dat : h) {
-                                    try {
-                                        history.add(decodeRawData(dat));
-                                    } catch (IndexOutOfBoundsException ignored) {
+                            if (!mFragment.setData(readMessage, msg, null)) {
+                                System.out.println("ohoh: history was needed - this shouldnt happen too often");
+                                ArrayList<HashMap<String, Double>> history = new ArrayList<>();
+                                if (h != null) {
+                                    for (String dat : h) {
+                                        try {
+                                            history.add(decodeRawData(dat));
+                                        } catch (IndexOutOfBoundsException ignored) {
+                                        }
                                     }
                                 }
+                                mFragment.setData(readMessage, msg, history);
                             }
-                            mFragment.setData(readMessage, msg, history);
                         }
                         catch (IndexOutOfBoundsException ignored) {}
 
@@ -77,10 +80,13 @@ public class DataUpdateReceiverFragment extends BroadcastReceiver {
                     case Constants.MESSAGE_DEVICE_NAME:
                         // save the connected device's name
                         String deviceName = intent.getStringExtra(Integer.toString(Constants.MESSAGE_DEVICE_NAME));
-                        if (null != activity) {
-                            Toast.makeText(activity, "Connected to "
-                                    + deviceName, Toast.LENGTH_SHORT).show();
+                        if (!deviceName.equals(mFragment.mConnectedDeviceName)) {
+                            if (null != activity) {
+                                Toast.makeText(activity, "Connected to "
+                                        + deviceName, Toast.LENGTH_SHORT).show();
+                            }
                         }
+                        mFragment.mConnectedDeviceName = deviceName;
                         break;
                     case Constants.MESSAGE_TOAST:
                         if (null != activity) {

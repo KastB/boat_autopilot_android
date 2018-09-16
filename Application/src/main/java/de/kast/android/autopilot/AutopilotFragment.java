@@ -180,7 +180,7 @@ public class AutopilotFragment extends MyFragment {
     }
 
     @Override
-    public void setData(String rawMessage, HashMap<String, Double> data, ArrayList<HashMap<String, Double>> history) {
+    public boolean setData(String rawMessage, HashMap<String, Double> data, ArrayList<HashMap<String, Double>> history) {
         this.mGoalView.setText(String.format("%.0f", data.get("m_goal")));
         this.mErrorView.setText(String.format("%.0f", data.get("m_lastError")));
         this.mWindSpeedView.setText(String.format("%.1f", data.get("m_wind.apparentSpeed")));
@@ -210,5 +210,6 @@ public class AutopilotFragment extends MyFragment {
                 this.mWindModeButton.setEnabled(true);
                 break;
         }
+        return true;
     }
 }

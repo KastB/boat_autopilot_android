@@ -180,28 +180,31 @@ public class AutopilotService extends Service {
      * Update UI title according to the current state of the chat connection
      */
     protected synchronized void updateUserInterfaceTitle() {
-        Intent in = new Intent(AutopilotService.AUTOPILOT_INTENT);
-        in.putExtra("intentType", Constants.MESSAGE_DEVICE_NAME);
-        in.putExtra(Integer.toString(Constants.MESSAGE_DEVICE_NAME), mDeviceName);
-        LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(in);
-
-        in = new Intent(AutopilotService.AUTOPILOT_INTENT);
-        in.putExtra("intentType", Constants.MESSAGE_STATE_CHANGE);
-        in.putExtra(Integer.toString(Constants.MESSAGE_STATE_CHANGE), mState);
-        LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(in);
-
-        in = new Intent(AutopilotService.AUTOPILOT_INTENT);
-        if (mState == STATE_CONNECTED_BT || mState == STATE_CONNECTED_TCP) {
+        if (mOldState != mState) {
+            Intent in = new Intent(AutopilotService.AUTOPILOT_INTENT);
             in.putExtra("intentType", Constants.MESSAGE_DEVICE_NAME);
             in.putExtra(Integer.toString(Constants.MESSAGE_DEVICE_NAME), mDeviceName);
-        } else if (mState == STATE_CONNECTING_BT || mState == STATE_CONNECTING_TCP) {
-            in.putExtra("intentType", Constants.MESSAGE_TOAST);
-            in.putExtra(Integer.toString(Constants.MESSAGE_TOAST), "connecting to " + mDeviceName);
-        } else {
-            in.putExtra("intentType", Constants.MESSAGE_TOAST);
-            in.putExtra(Integer.toString(Constants.MESSAGE_TOAST), "disconnected");
+            LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(in);
+
+
+            in = new Intent(AutopilotService.AUTOPILOT_INTENT);
+            in.putExtra("intentType", Constants.MESSAGE_STATE_CHANGE);
+            in.putExtra(Integer.toString(Constants.MESSAGE_STATE_CHANGE), mState);
+            LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(in);
+
+            in = new Intent(AutopilotService.AUTOPILOT_INTENT);
+            if (mState == STATE_CONNECTED_BT || mState == STATE_CONNECTED_TCP) {
+                in.putExtra("intentType", Constants.MESSAGE_DEVICE_NAME);
+                in.putExtra(Integer.toString(Constants.MESSAGE_DEVICE_NAME), mDeviceName);
+            } else if (mState == STATE_CONNECTING_BT || mState == STATE_CONNECTING_TCP) {
+                in.putExtra("intentType", Constants.MESSAGE_TOAST);
+                in.putExtra(Integer.toString(Constants.MESSAGE_TOAST), "connecting to " + mDeviceName);
+            } else {
+                in.putExtra("intentType", Constants.MESSAGE_TOAST);
+                in.putExtra(Integer.toString(Constants.MESSAGE_TOAST), "disconnected");
+            }
+            LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(in);
         }
-        LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(in);
         mOldState = mState;
     }
 
@@ -311,9 +314,6 @@ public class AutopilotService extends Service {
         mLastType = STATE_NONE;
         this.cancel();
         mLastType = STATE_NONE;
-
-        // Update UI title
-        updateUserInterfaceTitle();
     }
 
     /**
