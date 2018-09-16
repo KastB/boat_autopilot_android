@@ -78,6 +78,10 @@ abstract class MyFragment extends Fragment {
 
         int mode = getPreference("screen_orientation", ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         this.getActivity().setRequestedOrientation(mode);
+
+        String tcpServer = "";
+        tcpServer = getPreference("last_tcp_server", tcpServer);
+        connectToTCPServer(tcpServer);
     }
 
 
@@ -206,31 +210,20 @@ abstract class MyFragment extends Fragment {
         builder.setTitle("Please enter ip:port");
         final EditText input = new EditText(this.getContext());
         input.setInputType(InputType.TYPE_CLASS_TEXT);
-        String text = "10.0.0.1:2948";
-        try {
-            SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-            text = sharedPref.getString("last_tcp_server", text);
-        } catch (NullPointerException ignore) {
-        }
-        input.setText(text);
+        String serverAddress = "10.0.0.1:2948";
+        getPreference("last_tcp_server", serverAddress);
+        input.setText(serverAddress);
         builder.setView(input);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String text;
-                text = input.getText().toString();
+                String serverAddress;
+                serverAddress = input.getText().toString();
 
                 //save text in preferences
-                try {
-                    SharedPreferences sharedPref = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-                    sharedPref.edit().putString("last_tcp_server", text).apply();
-                } catch (NullPointerException ignore) {
-                }
-
-                System.out.println(text);
-                String ip = text.substring(0, text.indexOf(":"));
-                int port = Integer.parseInt(text.substring(ip.length() + 1, text.length()));
-                AutopilotService.getInstance().connectTcp(ip, port);
+                setPreference("last_tcp_server", serverAddress);
+                System.out.println(serverAddress);
+                connectToTCPServer(serverAddress);
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -241,6 +234,12 @@ abstract class MyFragment extends Fragment {
         });
 
         builder.show();
+    }
+
+    private void connectToTCPServer(String serverAddress) {
+        String ip = serverAddress.substring(0, serverAddress.indexOf(":"));
+        int port = Integer.parseInt(serverAddress.substring(ip.length() + 1, serverAddress.length()));
+        AutopilotService.getInstance().connectTcp(ip, port);
     }
 
     /**
@@ -361,6 +360,24 @@ abstract class MyFragment extends Fragment {
         try {
             SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
             mode = sharedPref.getInt(preference, mode);
+        } catch (NullPointerException ignore) {
+        }
+        return mode;
+    }
+
+    private void setPreference(String preference, String new_mode) {
+        try {
+            SharedPreferences sharedPref = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+            sharedPref.edit().putString(preference, new_mode).apply();
+        } catch (NullPointerException ignore) {
+        }
+    }
+
+    private String getPreference(String preference, String default_value) {
+        String mode = default_value;
+        try {
+            SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+            mode = sharedPref.getString(preference, mode);
         } catch (NullPointerException ignore) {
         }
         return mode;
