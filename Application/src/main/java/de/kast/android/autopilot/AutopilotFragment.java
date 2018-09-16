@@ -198,6 +198,9 @@ public class AutopilotFragment extends MyFragment {
         this.mIntegralView.setText(String.format("%.0f", data.get("m_errorSum")));
         this.mHeelView.setText(String.format("%.1f", data.get("roll")));
         this.mPitchView.setText(String.format("%.1f", data.get("pitch")));
+        this.mTripView.setText(String.format("%.1f", data.get("m_speed.tripMileage")));
+        this.mTotalView.setText(String.format("%.1f", data.get("m_speed.totalMileage")));
+
         switch (data.get("m_goalType").intValue()) {
             case 0:
                 this.mPositionModeButton.setEnabled(false);

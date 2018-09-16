@@ -37,7 +37,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.UUID;
 
     /* By now there is a hard coded mapping between index of data incoming and the type of that data
@@ -114,6 +116,9 @@ interface WritableThread {
  */
 public class AutopilotService extends Service {
 
+    static String mHeader = "Millis,m_currentPosition,m_pressedButtonDebug,m_bytesToSent,CurrentPosition,CurrentDirection,TargetPosition,MSStopped,startButton,stopButton,parkingButton,diagA,diagB,m_P,m_I,m_D,m_goalType,m_goal,m_lastError,m_errorSum,m_lastFilteredYaw,UI,yaw,roll,pitch,freq,magMin[0],magMin[1],magMin[2],magMax[0],magMax[1],magMax[2],m_speed,m_speed.tripMileage,m_speed.totalMileage,m_speed.waterTemp,m_lampIntensity,m_wind.apparentAngle,m_wind.apparentSpeed,m_wind.displayInKnots,m_wind.displayInMpS,m_depth.anchorAlarm,m_depth.deepAlarm,m_depth.defective,m_depth.depthBelowTransductor,m_depth.metricUnits,m_depth.shallowAlarm,m_depth.unknown,Position";
+    String mParts[];
+
     public static final String AUTOPILOT_INTENT = "autopilot_intent";
     // Constants that indicate the current connection state
     public static final int STATE_NONE = 0;       // we're doing nothing
@@ -151,6 +156,7 @@ public class AutopilotService extends Service {
      * Constructor. Prepares a new sessions.
      */
     public AutopilotService() {
+        mParts = mHeader.split(",");
         mAdapterBt = BluetoothAdapter.getDefaultAdapter();
         mState = STATE_NONE;
         mOldState = mState;
@@ -346,23 +352,55 @@ public class AutopilotService extends Service {
         // LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(in);
     }
 
-    private void broadcast_msg(String tmp) {
-        if (tmp != null) {
+    private void broadcast_msg(String rawMessage) {
+        if (rawMessage != null) {
+            writeToLog(rawMessage);
+
+            HashMap<String, Double> processedMsg;
+            try {
+                processedMsg = decodeRawData(rawMessage);
+            }
+            catch (IndexOutOfBoundsException e) {
+                return;
+            }
+            ArrayList<HashMap<String, Double>> history = mBuf.addGetAll(processedMsg);
+
             Intent in = new Intent(AutopilotService.AUTOPILOT_INTENT);
-            in.putExtra("intentType", Constants.MESSAGE_READ);
-            in.putExtra(Integer.toString(Constants.MESSAGE_READ), tmp);
+            in.putExtra("intentType", Constants.MESSAGE_READ_RAW);
+            in.putExtra(Integer.toString(Constants.MESSAGE_READ_RAW),       rawMessage);
+            in.putExtra(Integer.toString(Constants.MESSAGE_READ_PROCESSED), processedMsg);
+            in.putExtra(Integer.toString(Constants.MESSAGE_READ_HISTORY),   history);
 
-            String[] s = mBuf.addGetAll(tmp);
-            in.putExtra("History", s);
             LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(in);
+        }
+    }
 
-            if(mLogFileStream != null) {
-                try {
-                    mLogFileStream.write(tmp.getBytes());
-                    mLogFileStream.write('\n');
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+    public HashMap<String, Double> decodeRawData(String line) throws IndexOutOfBoundsException {
+        String parts[] = line.split("\t");
+        HashMap<String, Double> result = new HashMap<>();
+        Double value;
+        if (parts.length < mParts.length) {
+            throw new IndexOutOfBoundsException();
+        }
+        for(int i = 0; i < mParts.length; i++) {
+            try {
+                value = Double.parseDouble(parts[i]);
+            }
+            catch (java.lang.NumberFormatException e){
+                value = 0.0;
+            }
+            result.put(mParts[i], value);
+        }
+        return result;
+    }
+
+    private void writeToLog(String tmp) {
+        if(mLogFileStream != null) {
+            try {
+                mLogFileStream.write(tmp.getBytes());
+                mLogFileStream.write('\n');
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }

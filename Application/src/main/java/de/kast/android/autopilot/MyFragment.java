@@ -206,7 +206,7 @@ abstract class MyFragment extends Fragment {
         builder.setTitle("Please enter ip:port");
         final EditText input = new EditText(this.getContext());
         input.setInputType(InputType.TYPE_CLASS_TEXT);
-        String text = "192.168.178.26:2948";
+        String text = "10.0.0.1:2948";
         try {
             SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
             text = sharedPref.getString("last_tcp_server", text);

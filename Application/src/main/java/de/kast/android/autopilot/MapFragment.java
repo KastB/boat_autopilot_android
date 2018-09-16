@@ -42,7 +42,7 @@ public class MapFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.fragment_map, container, false);
         mapWebView = view.findViewById(R.id.webview_map);
-        String text = "192.168.178.26:2948";
+        String text = "10.0.0.1:2948";
         try {
             SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
             text = sharedPref.getString("last_tcp_server", text);

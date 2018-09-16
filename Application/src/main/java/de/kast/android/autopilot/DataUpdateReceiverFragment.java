@@ -3,13 +3,11 @@ package de.kast.android.autopilot;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by bernd on 11.07.17.
@@ -17,13 +15,9 @@ import java.util.List;
 
 public class DataUpdateReceiverFragment extends BroadcastReceiver {
     private MyFragment mFragment;
-    static String mHeader = "Millis,m_currentPosition,m_pressedButtonDebug,m_bytesToSent,CurrentPosition,CurrentDirection,TargetPosition,MSStopped,startButton,stopButton,parkingButton,diagA,diagB,m_P,m_I,m_D,m_goalType,m_goal,m_lastError,m_errorSum,m_lastFilteredYaw,UI,yaw,roll,pitch,freq,magMin[0],magMin[1],magMin[2],magMax[0],magMax[1],magMax[2],m_speed,m_speed.tripMileage,m_speed.totalMileage,m_speed.waterTemp,m_lampIntensity,m_wind.apparentAngle,m_wind.apparentSpeed,m_wind.displayInKnots,m_wind.displayInMpS,m_depth.anchorAlarm,m_depth.deepAlarm,m_depth.defective,m_depth.depthBelowTransductor,m_depth.metricUnits,m_depth.shallowAlarm,m_depth.unknown,Position";
-    String mParts[];
-
 
     public DataUpdateReceiverFragment(MyFragment fragment) {
         mFragment = fragment;
-        mParts = mHeader.split(",");
     }
 
     @Override
@@ -55,27 +49,11 @@ public class DataUpdateReceiverFragment extends BroadcastReceiver {
                         break;
                     case Constants.MESSAGE_WRITE:
                         break;
-                    case Constants.MESSAGE_READ:
-                        String readMessage = intent.getStringExtra(Integer.toString(Constants.MESSAGE_READ));
-                        try {
-                            HashMap<String, Double> msg = decodeRawData(readMessage);
-                            String[] h = intent.getStringArrayExtra("History");
-                            if (!mFragment.setData(readMessage, msg, null)) {
-                                System.out.println("ohoh: history was needed - this shouldnt happen too often");
-                                ArrayList<HashMap<String, Double>> history = new ArrayList<>();
-                                if (h != null) {
-                                    for (String dat : h) {
-                                        try {
-                                            history.add(decodeRawData(dat));
-                                        } catch (IndexOutOfBoundsException ignored) {
-                                        }
-                                    }
-                                }
-                                mFragment.setData(readMessage, msg, history);
-                            }
-                        }
-                        catch (IndexOutOfBoundsException ignored) {}
-
+                    case Constants.MESSAGE_READ_RAW:
+                    String rawMessage                               =                                       intent.getStringExtra(Integer.toString(Constants.MESSAGE_READ_RAW));
+                        HashMap<String, Double> msg                 = (HashMap<String, Double>)             intent.getSerializableExtra(Integer.toString(Constants.MESSAGE_READ_PROCESSED));
+                        ArrayList<HashMap<String, Double>> history  = (ArrayList<HashMap<String, Double>>)  intent.getSerializableExtra(Integer.toString(Constants.MESSAGE_READ_HISTORY));
+                        mFragment.setData(rawMessage, msg, history);
                         break;
                     case Constants.MESSAGE_DEVICE_NAME:
                         // save the connected device's name
@@ -99,24 +77,5 @@ public class DataUpdateReceiverFragment extends BroadcastReceiver {
         } catch (java.lang.IllegalStateException e) {
             System.out.println(e.toString());
         }
-    }
-
-    public HashMap<String, Double> decodeRawData(String line) {
-        String parts[] = line.split("\t");
-        HashMap<String, Double> result = new HashMap<>();
-        Double value;
-        if (parts.length < mParts.length) {
-            throw new IndexOutOfBoundsException();
-        }
-        for(int i = 0; i < mParts.length; i++) {
-            try {
-                value = Double.parseDouble(parts[i]);
-            }
-            catch (java.lang.NumberFormatException e){
-                value = 0.0;
-            }
-            result.put(mParts[i], value);
-        }
-        return result;
     }
 }

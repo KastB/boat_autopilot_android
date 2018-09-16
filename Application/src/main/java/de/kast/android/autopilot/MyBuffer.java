@@ -1,24 +1,27 @@
 package de.kast.android.autopilot;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
  * Created by bernd on 15.07.17.
  */
 
 public class MyBuffer {
 
-    int mMaxSize;
-    String[] mBuffer;
-    int mIndex;
-    int mMaxIndex;
+    private int mMaxSize;
+    private HashMap<String, Double>[] mBuffer;
+    private int mIndex;
+    private int mMaxIndex;
 
     MyBuffer(int size) {
         mMaxSize = size;
-        mBuffer = new String[size];
         mMaxIndex = -1;
         mIndex = -1;
+        mBuffer = new HashMap[mMaxSize];
     }
 
-    public void add(String s) {
+    public void add(HashMap<String, Double> s) {
         mIndex++;
         mMaxIndex++;
         if (mMaxIndex >= mMaxSize)
@@ -29,13 +32,14 @@ public class MyBuffer {
         mBuffer[mIndex] = s;
     }
 
-    String[] getAll() {
-        if (mMaxIndex < 0)
-            return new String[0];
-        String[] res = new String[mMaxIndex + 1];
+    ArrayList<HashMap<String, Double>> getAll() {
+        if (mMaxIndex < 0) {
+            return new ArrayList<>();
+        }
+        ArrayList<HashMap<String, Double>> res = new ArrayList<>();
         int index = mIndex;
         for (int i = 0; i <= mMaxIndex; i++) {
-            res[i] = mBuffer[index];
+            res.add(mBuffer[index]);
             index--;
             if (index < 0) {
                 index = mMaxIndex;
@@ -44,7 +48,7 @@ public class MyBuffer {
         return res;
     }
 
-    synchronized String[] addGetAll(String s) {
+    synchronized ArrayList<HashMap<String, Double>> addGetAll(HashMap<String, Double> s) {
         this.add(s);
         return this.getAll();
     }
