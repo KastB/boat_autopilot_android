@@ -67,6 +67,9 @@
     <string name="trip_milage">Trip [nm]:</string>
     <string name="total_milage">Total [nm]:</string>
     <string name="disconnect">Trennen</string>
+    <string name="rotate">Rotieren</string>
+    <string name="increase_font_size">+</string>
+    <string name="decrease_font_size">-</string>
 
     <string name="preference_file_key">de.kast.autopilot</string>
 

@@ -52,20 +52,11 @@
             android:theme="@android:style/Theme.Holo.Dialog"/>
         <service android:name=".AutopilotService" android:label="Autopilot Bluetooth Service" android:exported="false"/>
 
-        <receiver android:name=".DataUpdateReceiverAutopilotFragment">
+        <receiver android:name=".DataUpdateReceiverFragment">
             <intent-filter>
                 <action android:name="autopilot_intent">
                 </action>
             </intent-filter>
         </receiver>
-        <receiver android:name=".DataUpdateReceiverDebugFragment">
-            <intent-filter>
-                <action android:name="autopilot_intent">
-                </action>
-            </intent-filter>
-        </receiver>
-
     </application>
-
-
 </manifest>

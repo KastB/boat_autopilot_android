@@ -14,16 +14,20 @@ public class SwipeAdaptor extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
+        Fragment frag;
         if (position == 0)
-            return new AutopilotFragment();
+            frag = new AutopilotFragment();
         else if (position == 1)
-            return new GraphFragment();
+            frag = new GraphFragment();
+        else if (position == 2)
+            frag = new DebugFragment();
         else
-            return new DebugFragment();
+            frag = new MapFragment();
+        return frag;
     }
 
     @Override
     public int getCount() {
-        return 3;
+        return 4;
     }
 }

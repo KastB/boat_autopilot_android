@@ -13,6 +13,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 
 /**
  * Created by bernd on 30.06.17.
@@ -62,11 +65,6 @@ public class DebugFragment extends MyFragment {
         mSendButton = (Button) view.findViewById(R.id.button_send);
     }
 
-    @Override
-    DataUpdateReceiverDebugFragment getNewDataUpdateReceiver() {
-        return new DataUpdateReceiverDebugFragment(this);
-    }
-
     protected void setup() {
         // Initialize the array adapter for the conversation thread
         mConversationArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.message);
@@ -106,6 +104,12 @@ public class DebugFragment extends MyFragment {
             mOutStringBuffer.setLength(0);
             mOutEditText.setText(mOutStringBuffer);
         }
+    }
+
+    @Override
+    public boolean setData(String rawMessage, HashMap<String, Double> data, ArrayList<HashMap<String, Double>> history) {
+        this.mConversationArrayAdapter.add(rawMessage);
+        return true;
     }
 
 }

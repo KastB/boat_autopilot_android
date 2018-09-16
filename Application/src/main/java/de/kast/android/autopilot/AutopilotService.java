@@ -58,42 +58,44 @@ import java.util.UUID;
         8: startButton
         9: stopButton
         10: parkingButton
-        11: m_P
-        12: m_I
-        13: m_D
-        14: m_goalType
-        15: m_goal
-        16: m_lastError
-        17: m_errorSum
-        18: m_lastFilteredYaw
-        19: UI
-        20: yaw
-        21: pitch
-        22: roll
-        23: freq
-        24: magMin[0]
-        25: magMin[1]
-        26: magMin[2]
-        27: magMax[0]
-        28: magMax[1]
-        29: magMax[2]
-        30: m_speed
-        31: m_speed.tripMileage
-        32: m_speed.totalMileage
-        33: m_speed.waterTemp
-        34: m_lampIntensity
-        35: m_wind.apparentAngle
-        36: m_wind.apparentSpeed
-        37: m_wind.displayInKnots
-        38: m_wind.displayInMpS
-        39: m_depth.anchorAlarm
-        40: m_depth.deepAlarm
-        41: m_depth.defective
-        42: m_depth.depthBelowTransductor
-        43: m_depth.metricUnits
-        44: m_depth.shallowAlarm
-        45: m_depth.unknown
-        46: Position
+        11: diagA
+        12: diagB
+        13: m_P
+        14: m_I
+        15: m_D
+        16: m_goalType
+        17: m_goal
+        18: m_lastError
+        19: m_errorSum
+        20: m_lastFilteredYaw
+        21: UI
+        22: yaw
+        23: pitch
+        24: roll
+        25: freq
+        26: magMin[0]
+        27: magMin[1]
+        28: magMin[2]
+        29: magMax[0]
+        30: magMax[1]
+        31: magMax[2]
+        32: m_speed
+        33: m_speed.tripMileage
+        34: m_speed.totalMileage
+        35: m_speed.waterTemp
+        36: m_lampIntensity
+        37: m_wind.apparentAngle
+        38: m_wind.apparentSpeed
+        39: m_wind.displayInKnots
+        40: m_wind.displayInMpS
+        41: m_depth.anchorAlarm
+        42: m_depth.deepAlarm
+        43: m_depth.defective
+        44: m_depth.depthBelowTransductor
+        45: m_depth.metricUnits
+        46: m_depth.shallowAlarm
+        47: m_depth.unknown
+        48: Position
      */
 
 interface WritableThread {
@@ -178,28 +180,31 @@ public class AutopilotService extends Service {
      * Update UI title according to the current state of the chat connection
      */
     protected synchronized void updateUserInterfaceTitle() {
-        Intent in = new Intent(AutopilotService.AUTOPILOT_INTENT);
-        in.putExtra("intentType", Constants.MESSAGE_DEVICE_NAME);
-        in.putExtra(Integer.toString(Constants.MESSAGE_DEVICE_NAME), mDeviceName);
-        LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(in);
-
-        in = new Intent(AutopilotService.AUTOPILOT_INTENT);
-        in.putExtra("intentType", Constants.MESSAGE_STATE_CHANGE);
-        in.putExtra(Integer.toString(Constants.MESSAGE_STATE_CHANGE), mState);
-        LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(in);
-
-        in = new Intent(AutopilotService.AUTOPILOT_INTENT);
-        if (mState == STATE_CONNECTED_BT || mState == STATE_CONNECTED_TCP) {
+        if (mOldState != mState) {
+            Intent in = new Intent(AutopilotService.AUTOPILOT_INTENT);
             in.putExtra("intentType", Constants.MESSAGE_DEVICE_NAME);
             in.putExtra(Integer.toString(Constants.MESSAGE_DEVICE_NAME), mDeviceName);
-        } else if (mState == STATE_CONNECTING_BT || mState == STATE_CONNECTING_TCP) {
-            in.putExtra("intentType", Constants.MESSAGE_TOAST);
-            in.putExtra(Integer.toString(Constants.MESSAGE_TOAST), "connecting to " + mDeviceName);
-        } else {
-            in.putExtra("intentType", Constants.MESSAGE_TOAST);
-            in.putExtra(Integer.toString(Constants.MESSAGE_TOAST), "disconnected");
+            LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(in);
+
+
+            in = new Intent(AutopilotService.AUTOPILOT_INTENT);
+            in.putExtra("intentType", Constants.MESSAGE_STATE_CHANGE);
+            in.putExtra(Integer.toString(Constants.MESSAGE_STATE_CHANGE), mState);
+            LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(in);
+
+            in = new Intent(AutopilotService.AUTOPILOT_INTENT);
+            if (mState == STATE_CONNECTED_BT || mState == STATE_CONNECTED_TCP) {
+                in.putExtra("intentType", Constants.MESSAGE_DEVICE_NAME);
+                in.putExtra(Integer.toString(Constants.MESSAGE_DEVICE_NAME), mDeviceName);
+            } else if (mState == STATE_CONNECTING_BT || mState == STATE_CONNECTING_TCP) {
+                in.putExtra("intentType", Constants.MESSAGE_TOAST);
+                in.putExtra(Integer.toString(Constants.MESSAGE_TOAST), "connecting to " + mDeviceName);
+            } else {
+                in.putExtra("intentType", Constants.MESSAGE_TOAST);
+                in.putExtra(Integer.toString(Constants.MESSAGE_TOAST), "disconnected");
+            }
+            LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(in);
         }
-        LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(in);
         mOldState = mState;
     }
 
@@ -208,13 +213,17 @@ public class AutopilotService extends Service {
         super.onCreate();
         sInstance = this;
         File dir = new File (Environment.getExternalStorageDirectory().getAbsolutePath() + "/Autopilot");
-        dir.mkdirs();
-        mLogFile = new File(dir, "autopilot_" + DateFormat.getDateTimeInstance().format(new Date()) + ".log");
-        try {
-            mLogFileStream = new FileOutputStream(mLogFile,true);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            mLogFileStream = null;
+        if (dir.mkdirs()) {
+            mLogFile = new File(dir, "autopilot_" + DateFormat.getDateTimeInstance().format(new Date()) + ".log".replace(":", "_").replace(" ", "__"));
+            try {
+                mLogFileStream = new FileOutputStream(mLogFile, true);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                mLogFileStream = null;
+            }
+        }
+        else {
+            System.out.println("Probably insufficient permissions to write file");
         }
     }
 
@@ -305,9 +314,6 @@ public class AutopilotService extends Service {
         mLastType = STATE_NONE;
         this.cancel();
         mLastType = STATE_NONE;
-
-        // Update UI title
-        updateUserInterfaceTitle();
     }
 
     /**

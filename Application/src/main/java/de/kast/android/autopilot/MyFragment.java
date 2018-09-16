@@ -11,12 +11,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.InputType;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,7 +26,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import static java.lang.Math.max;
 
 /**
  * Created by bernd on 30.06.17.
@@ -45,14 +53,14 @@ abstract class MyFragment extends Fragment {
     protected BluetoothAdapter mBluetoothAdapter = null;
     BroadcastReceiver mDataUpdateReceiver;
 
-    abstract BroadcastReceiver getNewDataUpdateReceiver();
-
     abstract void setup();
 
     abstract public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                                       @Nullable Bundle savedInstanceState);
 
     abstract public void onViewCreated(View view, @Nullable Bundle savedInstanceState);
+
+    abstract public boolean setData(String rawMessage, HashMap<String, Double> data, ArrayList<HashMap<String, Double>> history);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,8 +73,11 @@ abstract class MyFragment extends Fragment {
         if (mBluetoothAdapter == null) {
             FragmentActivity activity = getActivity();
             Toast.makeText(activity, "Bluetooth is not available", Toast.LENGTH_LONG).show();
-            activity.finish();
         }
+        getActivity().getActionBar().show();
+
+        int mode = getPreference("screen_orientation", ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        this.getActivity().setRequestedOrientation(mode);
     }
 
 
@@ -75,7 +86,7 @@ abstract class MyFragment extends Fragment {
         super.onStart();
         setup();
         if (mDataUpdateReceiver == null)
-            mDataUpdateReceiver = getNewDataUpdateReceiver();
+            mDataUpdateReceiver = new DataUpdateReceiverFragment(this);
         IntentFilter intentFilter = new IntentFilter(AutopilotService.AUTOPILOT_INTENT);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(mDataUpdateReceiver, intentFilter);
     }
@@ -96,7 +107,7 @@ abstract class MyFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (mDataUpdateReceiver == null)
-            mDataUpdateReceiver = getNewDataUpdateReceiver();
+            mDataUpdateReceiver = new DataUpdateReceiverFragment(this);
         IntentFilter intentFilter = new IntentFilter(AutopilotService.AUTOPILOT_INTENT);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(mDataUpdateReceiver, intentFilter);
     }
@@ -199,7 +210,7 @@ abstract class MyFragment extends Fragment {
         try {
             SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
             text = sharedPref.getString("last_tcp_server", text);
-        } catch (NullPointerException e) {
+        } catch (NullPointerException ignore) {
         }
         input.setText(text);
         builder.setView(input);
@@ -213,7 +224,7 @@ abstract class MyFragment extends Fragment {
                 try {
                     SharedPreferences sharedPref = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
                     sharedPref.edit().putString("last_tcp_server", text).apply();
-                } catch (NullPointerException e) {
+                } catch (NullPointerException ignore) {
                 }
 
                 System.out.println(text);
@@ -253,6 +264,9 @@ abstract class MyFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.buttons, menu);
+        if (mBluetoothAdapter == null) {
+            menu.findItem(R.id.secure_connect_scan).setEnabled(false);
+        }
     }
 
     @Override
@@ -274,25 +288,81 @@ abstract class MyFragment extends Fragment {
             case R.id.connect_tcp: {
                 AutopilotService.getInstance().stop();
                 connectDeviceTcp();
+                return true;
+            }
+            case R.id.rotate: {
+                String preference = "screen_orientation";
+                int mode = getPreference(preference, ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+                int new_mode = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                if (mode == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+                    new_mode = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                }
+                this.getActivity().setRequestedOrientation(new_mode);
+
+                setPreference(preference, new_mode);
+                return true;
+            }
+            case R.id.increase_font_size: {
+                String preference = "font_size";
+                int font_size = getPreference(preference, 32);
+                font_size += 1;
+                setPreference(preference, font_size);
+                updateFontSizes();
+                return true;
+            }
+            case R.id.decrease_font_size: {
+                String preference = "font_size";
+                int font_size = getPreference(preference, 32);
+                font_size -= 1;
+                font_size = max(0, font_size);
+                setPreference(preference, font_size);
+                updateFontSizes();
+                return true;
             }
         }
         return false;
     }
 
+    private void updateFontSizes() {
+        int font_size = getPreference("font_size", 22);
+        ViewGroup root_view = (ViewGroup) getView().getRootView();
+        updateFontSize(getContext(), root_view, font_size);
+    }
 
-    public String reducePrecision(String str, int prec) {
-        if (prec < 1) {
-            if (str.contains("."))
-                return str.substring(0, str.indexOf("."));
-            else
-                return str;
+    public static void updateFontSize(Context context, View v, int font_size){
+        try {
+            if (v instanceof ViewGroup) {
+                ViewGroup vg = (ViewGroup) v;
+                for (int i = 0; i < vg.getChildCount(); i++) {
+                    View child = vg.getChildAt(i);
+                    //you can recursively call this method
+                    updateFontSize(context, child, font_size);
+                }
+            } else if (v instanceof TextView) {
+                //do whatever you want ...
+                ((TextView) v).setTextSize(TypedValue.COMPLEX_UNIT_DIP, font_size);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
 
-        //untested
-        if (!str.contains("."))
-            str.concat(".");
-        while (str.length() - str.indexOf(".") < prec + 1)
-            str.concat("0");
-        return str.substring(0, str.indexOf(".") + prec + 1);
+    private void setPreference(String preference, int new_mode) {
+        try {
+            SharedPreferences sharedPref = getContext().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+            sharedPref.edit().putInt(preference, new_mode).apply();
+        } catch (NullPointerException ignore) {
+        }
+    }
+
+    private int getPreference(String preference, int default_value) {
+        int mode = default_value;
+        try {
+            SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+            mode = sharedPref.getInt(preference, mode);
+        } catch (NullPointerException ignore) {
+        }
+        return mode;
     }
 }
