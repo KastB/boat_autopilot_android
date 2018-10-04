@@ -81,7 +81,7 @@ abstract class MyFragment extends Fragment {
 
         String tcpServer = "";
         tcpServer = getPreference("last_tcp_server", tcpServer);
-        connectToTCPServer(tcpServer);
+        connectToTCPServer(tcpServer, true);
     }
 
 
@@ -235,11 +235,18 @@ abstract class MyFragment extends Fragment {
 
         builder.show();
     }
-
     private void connectToTCPServer(String serverAddress) {
-        String ip = serverAddress.substring(0, serverAddress.indexOf(":"));
-        int port = Integer.parseInt(serverAddress.substring(ip.length() + 1, serverAddress.length()));
-        AutopilotService.getInstance().connectTcp(ip, port);
+        connectToTCPServer(serverAddress, true);
+    }
+
+    private void connectToTCPServer(String serverAddress, boolean complient) {
+        try {
+            String ip = serverAddress.substring(0, serverAddress.indexOf(":"));
+            int port = Integer.parseInt(serverAddress.substring(ip.length() + 1, serverAddress.length()));
+            AutopilotService.getInstance().connectTcp(ip, port, complient);
+        }
+        catch (java.lang.StringIndexOutOfBoundsException ignored) {
+        }
     }
 
     /**

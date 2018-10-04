@@ -300,7 +300,14 @@ public class AutopilotService extends Service {
         updateUserInterfaceTitle();
     }
 
-    public synchronized void connectTcp(String ip, Integer port) {
+    public synchronized void connectTcp(String ip, Integer port, boolean complient) {
+        if (    complient &&
+                ip.equals(this.mLastIp) &&
+                this.mLastPort == port &&
+                this.mLastType == TCP) {
+            return;
+        }
+
         AutopilotService.this.cancel();
         this.mLastIp = ip;
         this.mLastPort = port;

@@ -49,8 +49,8 @@ public class MapFragment extends Fragment {
         } catch (NullPointerException e) {
         }
         String ip = text.substring(0, text.indexOf(":"));
-        mapWebView.loadUrl("http://" + ip + ":8080/guacamole-0.9.14/#/client/Vk5DAGMAZGVmYXVsdA==");
 
+        mapWebView.loadUrl("http://" + ip + ":8080/guacamole");
         // Enable Javascript
         WebSettings webSettings = mapWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
