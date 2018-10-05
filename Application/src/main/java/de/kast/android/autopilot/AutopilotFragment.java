@@ -188,9 +188,9 @@ public class AutopilotFragment extends MyFragment {
     public boolean setData(String rawMessage, HashMap<String, Double> data, ArrayList<HashMap<String, Double>> history) {
         this.mGoalView.setText(String.format("%.0f", data.get("m_goal")));
         this.mErrorView.setText(String.format("%.0f", data.get("m_lastError")));
-        this.mWindSpeedView.setText(String.format("%.1f", data.get("m_wind.apparentSpeed")));
+        this.mWindSpeedView.setText(String.format("%.1f", data.get("tws")));
         this.mWindDirectionView.setText(String.format("%.0f", data.get("m_wind.apparentAngle")));
-        this.mSpeedView.setText(String.format("%.1f", data.get("m_speed")));
+        this.mSpeedView.setText(String.format("%.1f", data.get("gps_vel")));
         this.mHeadingView.setText(String.format("%.0f", data.get("yaw")));
         this.mDepthView.setText(String.format("%.1f", data.get("m_depth.depthBelowTransductor")));
         this.mTempView.setText(String.format("%.1f", data.get("m_speed.waterTemp")));
