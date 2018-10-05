@@ -236,14 +236,14 @@ abstract class MyFragment extends Fragment {
         builder.show();
     }
     private void connectToTCPServer(String serverAddress) {
-        connectToTCPServer(serverAddress, true);
+        connectToTCPServer(serverAddress, false);
     }
 
-    private void connectToTCPServer(String serverAddress, boolean complient) {
+    private void connectToTCPServer(String serverAddress, boolean compliant) {
         try {
             String ip = serverAddress.substring(0, serverAddress.indexOf(":"));
             int port = Integer.parseInt(serverAddress.substring(ip.length() + 1, serverAddress.length()));
-            AutopilotService.getInstance().connectTcp(ip, port, complient);
+            AutopilotService.getInstance().connectTcp(ip, port, compliant);
         }
         catch (java.lang.StringIndexOutOfBoundsException ignored) {
         }

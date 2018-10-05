@@ -42,63 +42,63 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
-    /* By now there is a hard coded mapping between index of data incoming and the type of that data
-        a better solution would probably be to ask for the current configuration, get an configuration
-        list and work with that. The problem of this mechanism is, that the continously incoming
-        data could corrupt the requested information. => Stopping of continuous information is needed
-        beforehand.
-        Mapping by now:
-        Millis	m_currentPosition	m_pressedButtonDebug	m_bytesToSent	CurrentPosition	CurrentDirection	TargetPosition	MSStopped	startButton	stopButton	parkingButton	m_P	m_I	m_D	m_goalType	m_goal	m_lastError	m_errorSum	m_lastFilteredYaw	UI	yaw	pitch	roll	freq	magMin[0]	magMin[1]	magMin[2]	magMax[0]	magMax[1]	magMax[2]	m_speed	m_speed.tripMileage	m_speed.totalMileage	m_speed.waterTemp	m_lampIntensity	m_wind.apparentAngle	m_wind.apparentSpeed	m_wind.displayInKnots	m_wind.displayInMpS	m_depth.anchorAlarm	m_depth.deepAlarm	m_depth.defective	m_depth.depthBelowTransductor	m_depth.metricUnits	m_depth.shallowAlarm	m_depth.unknown	Position
-        0: Millis
-        1: m_currentPosition
-        2: m_pressedButtonDebug
-        3: m_bytesToSent
-        4: CurrentPosition
-        5: CurrentDirection
-        6: TargetPosition
-        7: MSStopped
-        8: startButton
-        9: stopButton
-        10: parkingButton
-        11: diagA
-        12: diagB
-        13: m_P
-        14: m_I
-        15: m_D
-        16: m_goalType
-        17: m_goal
-        18: m_lastError
-        19: m_errorSum
-        20: m_lastFilteredYaw
-        21: UI
-        22: yaw
-        23: pitch
-        24: roll
-        25: freq
-        26: magMin[0]
-        27: magMin[1]
-        28: magMin[2]
-        29: magMax[0]
-        30: magMax[1]
-        31: magMax[2]
-        32: m_speed
-        33: m_speed.tripMileage
-        34: m_speed.totalMileage
-        35: m_speed.waterTemp
-        36: m_lampIntensity
-        37: m_wind.apparentAngle
-        38: m_wind.apparentSpeed
-        39: m_wind.displayInKnots
-        40: m_wind.displayInMpS
-        41: m_depth.anchorAlarm
-        42: m_depth.deepAlarm
-        43: m_depth.defective
-        44: m_depth.depthBelowTransductor
-        45: m_depth.metricUnits
-        46: m_depth.shallowAlarm
-        47: m_depth.unknown
-        48: Position
-     */
+/* By now there is a hard coded mapping between index of data incoming and the type of that data
+    a better solution would probably be to ask for the current configuration, get an configuration
+    list and work with that. The problem of this mechanism is, that the continously incoming
+    data could corrupt the requested information. => Stopping of continuous information is needed
+    beforehand.
+    Mapping by now:
+    Millis	m_currentPosition	m_pressedButtonDebug	m_bytesToSent	CurrentPosition	CurrentDirection	TargetPosition	MSStopped	startButton	stopButton	parkingButton	m_P	m_I	m_D	m_goalType	m_goal	m_lastError	m_errorSum	m_lastFilteredYaw	UI	yaw	pitch	roll	freq	magMin[0]	magMin[1]	magMin[2]	magMax[0]	magMax[1]	magMax[2]	m_speed	m_speed.tripMileage	m_speed.totalMileage	m_speed.waterTemp	m_lampIntensity	m_wind.apparentAngle	m_wind.apparentSpeed	m_wind.displayInKnots	m_wind.displayInMpS	m_depth.anchorAlarm	m_depth.deepAlarm	m_depth.defective	m_depth.depthBelowTransductor	m_depth.metricUnits	m_depth.shallowAlarm	m_depth.unknown	Position
+    0: Millis
+    1: m_currentPosition
+    2: m_pressedButtonDebug
+    3: m_bytesToSent
+    4: CurrentPosition
+    5: CurrentDirection
+    6: TargetPosition
+    7: MSStopped
+    8: startButton
+    9: stopButton
+    10: parkingButton
+    11: diagA
+    12: diagB
+    13: m_P
+    14: m_I
+    15: m_D
+    16: m_goalType
+    17: m_goal
+    18: m_lastError
+    19: m_errorSum
+    20: m_lastFilteredYaw
+    21: UI
+    22: yaw
+    23: pitch
+    24: roll
+    25: freq
+    26: magMin[0]
+    27: magMin[1]
+    28: magMin[2]
+    29: magMax[0]
+    30: magMax[1]
+    31: magMax[2]
+    32: m_speed
+    33: m_speed.tripMileage
+    34: m_speed.totalMileage
+    35: m_speed.waterTemp
+    36: m_lampIntensity
+    37: m_wind.apparentAngle
+    38: m_wind.apparentSpeed
+    39: m_wind.displayInKnots
+    40: m_wind.displayInMpS
+    41: m_depth.anchorAlarm
+    42: m_depth.deepAlarm
+    43: m_depth.defective
+    44: m_depth.depthBelowTransductor
+    45: m_depth.metricUnits
+    46: m_depth.shallowAlarm
+    47: m_depth.unknown
+    48: Position
+ */
 
 interface WritableThread {
     void write(byte[] buffer);
@@ -116,7 +116,7 @@ interface WritableThread {
  */
 public class AutopilotService extends Service {
 
-    static String mHeader = "Millis,m_currentPosition,m_pressedButtonDebug,m_bytesToSent,CurrentPosition,CurrentDirection,TargetPosition,MSStopped,startButton,stopButton,parkingButton,diagA,diagB,m_P,m_I,m_D,m_goalType,m_goal,m_lastError,m_errorSum,m_lastFilteredYaw,UI,yaw,roll,pitch,freq,magMin[0],magMin[1],magMin[2],magMax[0],magMax[1],magMax[2],m_speed,m_speed.tripMileage,m_speed.totalMileage,m_speed.waterTemp,m_lampIntensity,m_wind.apparentAngle,m_wind.apparentSpeed,m_wind.displayInKnots,m_wind.displayInMpS,m_depth.anchorAlarm,m_depth.deepAlarm,m_depth.defective,m_depth.depthBelowTransductor,m_depth.metricUnits,m_depth.shallowAlarm,m_depth.unknown,Position";
+    static String mHeader = "Millis,m_currentPosition,m_pressedButtonDebug,m_bytesToSent,CurrentPosition,CurrentDirection,TargetPosition,MSStopped,startButton,stopButton,parkingButton,diagA,diagB,m_P,m_I,m_D,m_goalType,m_goal,m_lastError,m_errorSum,m_lastFilteredYaw,UI,yaw,roll,pitch,freq,magMin[0],magMin[1],magMin[2],magMax[0],magMax[1],magMax[2],m_speed,m_speed.tripMileage,m_speed.totalMileage,m_speed.waterTemp,m_lampIntensity,m_wind.apparentAngle,m_wind.apparentSpeed,m_wind.displayInKnots,m_wind.displayInMpS,m_depth.anchorAlarm,m_depth.deepAlarm,m_depth.defective,m_depth.depthBelowTransductor,m_depth.metricUnits,m_depth.shallowAlarm,m_depth.unknown,Position,tws,twd,gps_vel";
     String mParts[];
 
     public static final String AUTOPILOT_INTENT = "autopilot_intent";
@@ -594,6 +594,24 @@ public class AutopilotService extends Service {
         }
     }
 
+    protected class WatchdogTCP extends Thread {
+        WritableThread mHandle;
+        public WatchdogTCP(WritableThread handle) {
+            mHandle = handle;
+        }
+
+        public void run() {
+            while(!this.isInterrupted()) {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    return;
+                }
+                mHandle.write("watchdog".getBytes());
+            }
+        }
+    }
+
     /**
      * This thread runs while attempting to make an outgoing connection
      * with a device. It runs straight through; the connection either
@@ -644,6 +662,8 @@ public class AutopilotService extends Service {
                     continue;
                 }
                 updateUserInterfaceTitle();
+                WatchdogTCP watchdog = new WatchdogTCP(this);
+                watchdog.start();
 
                 while (mState == STATE_CONNECTED_TCP) {
                     try {
@@ -661,6 +681,7 @@ public class AutopilotService extends Service {
                         updateUserInterfaceTitle();
                     }
                 }
+                watchdog.interrupt();
             }
         }
 
