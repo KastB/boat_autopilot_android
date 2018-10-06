@@ -1,4 +1,4 @@
-package de.kast.android.autopilot;
+package de.kast.android.autopilot.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;

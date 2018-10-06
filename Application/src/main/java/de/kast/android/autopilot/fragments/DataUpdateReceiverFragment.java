@@ -1,4 +1,4 @@
-package de.kast.android.autopilot;
+package de.kast.android.autopilot.fragments;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,6 +8,10 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import de.kast.android.autopilot.service.AutopilotService;
+import de.kast.android.autopilot.Constants;
+import de.kast.android.autopilot.R;
 
 /**
  * Created by bernd on 11.07.17.

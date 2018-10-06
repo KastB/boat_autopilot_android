@@ -1,9 +1,11 @@
-package de.kast.android.autopilot;
+package de.kast.android.autopilot.fragments;
 
 import android.view.View;
 import android.widget.Button;
 
 import java.util.HashMap;
+
+import de.kast.android.autopilot.service.AutopilotService;
 
 public class MyButton {
     public int mId;

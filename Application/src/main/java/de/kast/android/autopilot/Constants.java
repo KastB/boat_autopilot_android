@@ -16,6 +16,8 @@
 
 package de.kast.android.autopilot;
 
+import de.kast.android.autopilot.service.AutopilotService;
+
 /**
  * Defines several constants used between {@link AutopilotService} and the UI.
  */

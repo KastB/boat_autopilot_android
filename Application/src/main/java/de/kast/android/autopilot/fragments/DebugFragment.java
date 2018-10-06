@@ -1,6 +1,7 @@
-package de.kast.android.autopilot;
+package de.kast.android.autopilot.fragments;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -15,6 +16,9 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import de.kast.android.autopilot.service.AutopilotService;
+import de.kast.android.autopilot.R;
 
 
 /**
@@ -58,7 +62,7 @@ public class DebugFragment extends MyFragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         // connect #2#
         mConversationView = (ListView) view.findViewById(R.id.in);
         mOutEditText = (EditText) view.findViewById(R.id.edit_text_out);
@@ -102,9 +106,8 @@ public class DebugFragment extends MyFragment {
     }
 
     @Override
-    public boolean setData(String rawMessage, HashMap<String, Double> data, ArrayList<HashMap<String, Double>> history) {
+    public void setData(String rawMessage, HashMap<String, Double> data, ArrayList<HashMap<String, Double>> history) {
         this.mConversationArrayAdapter.add(rawMessage);
-        return true;
     }
 
 }

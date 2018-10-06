@@ -1,4 +1,4 @@
-package de.kast.android.autopilot;
+package de.kast.android.autopilot.fragments;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -13,6 +13,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -32,6 +33,10 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import de.kast.android.autopilot.service.AutopilotService;
+import de.kast.android.autopilot.DeviceListActivity;
+import de.kast.android.autopilot.R;
+
 import static java.lang.Math.max;
 
 /**
@@ -41,7 +46,6 @@ import static java.lang.Math.max;
 abstract class MyFragment extends Fragment {
     // Intent request codes
     protected static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
-    protected static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
     protected static final int REQUEST_ENABLE_BT = 3;
     /**
      * Name of the connected device
@@ -58,9 +62,9 @@ abstract class MyFragment extends Fragment {
     abstract public View createView(LayoutInflater inflater, @Nullable ViewGroup container,
                                     @Nullable Bundle savedInstanceState);
 
-    abstract public void onViewCreated(View view, @Nullable Bundle savedInstanceState);
+    abstract public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState);
 
-    abstract public boolean setData(String rawMessage, HashMap<String, Double> data, ArrayList<HashMap<String, Double>> history);
+    abstract public void setData(String rawMessage, HashMap<String, Double> data, ArrayList<HashMap<String, Double>> history);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,7 +73,7 @@ abstract class MyFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = createView(inflater, container, savedInstanceState);
         view.setOnTouchListener(new TouchListener(this));
         updateLayout(view);
@@ -190,13 +194,7 @@ abstract class MyFragment extends Fragment {
             case REQUEST_CONNECT_DEVICE_SECURE:
                 // When DeviceListActivity returns with a device to connectBt
                 if (resultCode == Activity.RESULT_OK) {
-                    connectDeviceBtPopup(data, true);
-                }
-                break;
-            case REQUEST_CONNECT_DEVICE_INSECURE:
-                // When DeviceListActivity returns with a device to connectBt
-                if (resultCode == Activity.RESULT_OK) {
-                    connectDeviceBtPopup(data, false);
+                    connectDeviceBtPopup(data);
                 }
                 break;
             case REQUEST_ENABLE_BT:
@@ -264,9 +262,8 @@ abstract class MyFragment extends Fragment {
      * Establish connection with other device
      *
      * @param data   An {@link Intent} with {@link DeviceListActivity#EXTRA_DEVICE_ADDRESS} extra.
-     * @param secure Socket Security type - Secure (true) , Insecure (false)
      */
-    protected void connectDeviceBtPopup(Intent data, boolean secure) {
+    protected void connectDeviceBtPopup(Intent data) {
         // Get the device MAC address
         String address = data.getExtras()
                 .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
@@ -275,7 +272,7 @@ abstract class MyFragment extends Fragment {
         // Attempt to connectBt to the device
         if (AutopilotService.getInstance() == null)
             return;
-        AutopilotService.getInstance().connectBt(device, secure);
+        AutopilotService.getInstance().connectBt(device);
     }
 
     @Override

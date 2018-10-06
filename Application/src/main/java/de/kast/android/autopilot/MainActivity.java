@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 
+import de.kast.android.autopilot.service.AutopilotService;
 import de.kast.android.common.activities.SampleActivityBase;
 
 /**
@@ -74,8 +75,6 @@ public class MainActivity extends SampleActivityBase {
         if (AutopilotService.getInstance() == null) {
             startService(new Intent(this, AutopilotService.class));
         }
-        if (AutopilotService.getInstance() != null)
-            AutopilotService.getInstance().updateUserInterfaceTitle();
     }
 
     @Override

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package de.kast.android.autopilot;
+package de.kast.android.autopilot.fragments;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -32,6 +32,8 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import de.kast.android.autopilot.R;
 
 /**
  * This fragment controls Bluetooth to communicate with other devices.
@@ -54,12 +56,12 @@ public class GraphFragment extends MyFragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         mGraph = (GraphView) view.findViewById(R.id.graph);
     }
 
     @Override
-    public boolean setData(String rawMessage, HashMap<String, Double> data, ArrayList<HashMap<String, Double>> history) {
+    public void setData(String rawMessage, HashMap<String, Double> data, ArrayList<HashMap<String, Double>> history) {
         if (this.mSeriesValid) {
             double x = -1.0;
             for (int i = 0; i < this.mSeries.length; i++) {
@@ -74,10 +76,9 @@ public class GraphFragment extends MyFragment {
             this.mGraph.getViewport().setXAxisBoundsManual(true);
             this.mGraph.getViewport().setMinX(x - mTimeHorizon);
             this.mGraph.getViewport().setMaxX(x + 2.0);
-            return true;
         } else {
             if (history == null) {
-                return false;
+                return;
             }
             DataPoint[][] dataPoints = new DataPoint[this.mDataSets.length][history.size()];
             int counter = 0;
@@ -97,7 +98,6 @@ public class GraphFragment extends MyFragment {
                 }
             }
         }
-        return true;
     }
 
     /**

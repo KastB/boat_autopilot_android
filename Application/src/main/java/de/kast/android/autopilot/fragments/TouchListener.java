@@ -1,4 +1,4 @@
-package de.kast.android.autopilot;
+package de.kast.android.autopilot.fragments;
 
 import android.view.GestureDetector;
 import android.view.MotionEvent;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.kast.android.autopilot;
+package de.kast.android.autopilot.fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -28,6 +28,8 @@ import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import de.kast.android.autopilot.R;
 
 public class MapFragment extends Fragment {
 
