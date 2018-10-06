@@ -139,8 +139,8 @@ public class AutopilotService extends Service {
         super.onCreate();
         sInstance = this;
         File dir = new File (Environment.getExternalStorageDirectory().getAbsolutePath() + "/Autopilot");
-        if (dir.mkdirs()) {
-            mLogFile = new File(dir, "autopilot_" + DateFormat.getDateTimeInstance().format(new Date()) + ".log".replace(":", "_").replace(" ", "__"));
+        if (dir.isDirectory() || dir.mkdirs()) {
+            mLogFile = new File(dir, ("autopilot_" + DateFormat.getDateTimeInstance().format(new Date()) + ".log").replace(":", "_").replace(" ", "__"));
             try {
                 mLogFileStream = new FileOutputStream(mLogFile, true);
             } catch (FileNotFoundException e) {
