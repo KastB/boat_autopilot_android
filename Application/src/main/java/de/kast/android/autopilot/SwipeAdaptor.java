@@ -8,6 +8,7 @@ import de.kast.android.autopilot.fragments.GraphFragment;
 import de.kast.android.autopilot.fragments.MapFragment;
 import de.kast.android.autopilot.fragments.TextAndButtonsFragment;
 import de.kast.android.autopilot.fragments.TnBFullFragment;
+import de.kast.android.autopilot.fragments.TnBLightFragment;
 
 /**
  * Created by bernd on 30.06.17.
@@ -24,8 +25,10 @@ public class SwipeAdaptor extends FragmentStatePagerAdapter {
         if (position == 0)
             frag = new TnBFullFragment();
         else if (position == 1)
-            frag = new GraphFragment();
+            frag = new TnBLightFragment();
         else if (position == 2)
+            frag = new GraphFragment();
+        else if (position == 3)
             frag = new DebugFragment();
         else
             frag = new MapFragment();
@@ -34,6 +37,6 @@ public class SwipeAdaptor extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 4;
+        return 5;
     }
 }

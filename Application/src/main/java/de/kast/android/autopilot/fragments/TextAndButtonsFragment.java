@@ -29,7 +29,7 @@ import java.util.HashMap;
 
 import de.kast.android.autopilot.R;
 
-public class TextAndButtonsFragment extends MyFragment {
+public abstract class TextAndButtonsFragment extends MyFragment {
 
     protected static final String TAG = "TextAndButtonsFragment";
 
@@ -105,12 +105,6 @@ public class TextAndButtonsFragment extends MyFragment {
             mBts[i] = bts.get(button_ids[i]);
         }
 
-    }
-
-    @Override
-    public View createView(LayoutInflater inflater, @Nullable ViewGroup container,
-                           @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_overview, container, false);
     }
 
     @Override

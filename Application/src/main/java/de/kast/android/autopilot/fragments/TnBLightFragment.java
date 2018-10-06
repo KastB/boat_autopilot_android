@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 
 import de.kast.android.autopilot.R;
 
-public class TnBFullFragment extends TextAndButtonsFragment {
+public class TnBLightFragment extends TextAndButtonsFragment {
     final static int[] mButtonIds = {
         R.id.button_unlock,
         R.id.button_init,
@@ -30,22 +30,16 @@ public class TnBFullFragment extends TextAndButtonsFragment {
         R.id.gps_speed,
         R.id.yaw,
         R.id.depth,
-        R.id.water_temp,
-        R.id.rudder_position,
-        R.id.integral,
-        R.id.roll,
-        R.id.pitch,
-        R.id.trip_milage,
-        R.id.total_milage
+        R.id.rudder_position
     };
-    public TnBFullFragment() {
+    public TnBLightFragment() {
         super(mTextViewIds, mButtonIds);
     }
 
     @Override
     public View createView(LayoutInflater inflater, @Nullable ViewGroup container,
                            @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_tnb_full, container, false);
+        return inflater.inflate(R.layout.fragment_tnb_light, container, false);
     }
 
 }
