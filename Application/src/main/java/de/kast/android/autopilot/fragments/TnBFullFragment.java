@@ -48,4 +48,9 @@ public class TnBFullFragment extends TextAndButtonsFragment {
         return inflater.inflate(R.layout.fragment_tnb_full, container, false);
     }
 
+    @Override
+    public String getFragmentName() {
+        return "TnBFullFragment";
+    }
+
 }

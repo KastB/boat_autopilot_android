@@ -42,4 +42,8 @@ public class TnBLightFragment extends TextAndButtonsFragment {
         return inflater.inflate(R.layout.fragment_tnb_light, container, false);
     }
 
+    @Override
+    public String getFragmentName() {
+        return "TnBLightFragment";
+    }
 }

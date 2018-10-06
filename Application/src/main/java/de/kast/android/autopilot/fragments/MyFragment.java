@@ -58,13 +58,12 @@ abstract class MyFragment extends Fragment {
     BroadcastReceiver mDataUpdateReceiver;
 
     abstract void setup();
-
     abstract public View createView(LayoutInflater inflater, @Nullable ViewGroup container,
                                     @Nullable Bundle savedInstanceState);
 
     abstract public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState);
-
     abstract public void setData(String rawMessage, HashMap<String, Double> data, ArrayList<HashMap<String, Double>> history);
+    abstract public String getFragmentName();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -287,9 +286,7 @@ abstract class MyFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.secure_connect_scan: {
-
                 AutopilotService.getInstance().stop();
-
                 // Launch the DeviceListActivity to see devices and do scan
                 Intent serverIntent = new Intent(getActivity(), DeviceListActivity.class);
                 startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
@@ -312,66 +309,61 @@ abstract class MyFragment extends Fragment {
                 if (mode == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
                     new_mode = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
                 }
-                this.getActivity().setRequestedOrientation(new_mode);
-
                 setPreference(preference, new_mode);
+                updateLayout(getView());
                 return true;
             }
             case R.id.increase_font_size: {
-                String preference = "font_size_text";
+                String preference = "font_size_text" + getFragmentName() + getPreference("screen_orientation", ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 int font_size = getPreference(preference, 22);
                 font_size += 1;
                 setPreference(preference, font_size);
-                updateFontSizes();
+                updateLayout(getView());
                 return true;
             }
             case R.id.decrease_font_size: {
-                String preference = "font_size_text";
+                String preference = "font_size_text" + getFragmentName() + getPreference("screen_orientation", ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 int font_size = getPreference(preference, 22);
                 font_size -= 1;
                 font_size = max(0, font_size);
                 setPreference(preference, font_size);
-                updateFontSizes();
+                updateLayout(getView());
                 return true;
             }
             case R.id.increase_label_size: {
-                String preference = "font_size_label";
+                String preference = "font_size_label" + getFragmentName() + getPreference("screen_orientation", ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 int font_size = getPreference(preference, 11);
                 font_size += 1;
                 setPreference(preference, font_size);
-                updateFontSizes();
+                updateLayout(getView());
                 return true;
             }
             case R.id.decrease_label_size: {
-                String preference = "font_size_label";
+                String preference = "font_size_label" + getFragmentName() + getPreference("screen_orientation", ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 int font_size = getPreference(preference, 11);
                 font_size -= 1;
                 font_size = max(0, font_size);
                 setPreference(preference, font_size);
-                updateFontSizes();
+                updateLayout(getView());
                 return true;
             }
         }
         return false;
     }
 
-    private void updateFontSizes() {
-        updateFontSizes (getView());
-    }
     private void updateFontSizes(View view) {
-        int font_size_text = getPreference("font_size_text", 22);
-        int font_size_label = getPreference("font_size_label", 11);
-        ViewGroup root_view = (ViewGroup) view.getRootView();
-        updateFontSize(getContext(), root_view, font_size_text, font_size_label);
+        int font_size_text = getPreference("font_size_text" + getFragmentName() + getPreference("screen_orientation", ActivityInfo.SCREEN_ORIENTATION_PORTRAIT), 22);
+        int font_size_label = getPreference("font_size_label" + getFragmentName() + getPreference("screen_orientation", ActivityInfo.SCREEN_ORIENTATION_PORTRAIT), 11);
+        updateFontSize(view, font_size_text, font_size_label);
     }
 
-    public static void updateFontSize(Context context, View v, int font_size_text, int font_size_label){
+    public static void updateFontSize(View v, int font_size_text, int font_size_label){
         try {
             if (v instanceof ViewGroup) {
                 ViewGroup vg = (ViewGroup) v;
                 for (int i = 0; i < vg.getChildCount(); i++) {
                     View child = vg.getChildAt(i);
-                    updateFontSize(context, child, font_size_text, font_size_label);
+                    updateFontSize(child, font_size_text, font_size_label);
                 }
             } else if (v instanceof TextView) {
                 if (v.getLabelFor() == -1) {
@@ -420,5 +412,16 @@ abstract class MyFragment extends Fragment {
         } catch (NullPointerException ignore) {
         }
         return mode;
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            try {
+                updateLayout(getView());
+            }
+            catch(IllegalStateException ignore) {}
+        }
     }
 }

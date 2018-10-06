@@ -162,4 +162,9 @@ public class GraphFragment extends MyFragment {
             return super.onTouch(v, event);
         }
     }
+
+    @Override
+    public String getFragmentName() {
+        return "GraphFragment";
+    }
 }

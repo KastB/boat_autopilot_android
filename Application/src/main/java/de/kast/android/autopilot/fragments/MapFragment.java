@@ -32,10 +32,6 @@ import android.webkit.WebViewClient;
 import de.kast.android.autopilot.R;
 
 public class MapFragment extends Fragment {
-
-
-    protected static final String TAG = "MapFragment";
-
     // Layout Views
     WebView mapWebView;
 
@@ -66,4 +62,5 @@ public class MapFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mapWebView = getView().findViewById(R.id.webview_map);
     }
+
 }

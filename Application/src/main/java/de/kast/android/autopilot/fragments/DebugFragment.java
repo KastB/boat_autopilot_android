@@ -110,4 +110,9 @@ public class DebugFragment extends MyFragment {
         this.mConversationArrayAdapter.add(rawMessage);
     }
 
+    @Override
+    public String getFragmentName() {
+        return "DebugFragment";
+    }
+
 }

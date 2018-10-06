@@ -30,9 +30,6 @@ import java.util.HashMap;
 import de.kast.android.autopilot.R;
 
 public abstract class TextAndButtonsFragment extends MyFragment {
-
-    protected static final String TAG = "TextAndButtonsFragment";
-
     // Layout Views
     protected MyTextView[] mTfs;
     protected MyButton[] mBts;
