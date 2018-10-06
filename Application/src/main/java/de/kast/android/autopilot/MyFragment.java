@@ -65,7 +65,6 @@ abstract class MyFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        updateLayout();
         setupConnections();
     }
 
@@ -73,10 +72,11 @@ abstract class MyFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = createView(inflater, container, savedInstanceState);
         view.setOnTouchListener(new TouchListener(this));
+        updateLayout(view);
         return view;
     }
 
-    private void updateLayout() {
+    private void updateLayout(View view) {
         setHasOptionsMenu(true);
 
         int fullscreen_mode = getPreference("fullscreen_mode", 0);
@@ -90,6 +90,8 @@ abstract class MyFragment extends Fragment {
 
         int mode = getPreference("screen_orientation", ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         this.getActivity().setRequestedOrientation(mode);
+
+        updateFontSizes(view);
     }
 
     private void setupConnections() {
@@ -146,7 +148,7 @@ abstract class MyFragment extends Fragment {
             fullscreen_mode = 0;
         }
         setPreference("fullscreen_mode", fullscreen_mode);
-        updateLayout();
+        updateLayout(getView());
     }
 
 
@@ -364,8 +366,11 @@ abstract class MyFragment extends Fragment {
     }
 
     private void updateFontSizes() {
+        updateFontSizes (getView());
+    }
+    private void updateFontSizes(View view) {
         int font_size = getPreference("font_size", 22);
-        ViewGroup root_view = (ViewGroup) getView().getRootView();
+        ViewGroup root_view = (ViewGroup) view.getRootView();
         updateFontSize(getContext(), root_view, font_size);
     }
 
