@@ -151,30 +151,6 @@ abstract class MyFragment extends Fragment {
         updateLayout(getView());
     }
 
-
-    /**
-     * Sends a message.
-     *
-     * @param message A string of text to send.
-     */
-    protected void sendMessage(String message) {
-        // Check that we're actually connected before trying anything
-        if (AutopilotService.getInstance() == null)
-            return;
-        if (AutopilotService.getInstance().getState() != AutopilotService.STATE_CONNECTED_BT &&
-                AutopilotService.getInstance().getState() != AutopilotService.STATE_CONNECTED_TCP) {
-            Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Check that there's actually something to send
-        if (message.length() > 0) {
-            // Get the message bytes and tell the AutopilotService to write
-            byte[] send = message.getBytes();
-            AutopilotService.getInstance().write(send);
-        }
-    }
-
     /**
      * Updates the status on the action bar.
      *

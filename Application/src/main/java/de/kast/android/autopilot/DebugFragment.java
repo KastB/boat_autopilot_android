@@ -91,13 +91,8 @@ public class DebugFragment extends MyFragment {
         mOutStringBuffer = new StringBuffer("");
     }
 
-    /**
-     * Sends a message.
-     *
-     * @param message A string of text to send.
-     */
     protected void sendMessage(String message) {
-        super.sendMessage(message);
+        AutopilotService.sendMessage(message);
 
         if (message.length() > 0) {
             // Reset out string buffer to zero and clear the edit text field

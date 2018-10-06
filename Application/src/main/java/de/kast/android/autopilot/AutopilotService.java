@@ -26,6 +26,7 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -731,6 +732,23 @@ public class AutopilotService extends Service {
                 mState = STATE_NONE;
                 updateUserInterfaceTitle();
             }
+        }
+    }
+
+    static void sendMessage(String message) {
+        // Check that we're actually connected before trying anything
+        if (AutopilotService.getInstance() == null)
+            return;
+        if (AutopilotService.getInstance().getState() != AutopilotService.STATE_CONNECTED_BT &&
+                AutopilotService.getInstance().getState() != AutopilotService.STATE_CONNECTED_TCP) {
+            return;
+        }
+
+        // Check that there's actually something to send
+        if (message.length() > 0) {
+            // Get the message bytes and tell the AutopilotService to write
+            byte[] send = message.getBytes();
+            AutopilotService.getInstance().write(send);
         }
     }
 }
