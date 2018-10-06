@@ -16,9 +16,13 @@ public class MyBuffer {
 
     MyBuffer(int size) {
         mMaxSize = size;
+        clear();
+        mBuffer = new HashMap[mMaxSize];
+    }
+
+    public void clear() {
         mMaxIndex = -1;
         mIndex = -1;
-        mBuffer = new HashMap[mMaxSize];
     }
 
     public void add(HashMap<String, Double> s) {

@@ -372,6 +372,13 @@ public class AutopilotService extends Service {
             }
             ArrayList<HashMap<String, Double>> history = mBuf.addGetAll(processedMsg);
 
+            //corrupt order => clear history
+            if (history.size() > 1) {
+                if (history.get(0).get("Millis") < history.get(1).get("Millis")) {
+                    mBuf.clear();
+                    history = mBuf.addGetAll(processedMsg);
+                }
+            }
             Intent in = new Intent(AutopilotService.AUTOPILOT_INTENT);
             in.putExtra("intentType", Constants.MESSAGE_READ_RAW);
             in.putExtra(Integer.toString(Constants.MESSAGE_READ_RAW),       rawMessage);

@@ -92,6 +92,7 @@ public class GraphFragment extends MyFragment {
                 try {
                     this.mSeries[z].resetData(dataPoints[z]);
                 } catch (java.lang.IllegalArgumentException e) {
+                    this.mSeries[z].resetData(new DataPoint[0]);
                     this.mSeriesValid = false;
                 }
             }
@@ -133,17 +134,11 @@ public class GraphFragment extends MyFragment {
         mGraph.getSecondScale().setMinY(-20);
         mGraph.getSecondScale().setMaxY(20);
         mGraph.getGridLabelRenderer().setHorizontalLabelsAngle(90);
-
         mGraph.getGridLabelRenderer().setPadding(64);
-
         mGraph.getViewport().setScalable(true);
 
         mSeriesValid = false;
-
-
         mGraph.setOnTouchListener(new GraphTouchListener(this));
-
-
     }
 
     private class GraphTouchListener extends TouchListener {

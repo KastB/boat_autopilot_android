@@ -13,7 +13,6 @@ class TouchListener implements View.OnTouchListener {
         mGestureDetector = new GestureDetector(fragment.getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onDoubleTap(MotionEvent e) {
-                System.out.println("doubletap");
                 mFragment.doubleClicked();
                 return super.onDoubleTap(e);
             }
