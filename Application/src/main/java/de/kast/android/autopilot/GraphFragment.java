@@ -16,6 +16,7 @@
 
 package de.kast.android.autopilot;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -47,8 +48,8 @@ public class GraphFragment extends MyFragment {
     boolean mSeriesValid;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View createView(LayoutInflater inflater, @Nullable ViewGroup container,
+                           @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_graph, container, false);
     }
 
@@ -140,25 +141,30 @@ public class GraphFragment extends MyFragment {
         mSeriesValid = false;
 
 
-        mGraph.setOnTouchListener(new TouchListener(this));
+        mGraph.setOnTouchListener(new GraphTouchListener(this));
+
+
     }
 
-    private class TouchListener implements View.OnTouchListener {
-        private final GraphFragment graphFragment;
+    private class GraphTouchListener extends TouchListener {
+        private final GraphFragment mGraphFragment;
 
-        TouchListener(GraphFragment gf) {
-            this.graphFragment = gf;
+        GraphTouchListener(GraphFragment gf) {
+            super(gf);
+            mGraphFragment = gf;
+
         }
+
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                if (this.graphFragment.mGraph.getLegendRenderer().isVisible()) {
-                    this.graphFragment.mGraph.getLegendRenderer().setVisible(false);
+                if (mGraphFragment.mGraph.getLegendRenderer().isVisible()) {
+                    mGraphFragment.mGraph.getLegendRenderer().setVisible(false);
                 } else {
-                    this.graphFragment.mGraph.getLegendRenderer().setVisible(true);
+                    mGraphFragment.mGraph.getLegendRenderer().setVisible(true);
                 }
             }
-            return false;
+            return super.onTouch(v, event);
         }
     }
 }

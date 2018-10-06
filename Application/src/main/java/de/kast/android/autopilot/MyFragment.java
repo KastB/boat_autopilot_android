@@ -55,8 +55,8 @@ abstract class MyFragment extends Fragment {
 
     abstract void setup();
 
-    abstract public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                                      @Nullable Bundle savedInstanceState);
+    abstract public View createView(LayoutInflater inflater, @Nullable ViewGroup container,
+                                    @Nullable Bundle savedInstanceState);
 
     abstract public void onViewCreated(View view, @Nullable Bundle savedInstanceState);
 
@@ -65,7 +65,34 @@ abstract class MyFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        updateLayout();
+        setupConnections();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = createView(inflater, container, savedInstanceState);
+        view.setOnTouchListener(new TouchListener(this));
+        return view;
+    }
+
+    private void updateLayout() {
         setHasOptionsMenu(true);
+
+        int fullscreen_mode = getPreference("fullscreen_mode", 0);
+        if (fullscreen_mode == 1) {
+            getActivity().getActionBar().hide();
+        }
+        else
+        {
+            getActivity().getActionBar().show();
+        }
+
+        int mode = getPreference("screen_orientation", ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        this.getActivity().setRequestedOrientation(mode);
+    }
+
+    private void setupConnections() {
         // Get local Bluetooth adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -74,11 +101,6 @@ abstract class MyFragment extends Fragment {
             FragmentActivity activity = getActivity();
             Toast.makeText(activity, "Bluetooth is not available", Toast.LENGTH_LONG).show();
         }
-        getActivity().getActionBar().show();
-
-        int mode = getPreference("screen_orientation", ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        this.getActivity().setRequestedOrientation(mode);
-
         String tcpServer = "";
         tcpServer = getPreference("last_tcp_server", tcpServer);
         connectToTCPServer(tcpServer, true);
@@ -102,8 +124,7 @@ abstract class MyFragment extends Fragment {
             if (mDataUpdateReceiver != null) {
                 LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mDataUpdateReceiver);
             }
-        } catch (IllegalArgumentException e) {
-
+        } catch (IllegalArgumentException ignored) {
         }
     }
 
@@ -114,6 +135,18 @@ abstract class MyFragment extends Fragment {
             mDataUpdateReceiver = new DataUpdateReceiverFragment(this);
         IntentFilter intentFilter = new IntentFilter(AutopilotService.AUTOPILOT_INTENT);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(mDataUpdateReceiver, intentFilter);
+    }
+
+    public void doubleClicked() {
+        int fullscreen_mode = getPreference("fullscreen_mode", 0);
+        if (fullscreen_mode == 0) {
+            fullscreen_mode = 1;
+        }
+        else {
+            fullscreen_mode = 0;
+        }
+        setPreference("fullscreen_mode", fullscreen_mode);
+        updateLayout();
     }
 
 
@@ -179,13 +212,13 @@ abstract class MyFragment extends Fragment {
             case REQUEST_CONNECT_DEVICE_SECURE:
                 // When DeviceListActivity returns with a device to connectBt
                 if (resultCode == Activity.RESULT_OK) {
-                    connectDeviceBt(data, true);
+                    connectDeviceBtPopup(data, true);
                 }
                 break;
             case REQUEST_CONNECT_DEVICE_INSECURE:
                 // When DeviceListActivity returns with a device to connectBt
                 if (resultCode == Activity.RESULT_OK) {
-                    connectDeviceBt(data, false);
+                    connectDeviceBtPopup(data, false);
                 }
                 break;
             case REQUEST_ENABLE_BT:
@@ -202,7 +235,7 @@ abstract class MyFragment extends Fragment {
         }
     }
 
-    protected void connectDeviceTcp() {
+    protected void connectDeviceTcpPopup() {
         if (AutopilotService.getInstance() == null)
             return;
 
@@ -255,7 +288,7 @@ abstract class MyFragment extends Fragment {
      * @param data   An {@link Intent} with {@link DeviceListActivity#EXTRA_DEVICE_ADDRESS} extra.
      * @param secure Socket Security type - Secure (true) , Insecure (false)
      */
-    protected void connectDeviceBt(Intent data, boolean secure) {
+    protected void connectDeviceBtPopup(Intent data, boolean secure) {
         // Get the device MAC address
         String address = data.getExtras()
                 .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
@@ -293,7 +326,7 @@ abstract class MyFragment extends Fragment {
             }
             case R.id.connect_tcp: {
                 AutopilotService.getInstance().stop();
-                connectDeviceTcp();
+                connectDeviceTcpPopup();
                 return true;
             }
             case R.id.rotate: {

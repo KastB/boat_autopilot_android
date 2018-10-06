@@ -67,8 +67,8 @@ public class AutopilotFragment extends MyFragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View createView(LayoutInflater inflater, @Nullable ViewGroup container,
+                           @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_overview, container, false);
     }
 

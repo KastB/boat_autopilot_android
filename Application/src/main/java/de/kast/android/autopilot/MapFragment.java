@@ -55,7 +55,6 @@ public class MapFragment extends Fragment {
         WebSettings webSettings = mapWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
 
-        getActivity().getActionBar().hide();
         // Force links and redirects to open in the WebView instead of in a browser
         mapWebView.setWebViewClient(new WebViewClient());
         return view;
