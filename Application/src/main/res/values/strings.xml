@@ -70,7 +70,10 @@
     <string name="rotate">Rotieren</string>
     <string name="increase_font_size">+</string>
     <string name="decrease_font_size">-</string>
+    <string name="decrease_label_size">--</string>
+    <string name="increase_label_size">++</string>
 
     <string name="preference_file_key">de.kast.autopilot</string>
+
 
 </resources>

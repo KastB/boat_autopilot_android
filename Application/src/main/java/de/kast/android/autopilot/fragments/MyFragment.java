@@ -318,16 +318,33 @@ abstract class MyFragment extends Fragment {
                 return true;
             }
             case R.id.increase_font_size: {
-                String preference = "font_size";
-                int font_size = getPreference(preference, 32);
+                String preference = "font_size_text";
+                int font_size = getPreference(preference, 22);
                 font_size += 1;
                 setPreference(preference, font_size);
                 updateFontSizes();
                 return true;
             }
             case R.id.decrease_font_size: {
-                String preference = "font_size";
-                int font_size = getPreference(preference, 32);
+                String preference = "font_size_text";
+                int font_size = getPreference(preference, 22);
+                font_size -= 1;
+                font_size = max(0, font_size);
+                setPreference(preference, font_size);
+                updateFontSizes();
+                return true;
+            }
+            case R.id.increase_label_size: {
+                String preference = "font_size_label";
+                int font_size = getPreference(preference, 11);
+                font_size += 1;
+                setPreference(preference, font_size);
+                updateFontSizes();
+                return true;
+            }
+            case R.id.decrease_label_size: {
+                String preference = "font_size_label";
+                int font_size = getPreference(preference, 11);
                 font_size -= 1;
                 font_size = max(0, font_size);
                 setPreference(preference, font_size);
@@ -342,23 +359,27 @@ abstract class MyFragment extends Fragment {
         updateFontSizes (getView());
     }
     private void updateFontSizes(View view) {
-        int font_size = getPreference("font_size", 22);
+        int font_size_text = getPreference("font_size_text", 22);
+        int font_size_label = getPreference("font_size_label", 11);
         ViewGroup root_view = (ViewGroup) view.getRootView();
-        updateFontSize(getContext(), root_view, font_size);
+        updateFontSize(getContext(), root_view, font_size_text, font_size_label);
     }
 
-    public static void updateFontSize(Context context, View v, int font_size){
+    public static void updateFontSize(Context context, View v, int font_size_text, int font_size_label){
         try {
             if (v instanceof ViewGroup) {
                 ViewGroup vg = (ViewGroup) v;
                 for (int i = 0; i < vg.getChildCount(); i++) {
                     View child = vg.getChildAt(i);
-                    //you can recursively call this method
-                    updateFontSize(context, child, font_size);
+                    updateFontSize(context, child, font_size_text, font_size_label);
                 }
             } else if (v instanceof TextView) {
-                //do whatever you want ...
-                ((TextView) v).setTextSize(TypedValue.COMPLEX_UNIT_DIP, font_size);
+                if (v.getLabelFor() == -1) {
+                    ((TextView) v).setTextSize(TypedValue.COMPLEX_UNIT_DIP, font_size_text);
+                }
+                else {
+                    ((TextView) v).setTextSize(TypedValue.COMPLEX_UNIT_DIP, font_size_label);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
