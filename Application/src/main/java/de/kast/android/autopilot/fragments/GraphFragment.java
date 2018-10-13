@@ -62,41 +62,46 @@ public class GraphFragment extends MyFragment {
 
     @Override
     public void setData(String rawMessage, HashMap<String, Double> data, ArrayList<HashMap<String, Double>> history) {
-        if (this.mSeriesValid) {
-            double x = -1.0;
-            for (int i = 0; i < this.mSeries.length; i++) {
-                DataPoint p = new DataPoint(data.get("Millis") / 1000.0f, data.get(this.mDataSets[i].mIndex));
-                x = p.getX();
-                try {
-                    this.mSeries[i].appendData(p, true, mMaxDataPoints);
-                } catch (java.lang.IllegalArgumentException e) {
-                    this.mSeriesValid = false;
+        if (isVisible()) {
+            if (this.mSeriesValid) {
+                double x = -1.0;
+                for (int i = 0; i < this.mSeries.length; i++) {
+                    DataPoint p = new DataPoint(data.get("Millis") / 1000.0f, data.get(this.mDataSets[i].mIndex));
+                    x = p.getX();
+                    try {
+                        this.mSeries[i].appendData(p, true, mMaxDataPoints);
+                    } catch (java.lang.IllegalArgumentException e) {
+                        this.mSeriesValid = false;
+                    }
                 }
-            }
-            this.mGraph.getViewport().setXAxisBoundsManual(true);
-            this.mGraph.getViewport().setMinX(x - mTimeHorizon);
-            this.mGraph.getViewport().setMaxX(x + 2.0);
-        } else {
-            if (history == null) {
-                return;
-            }
-            DataPoint[][] dataPoints = new DataPoint[this.mDataSets.length][history.size()];
-            int counter = 0;
-            for (HashMap<String, Double> h : history) {
+                this.mGraph.getViewport().setXAxisBoundsManual(true);
+                this.mGraph.getViewport().setMinX(x - mTimeHorizon);
+                this.mGraph.getViewport().setMaxX(x + 2.0);
+            } else {
+                if (history == null) {
+                    return;
+                }
+                DataPoint[][] dataPoints = new DataPoint[this.mDataSets.length][history.size()];
+                int counter = 0;
+                for (HashMap<String, Double> h : history) {
+                    for (int z = 0; z < this.mDataSets.length; z++) {
+                        dataPoints[z][counter] = new DataPoint(h.get("Millis") / 1000.0f, h.get(this.mDataSets[z].mIndex));
+                    }
+                    counter++;
+                }
+                this.mSeriesValid = true;
                 for (int z = 0; z < this.mDataSets.length; z++) {
-                    dataPoints[z][counter] = new DataPoint(h.get("Millis") / 1000.0f, h.get(this.mDataSets[z].mIndex));
-                }
-                counter++;
-            }
-            this.mSeriesValid = true;
-            for (int z = 0; z < this.mDataSets.length; z++) {
-                try {
-                    this.mSeries[z].resetData(dataPoints[z]);
-                } catch (java.lang.IllegalArgumentException e) {
-                    this.mSeries[z].resetData(new DataPoint[0]);
-                    this.mSeriesValid = false;
+                    try {
+                        this.mSeries[z].resetData(dataPoints[z]);
+                    } catch (java.lang.IllegalArgumentException e) {
+                        this.mSeries[z].resetData(new DataPoint[0]);
+                        this.mSeriesValid = false;
+                    }
                 }
             }
+        }
+        else {
+            mSeriesValid = false;
         }
     }
 

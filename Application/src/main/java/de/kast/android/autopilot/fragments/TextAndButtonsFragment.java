@@ -123,12 +123,14 @@ public abstract class TextAndButtonsFragment extends MyFragment {
 
     @Override
     public void setData(String rawMessage, HashMap<String, Double> data, ArrayList<HashMap<String, Double>> history) {
-        for (MyTextView t: mTfs) {
-            t.setText(data);
-        }
+        if (isVisible()) {
+            for (MyTextView t : mTfs) {
+                t.setText(data);
+            }
 
-        for (MyButton t: mBts) {
-            t.updateEnabled(data);
+            for (MyButton t : mBts) {
+                t.updateEnabled(data);
+            }
         }
     }
 }

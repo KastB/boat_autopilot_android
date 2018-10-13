@@ -50,6 +50,8 @@
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/select_device"
             android:theme="@android:style/Theme.Holo.Dialog"/>
+        <activity android:name="de.kast.android.common.activities.SampleActivityBase" />
+
         <service android:name=".service.AutopilotService" android:label="Autopilot Bluetooth Service" android:exported="false"/>
 
         <receiver android:name=".fragments.DataUpdateReceiverFragment">
