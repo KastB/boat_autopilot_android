@@ -58,11 +58,9 @@ public class MainActivity extends SampleActivityBase {
             startService(new Intent(this, AutopilotService.class));
         }
 
-        if (savedInstanceState == null) {
-            mViewPager = (ViewPager) findViewById(R.id.view_pager);
-            SwipeAdaptor swipeAdaptor = new SwipeAdaptor(getSupportFragmentManager());
-            mViewPager.setAdapter(swipeAdaptor);
-        }
+        mViewPager = (ViewPager) findViewById(R.id.view_pager);
+        SwipeAdaptor swipeAdaptor = new SwipeAdaptor(getSupportFragmentManager());
+        mViewPager.setAdapter(swipeAdaptor);
     }
 
     @Override
