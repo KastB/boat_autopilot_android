@@ -83,7 +83,8 @@ public class GraphFragment extends MyFragment {
                 }
                 DataPoint[][] dataPoints = new DataPoint[this.mDataSets.length][history.size()];
                 int counter = 0;
-                for (HashMap<String, Double> h : history) {
+                for (int i = history.size(); i > 0; i--) {
+                    HashMap<String, Double> h = history.get(i - 1);
                     for (int z = 0; z < this.mDataSets.length; z++) {
                         dataPoints[z][counter] = new DataPoint(h.get("Millis") / 1000.0f, h.get(this.mDataSets[z].mIndex));
                     }
@@ -95,7 +96,6 @@ public class GraphFragment extends MyFragment {
                         this.mSeries[z].resetData(dataPoints[z]);
                     } catch (java.lang.IllegalArgumentException e) {
                         this.mSeries[z].resetData(new DataPoint[0]);
-                        this.mSeriesValid = false;
                     }
                 }
             }
