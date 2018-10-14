@@ -29,9 +29,12 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import de.kast.android.autopilot.R;
 
-public class MapFragment extends Fragment {
+public class MapFragment extends MyFragment {
     // Layout Views
     WebView mapWebView;
 
@@ -59,8 +62,29 @@ public class MapFragment extends Fragment {
     }
 
     @Override
+    void setup() {
+
+    }
+
+    @Override
+    public View createView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return null;
+    }
+
+    @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mapWebView = getView().findViewById(R.id.webview_map);
     }
+
+    @Override
+    public void setData(String rawMessage, HashMap<String, Double> data, ArrayList<HashMap<String, Double>> history) {
+
+    }
+
+    @Override
+    public String getFragmentName() {
+        return "MapFragment";
+    }
+
 
 }

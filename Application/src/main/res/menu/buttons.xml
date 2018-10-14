@@ -18,46 +18,46 @@
 
     <item
         android:id="@+id/increase_font_size"
-        android:icon="@drawable/ic_disconnect"
+        android:icon="@drawable/ic_add"
         android:title="@string/increase_font_size"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
     <item
         android:id="@+id/decrease_font_size"
-        android:icon="@drawable/ic_disconnect"
+        android:icon="@drawable/ic_remove"
         android:title="@string/decrease_font_size"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/increase_label_size"
-        android:icon="@drawable/ic_disconnect"
+        android:icon="@drawable/ic_add_box"
         android:title="@string/increase_label_size"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
     <item
         android:id="@+id/decrease_label_size"
-        android:icon="@drawable/ic_disconnect"
+        android:icon="@drawable/ic_remove_box"
         android:title="@string/decrease_label_size"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/rotate"
-        android:icon="@drawable/ic_disconnect"
+        android:icon="@drawable/ic_rotate"
         android:title="@string/rotate"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/disconnect"
         android:icon="@drawable/ic_disconnect"
         android:title="@string/disconnect"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
     <item
         android:id="@+id/secure_connect_scan"
         android:icon="@drawable/ic_connect_bt"
         android:title="@string/secure_connect"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
     <item
         android:id="@+id/connect_tcp"
         android:icon="@drawable/ic_connect_wifi"
         android:title="@string/connect_tcp"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
 </menu>

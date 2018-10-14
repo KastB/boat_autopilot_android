@@ -35,30 +35,21 @@ import de.kast.android.common.activities.SampleActivityBase;
  */
 public class MainActivity extends SampleActivityBase {
 
-    public static final String TAG = "MainActivity";
-    // Intent request codes
-    private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
-    private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
-    private static final int REQUEST_ENABLE_BT = 3;
-    private BluetoothAdapter mBluetoothAdapter = null;
-    private ViewPager mViewPager;
-
     public MainActivity() {
         System.out.println("MainActivity Constructor");
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         if (AutopilotService.getInstance() == null) {
             startService(new Intent(this, AutopilotService.class));
         }
 
-        mViewPager = (ViewPager) findViewById(R.id.view_pager);
+        // Intent request codes
+        ViewPager mViewPager = (ViewPager) findViewById(R.id.view_pager);
         SwipeAdaptor swipeAdaptor = new SwipeAdaptor(getSupportFragmentManager());
         mViewPager.setAdapter(swipeAdaptor);
     }
@@ -66,10 +57,6 @@ public class MainActivity extends SampleActivityBase {
     @Override
     public void onResume() {
         super.onResume();
-
-        // Performing this check in onResume() covers the case in which BT was
-        // not enabled during onStart(), so we were paused to enable it...
-        // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
         if (AutopilotService.getInstance() == null) {
             startService(new Intent(this, AutopilotService.class));
         }
@@ -85,7 +72,14 @@ public class MainActivity extends SampleActivityBase {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+        menu.clear();
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        getMenuInflater().inflate(R.menu.buttons, menu);
+        if (BluetoothAdapter.getDefaultAdapter() == null) {
+            menu.findItem(R.id.secure_connect_scan).setEnabled(false);
+            menu.findItem(R.id.secure_connect_scan).setVisible(false);
+        }
+        return super.onCreateOptionsMenu(menu);
     }
 }

@@ -1,6 +1,5 @@
 package de.kast.android.autopilot.fragments;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -18,6 +17,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.ActionBar;
 import android.text.InputType;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -33,6 +33,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import de.kast.android.autopilot.MainActivity;
 import de.kast.android.autopilot.service.AutopilotService;
 import de.kast.android.autopilot.DeviceListActivity;
 import de.kast.android.autopilot.R;
@@ -83,16 +84,18 @@ abstract class MyFragment extends Fragment {
         setHasOptionsMenu(true);
 
         int fullscreen_mode = getPreference("fullscreen_mode", 0);
-        if (fullscreen_mode == 1) {
-            getActivity().getActionBar().hide();
-        }
-        else
-        {
-            getActivity().getActionBar().show();
-        }
-
         int mode = getPreference("screen_orientation", ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        this.getActivity().setRequestedOrientation(mode);
+        try {
+            MainActivity activity = (MainActivity)getActivity();
+            ActionBar ab = activity.getSupportActionBar();
+            ab.setDisplayShowTitleEnabled(false);
+            activity.setRequestedOrientation(mode);
+            if (fullscreen_mode == 1)
+                ab.hide();
+            else
+                ab.show();
+        } catch (NullPointerException ignored){
+        }
 
         updateFontSizes(view);
     }
@@ -160,11 +163,11 @@ abstract class MyFragment extends Fragment {
      * @param resId a string resource ID
      */
     protected void setStatus(int resId) {
-        FragmentActivity activity = getActivity();
+        MainActivity activity = (MainActivity) getActivity();
         if (null == activity) {
             return;
         }
-        final ActionBar actionBar = activity.getActionBar();
+        final ActionBar actionBar = activity.getSupportActionBar();
         if (null == actionBar) {
             return;
         }
@@ -177,11 +180,11 @@ abstract class MyFragment extends Fragment {
      * @param subTitle status
      */
     protected void setStatus(CharSequence subTitle) {
-        FragmentActivity activity = getActivity();
+        MainActivity activity = (MainActivity)getActivity();
         if (null == activity) {
             return;
         }
-        final ActionBar actionBar = activity.getActionBar();
+        final ActionBar actionBar = activity.getSupportActionBar();
         if (null == actionBar) {
             return;
         }
@@ -272,15 +275,6 @@ abstract class MyFragment extends Fragment {
         if (AutopilotService.getInstance() == null)
             return;
         AutopilotService.getInstance().connectBt(device);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.clear();
-        inflater.inflate(R.menu.buttons, menu);
-        if (mBluetoothAdapter == null) {
-            menu.findItem(R.id.secure_connect_scan).setEnabled(false);
-        }
     }
 
     @Override

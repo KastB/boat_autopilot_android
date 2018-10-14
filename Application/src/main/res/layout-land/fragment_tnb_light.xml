@@ -70,6 +70,7 @@
             android:layout_weight="1">
         <TextView
             android:id="@+id/label_heading"
+            android:labelFor="@+id/heading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="@string/weight_label"
@@ -90,6 +91,7 @@
 
             <TextView
                 android:id="@+id/label_wind_direction"
+                android:labelFor="@+id/wind_direction"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="@string/weight_label"
@@ -108,6 +110,7 @@
                 android:textSize="21dp" />
             <TextView
                 android:id="@+id/label_goal"
+                android:labelFor="@+id/goal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="@string/weight_label"
@@ -139,6 +142,7 @@
 
             <TextView
                 android:id="@+id/label_gps_speed"
+                android:labelFor="@+id/gps_speed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="@string/weight_label"
@@ -162,6 +166,7 @@
 
             <TextView
                 android:id="@+id/label_true_wind_speed"
+                android:labelFor="@+id/true_wind_speed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="@string/weight_label"
@@ -185,6 +190,7 @@
 
             <TextView
                 android:id="@+id/label_error"
+                android:labelFor="@+id/error"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="@string/weight_label"
@@ -213,6 +219,7 @@
 
             <TextView
                 android:id="@+id/label_rudder_position"
+                android:labelFor="@+id/rudder_position"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="@string/weight_label"
@@ -231,6 +238,7 @@
                 android:textSize="21dp" />
             <TextView
                 android:id="@+id/label_depth"
+                android:labelFor="@+id/depth"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="@string/weight_label"
@@ -253,6 +261,7 @@
 
             <TextView
                 android:id="@+id/label_integral"
+                android:labelFor="@+id/integral"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="@string/weight_label"

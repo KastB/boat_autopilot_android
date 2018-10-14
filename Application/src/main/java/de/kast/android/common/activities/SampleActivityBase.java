@@ -18,12 +18,13 @@ package de.kast.android.common.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 
 
 /**
  * Base launcher activity, to handle most of the common plumbing for samples.
  */
-public class SampleActivityBase extends FragmentActivity {
+public class SampleActivityBase extends AppCompatActivity {
 
     public static final String TAG = "SampleActivityBase";
 

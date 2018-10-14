@@ -18,11 +18,10 @@
 
     <!-- Activity themes -->
 
-    <style name="Theme.Base" parent="android:Theme.Light" />
-
-    <style name="Theme.Sample" parent="Theme.Base" />
-
-    <style name="AppTheme" parent="Theme.Sample" />
+    <style name="Theme.Base"
+        parent="Theme.AppCompat.Light">
+        <item name="android:background">#FFFFFF</item>
+    </style>
     <!-- Widget styling -->
 
     <style name="Widget" />
@@ -38,5 +37,6 @@
         <item name="android:shadowDy">-3.5</item>
         <item name="android:shadowRadius">2</item>
     </style>
+
 
 </resources>
