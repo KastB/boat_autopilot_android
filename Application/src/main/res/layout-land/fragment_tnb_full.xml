@@ -73,7 +73,7 @@
             android:labelFor="@+id/yaw"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="@string/weight_label"
             android:text="@string/heading"
             android:textSize="21dp"
             android:textStyle="bold" />
@@ -82,10 +82,10 @@
             android:id="@+id/yaw"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="start"
+            android:layout_weight="@string/weight_value"
+            android:gravity="center"
             android:text="@string/blank"
-            android:textAlignment="viewStart"
+            android:textAlignment="gravity"
             android:textSize="21dp" />
 
 
@@ -94,28 +94,28 @@
                 android:labelFor="@+id/apparent_wind_angle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="@string/weight_label"
                 android:text="@string/wind_direction"
                 android:textSize="21dp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/apparent_wind_angle"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="start"
+                android:layout_weight="@string/weight_value"
+                android:gravity="center"
                 android:text="@string/blank"
-                android:textAlignment="viewStart"
+                android:textAlignment="gravity"
                 android:textSize="21dp" />
             <TextView
                 android:id="@+id/label_goal"
                 android:labelFor="@+id/goal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="@string/weight_label"
                 android:text="@string/goal"
-                android:textAlignment="viewStart"
+                android:textAlignment="gravity"
                 android:gravity="start"
                 android:textSize="21dp"
                 android:textStyle="bold"
@@ -123,12 +123,12 @@
 
             <TextView
                 android:id="@+id/goal"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="start"
+                android:layout_weight="@string/weight_value"
+                android:gravity="center"
                 android:text="@string/blank"
-                android:textAlignment="viewStart"
+                android:textAlignment="gravity"
                 android:textSize="21dp" />
 
 
@@ -145,9 +145,9 @@
                 android:labelFor="@+id/gps_speed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="@string/weight_label"
                 android:text="@string/boat_speed"
-                android:textAlignment="viewStart"
+                android:textAlignment="gravity"
                 android:gravity="start"
                 android:textSize="21dp"
                 android:textStyle="bold"
@@ -155,12 +155,12 @@
 
             <TextView
                 android:id="@+id/gps_speed"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="start"
+                android:layout_weight="@string/weight_value"
+                android:gravity="center"
                 android:text="@string/blank"
-                android:textAlignment="viewStart"
+                android:textAlignment="gravity"
                 android:textSize="21dp" />
 
 
@@ -169,9 +169,9 @@
                 android:labelFor="@+id/true_wind_speed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="@string/weight_label"
                 android:text="@string/wind_speed"
-                android:textAlignment="viewStart"
+                android:textAlignment="gravity"
                 android:gravity="start"
                 android:textSize="21dp"
                 android:textStyle="bold"
@@ -179,12 +179,12 @@
 
             <TextView
                 android:id="@+id/true_wind_speed"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="start"
+                android:layout_weight="@string/weight_value"
+                android:gravity="center"
                 android:text="@string/blank"
-                android:textAlignment="viewStart"
+                android:textAlignment="gravity"
                 android:textSize="21dp" />
 
 
@@ -193,17 +193,17 @@
                 android:labelFor="@+id/error"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="@string/weight_label"
                 android:text="@string/error"
                 android:textSize="21dp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/error"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="start"
+                android:layout_weight="@string/weight_value"
+                android:gravity="center"
                 android:text="@string/blank"
                 android:textSize="21dp" />
 
@@ -221,7 +221,7 @@
                 android:labelFor="@+id/water_temp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="@string/weight_label"
                 android:text="@string/temperature"
                 android:textSize="21dp"
                 android:textStyle="bold" />
@@ -230,31 +230,31 @@
                 android:id="@+id/water_temp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="start"
+                android:layout_weight="@string/weight_value"
+                android:gravity="center"
                 android:text="@string/blank"
-                android:textAlignment="viewStart"
+                android:textAlignment="gravity"
                 android:textSize="21dp" />
             <TextView
                 android:id="@+id/label_depth"
                 android:labelFor="@+id/depth"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="@string/weight_label"
                 android:text="@string/depth"
-                android:textAlignment="viewStart"
+                android:textAlignment="gravity"
                 android:textSize="21dp"
                 android:textStyle="bold"
                 android:typeface="normal" />
 
             <TextView
                 android:id="@+id/depth"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="start"
+                android:layout_weight="@string/weight_value"
+                android:gravity="center"
                 android:text="@string/blank"
-                android:textAlignment="viewStart"
+                android:textAlignment="gravity"
                 android:textSize="21dp" />
 
 
@@ -263,21 +263,21 @@
                 android:labelFor="@+id/integral"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="@string/weight_label"
                 android:text="@string/integral"
-                android:textAlignment="viewStart"
+                android:textAlignment="gravity"
                 android:textSize="21dp"
                 android:textStyle="bold"
                 android:typeface="normal" />
 
             <TextView
                 android:id="@+id/integral"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="start"
+                android:layout_weight="@string/weight_value"
+                android:gravity="center"
                 android:text="@string/blank"
-                android:textAlignment="viewStart"
+                android:textAlignment="gravity"
                 android:textSize="21dp" />
 
         </TableRow>
@@ -293,7 +293,7 @@
                 android:labelFor="@+id/roll"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="@string/weight_label"
                 android:text="@string/heel"
                 android:textSize="21dp"
                 android:textStyle="bold" />
@@ -302,10 +302,10 @@
                 android:id="@+id/roll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="start"
+                android:layout_weight="@string/weight_value"
+                android:gravity="center"
                 android:text="@string/blank"
-                android:textAlignment="viewStart"
+                android:textAlignment="gravity"
                 android:textSize="21dp" />
 
             <TextView
@@ -313,21 +313,21 @@
                 android:labelFor="@+id/pitch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="@string/weight_label"
                 android:text="@string/pitch"
-                android:textAlignment="viewStart"
+                android:textAlignment="gravity"
                 android:textSize="21dp"
                 android:textStyle="bold"
                 android:typeface="normal" />
 
             <TextView
                 android:id="@+id/pitch"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="start"
+                android:layout_weight="@string/weight_value"
+                android:gravity="center"
                 android:text="@string/blank"
-                android:textAlignment="viewStart"
+                android:textAlignment="gravity"
                 android:textSize="21dp" />
 
             <TextView
@@ -335,7 +335,7 @@
                 android:labelFor="@+id/rudder_position"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="@string/weight_label"
                 android:text="@string/rudder_position"
                 android:textSize="21dp"
                 android:textStyle="bold" />
@@ -344,10 +344,10 @@
                 android:id="@+id/rudder_position"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="start"
+                android:layout_weight="@string/weight_value"
+                android:gravity="center"
                 android:text="@string/blank"
-                android:textAlignment="viewStart"
+                android:textAlignment="gravity"
                 android:textSize="21dp" />
 
         </TableRow>
@@ -362,7 +362,7 @@
                 android:labelFor="@+id/trip_milage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="@string/weight_label"
                 android:text="@string/trip_milage"
                 android:textSize="21dp"
                 android:textStyle="bold" />
@@ -371,10 +371,10 @@
                 android:id="@+id/trip_milage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="start"
+                android:layout_weight="@string/weight_value"
+                android:gravity="center"
                 android:text="@string/blank"
-                android:textAlignment="viewStart"
+                android:textAlignment="gravity"
                 android:textSize="21dp" />
 
             <TextView
@@ -382,21 +382,21 @@
                 android:labelFor="@+id/total_milage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="@string/weight_label"
                 android:text="@string/total_milage"
-                android:textAlignment="viewStart"
+                android:textAlignment="gravity"
                 android:textSize="21dp"
                 android:textStyle="bold"
                 android:typeface="normal" />
 
             <TextView
                 android:id="@+id/total_milage"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="start"
+                android:layout_weight="@string/weight_value"
+                android:gravity="center"
                 android:text="@string/blank"
-                android:textAlignment="viewStart"
+                android:textAlignment="gravity"
                 android:textSize="21dp" />
 
 
@@ -405,9 +405,9 @@
                 android:labelFor="@+id/spacer10"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="@string/weight_label"
                 android:text="@string/boat_speed"
-                android:textAlignment="viewStart"
+                android:textAlignment="gravity"
                 android:textSize="22dp"
                 android:textStyle="bold"
                 android:typeface="normal"
@@ -415,70 +415,16 @@
 
             <TextView
                 android:id="@+id/spacer10"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/spacer4"
-                android:textAlignment="viewStart"
-                android:gravity="start"
-                android:textSize="22dp"
-                android:visibility="invisible" />
-
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <TextView
-                android:id="@+id/label_spacer1"
-                android:labelFor="@+id/spacer1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/boat_speed"
-                android:textAlignment="viewStart"
-                android:textSize="22dp"
-                android:textStyle="bold"
-                android:typeface="normal"
-                android:visibility="invisible" />
-
-            <TextView
-                android:id="@+id/spacer1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/spacer4"
-                android:textAlignment="viewStart"
-                android:gravity="start"
-                android:textSize="22dp"
-                android:visibility="invisible" />
-
-            <TextView
-                android:id="@+id/label_spacer2"
-                android:labelFor="@+id/spacer2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/heading"
-                android:textSize="22dp"
-                android:textStyle="bold"
-                android:layout_weight="1"
-                android:visibility="invisible" />
-
-            <TextView
-                android:id="@+id/spacer2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="end"
+                android:layout_weight="@string/weight_value"
                 android:text="@string/spacer4"
-                android:textAlignment="viewEnd"
+                android:textAlignment="gravity"
+                android:gravity="center"
                 android:textSize="22dp"
-                android:layout_weight="1"
                 android:visibility="invisible" />
 
         </TableRow>
-
 
     </TableLayout>
 

@@ -74,6 +74,8 @@
     <string name="increase_label_size">++</string>
 
     <string name="preference_file_key">de.kast.autopilot</string>
+    <string name="weight_label">0</string>
+    <string name="weight_value">1</string>
 
 
 </resources>
