@@ -27,11 +27,11 @@ public class SwipeAdaptor extends FragmentStatePagerAdapter {
         else if (position == 1)
             frag = new TnBLightFragment();
         else if (position == 2)
-            frag = new GraphFragment();
+            frag = new MapFragment();
         else if (position == 3)
             frag = new DebugFragment();
         else
-            frag = new MapFragment();
+            frag = new GraphFragment();
         return frag;
     }
 
