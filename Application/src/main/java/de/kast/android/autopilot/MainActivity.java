@@ -17,8 +17,15 @@
 
 package de.kast.android.autopilot;
 
+import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkRequest;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
@@ -39,14 +46,19 @@ public class MainActivity extends SampleActivityBase {
         System.out.println("MainActivity Constructor");
     }
 
+    private void start() {
+        setWifiInterfaceAsDefault();
+        if (AutopilotService.getInstance() == null) {
+            startService(new Intent(this, AutopilotService.class));
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (AutopilotService.getInstance() == null) {
-            startService(new Intent(this, AutopilotService.class));
-        }
+        start();
 
         // Intent request codes
         ViewPager mViewPager = (ViewPager) findViewById(R.id.view_pager);
@@ -57,17 +69,13 @@ public class MainActivity extends SampleActivityBase {
     @Override
     public void onResume() {
         super.onResume();
-        if (AutopilotService.getInstance() == null) {
-            startService(new Intent(this, AutopilotService.class));
-        }
+        start();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        if (AutopilotService.getInstance() == null) {
-            startService(new Intent(this, AutopilotService.class));
-        }
+        start();
     }
 
     @Override
@@ -81,5 +89,22 @@ public class MainActivity extends SampleActivityBase {
             menu.findItem(R.id.secure_connect_scan).setVisible(false);
         }
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void setWifiInterfaceAsDefault() {
+        ConnectivityManager connection_manager =
+                (ConnectivityManager) getApplication().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkRequest.Builder request = new NetworkRequest.Builder();
+        request.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
+
+        connection_manager.registerNetworkCallback(request.build(), new ConnectivityManager.NetworkCallback() {
+
+            @Override
+            public void onAvailable(Network network) {
+                ConnectivityManager.setProcessDefaultNetwork(network);
+            }
+        });
     }
 }
