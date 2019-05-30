@@ -64,14 +64,14 @@ public class DebugFragment extends MyFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         // connect #2#
-        mConversationView = (ListView) view.findViewById(R.id.in);
-        mOutEditText = (EditText) view.findViewById(R.id.edit_text_out);
-        mSendButton = (Button) view.findViewById(R.id.button_send);
+        mConversationView = view.findViewById(R.id.in);
+        mOutEditText = view.findViewById(R.id.edit_text_out);
+        mSendButton = view.findViewById(R.id.button_send);
     }
 
     protected void setup() {
         // Initialize the array adapter for the conversation thread
-        mConversationArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.message);
+        mConversationArrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.message);
         mConversationView.setAdapter(mConversationArrayAdapter);
 
         // Initialize the compose field with a listener for the return key
@@ -84,7 +84,7 @@ public class DebugFragment extends MyFragment {
                 // Send a message using content of the edit text widget
                 View view = getView();
                 if (null != view) {
-                    TextView textView = (TextView) view.findViewById(R.id.edit_text_out);
+                    TextView textView = view.findViewById(R.id.edit_text_out);
                     String message = textView.getText().toString() + "\r\n";
                     sendMessage(message);
                 }
@@ -92,7 +92,7 @@ public class DebugFragment extends MyFragment {
         });
 
         // Initialize the buffer for outgoing messages
-        mOutStringBuffer = new StringBuffer("");
+        mOutStringBuffer = new StringBuffer();
     }
 
     protected void sendMessage(String message) {

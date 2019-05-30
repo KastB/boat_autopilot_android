@@ -20,11 +20,11 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
+import android.util.SparseArray;
 import android.view.View;
-import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import de.kast.android.autopilot.R;
@@ -40,9 +40,7 @@ public abstract class TextAndButtonsFragment extends MyFragment {
         View.OnClickListener temporaryUnlockOnClickListener = new View.OnClickListener() {
             public void onClick(View v) {
                 final ArrayList<MyButton> temporaryEnableButtons = new ArrayList<>();
-                for (MyButton b: mBts) {
-                    temporaryEnableButtons.add(b);
-                }
+                Collections.addAll(temporaryEnableButtons, mBts);
 
                 for (MyButton b: temporaryEnableButtons) {
                     b.mButton.setEnabled(true);
@@ -62,7 +60,7 @@ public abstract class TextAndButtonsFragment extends MyFragment {
             }
         };
 
-        HashMap<Integer, MyTextView> tfs = new HashMap<Integer, MyTextView>();
+        SparseArray<MyTextView> tfs = new SparseArray<>();
         tfs.put(R.id.goal, new MyTextView(R.id.goal,"%.0f", "m_goal"));
         tfs.put(R.id.error, new MyTextView(R.id.error,"%.0f", "m_lastError"));
         tfs.put(R.id.true_wind_speed, new MyTextView(R.id.true_wind_speed,"%.1f", "tws"));
@@ -79,7 +77,7 @@ public abstract class TextAndButtonsFragment extends MyFragment {
         tfs.put(R.id.total_milage, new MyTextView(R.id.total_milage,"%.1f", "m_speed.totalMileage"));
 
 
-        HashMap<Integer, MyButton> bts = new HashMap<Integer, MyButton>();
+        SparseArray<MyButton> bts = new SparseArray<>();
         bts.put(R.id.button_unlock, new MyButton(R.id.button_unlock, temporaryUnlockOnClickListener));
         bts.put(R.id.button_init, new MyButton(R.id.button_init, "I\r\n", false));
         bts.put(R.id.button_reinit, new MyButton(R.id.button_reinit, "RI\r\n", false));

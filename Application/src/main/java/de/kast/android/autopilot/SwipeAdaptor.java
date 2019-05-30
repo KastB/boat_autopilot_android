@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import de.kast.android.autopilot.fragments.DebugFragment;
 import de.kast.android.autopilot.fragments.GraphFragment;
 import de.kast.android.autopilot.fragments.MapFragment;
-import de.kast.android.autopilot.fragments.TextAndButtonsFragment;
 import de.kast.android.autopilot.fragments.TnBFullFragment;
 import de.kast.android.autopilot.fragments.TnBLightFragment;
 

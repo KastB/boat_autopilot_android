@@ -42,7 +42,7 @@ import de.kast.android.autopilot.Constants;
 public class AutopilotService extends Service {
 
     static String mHeader = "Millis,m_currentPosition,m_pressedButtonDebug,m_bytesToSent,CurrentPosition,CurrentDirection,TargetPosition,MSStopped,startButton,stopButton,parkingButton,diagA,diagB,m_P,m_I,m_D,m_goalType,m_goal,m_lastError,m_errorSum,m_lastFilteredYaw,UI,yaw,roll,pitch,freq,magMin[0],magMin[1],magMin[2],magMax[0],magMax[1],magMax[2],m_speed,m_speed.tripMileage,m_speed.totalMileage,m_speed.waterTemp,m_lampIntensity,m_wind.apparentAngle,m_wind.apparentSpeed,m_wind.displayInKnots,m_wind.displayInMpS,m_depth.anchorAlarm,m_depth.deepAlarm,m_depth.defective,m_depth.depthBelowTransductor,m_depth.metricUnits,m_depth.shallowAlarm,m_depth.unknown,Position,twd,tws,gps_vel";
-    String mParts[];
+    String[] mParts;
 
     public static final String AUTOPILOT_INTENT = "autopilot_intent";
 
@@ -281,7 +281,16 @@ public class AutopilotService extends Service {
 
             //corrupt order => clear history
             if (history.size() > 1) {
-                if (history.get(0).get("Millis") < history.get(1).get("Millis")) {
+                boolean clear = false;
+                try {
+                    if (history.get(0).get("Millis") < history.get(1).get("Millis")) {
+                        clear = true;
+                    }
+                }
+                catch (NullPointerException ignored) {
+                    clear = true;
+                }
+                if (clear) {
                     mBuf.clear();
                     history = mBuf.addGetAll(processedMsg);
                 }
@@ -297,9 +306,11 @@ public class AutopilotService extends Service {
     }
 
     public HashMap<String, Double> decodeRawData(String line) throws IndexOutOfBoundsException {
-        String parts[] = line.split("\t");
-        HashMap<String, Double> result = new HashMap<>();
-        Double value;
+        String[] parts = line.split("\t");
+        HashMap<String, Double> result;
+        double value;
+
+        result = new HashMap<>();
         if (parts.length < mParts.length) {
             throw new IndexOutOfBoundsException();
         }
