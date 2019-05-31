@@ -49,15 +49,23 @@
         android:icon="@drawable/ic_disconnect"
         android:title="@string/disconnect"
         app:showAsAction="always" />
-    <item
-        android:id="@+id/secure_connect_scan"
-        android:icon="@drawable/ic_connect_bt"
-        android:title="@string/secure_connect"
-        app:showAsAction="always" />
+
     <item
         android:id="@+id/connect_tcp"
         android:icon="@drawable/ic_connect_wifi"
         android:title="@string/connect_tcp"
         app:showAsAction="always" />
-
+    <item
+        android:id="@+id/secure_connect_scan"
+        android:icon="@drawable/ic_connect_bt"
+        android:title="@string/secure_connect"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/shutdown_server"
+        android:title="@string/shutdown_server"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/reboot_server"
+        android:title="@string/reboot_server"
+        app:showAsAction="never" />
 </menu>

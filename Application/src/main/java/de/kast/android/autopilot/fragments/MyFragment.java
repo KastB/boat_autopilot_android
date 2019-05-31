@@ -342,6 +342,14 @@ abstract class MyFragment extends Fragment {
                 updateLayout(getView());
                 return true;
             }
+            case R.id.shutdown_server: {
+                AutopilotService.sendMessage("#SHUTDOWN");
+                return true;
+            }
+            case R.id.reboot_server: {
+                AutopilotService.sendMessage("#REBOOT");
+                return true;
+            }
         }
         return false;
     }
