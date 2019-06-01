@@ -59,6 +59,25 @@ public class MapFragment extends MyFragment {
         // Force links and redirects to open in the WebView instead of in a browser
         mapWebView.setWebViewClient(new WebViewClient());
         return view;
+
+    }
+
+    @Override
+    public void onDestroy() {
+        mapWebView.destroy();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onPause() {
+        mapWebView.onPause();
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        mapWebView.onResume();
+        super.onResume();
     }
 
     @Override
