@@ -107,7 +107,7 @@ abstract class MyFragment extends Fragment {
         // If the adapter is null, then Bluetooth is not supported
         if (mBluetoothAdapter == null) {
             FragmentActivity activity = getActivity();
-            Toast.makeText(activity, "Bluetooth is not available", Toast.LENGTH_LONG).show();
+            // Toast.makeText(activity, "Bluetooth is not available", Toast.LENGTH_LONG).show();
         }
         String tcpServer = "";
         tcpServer = getPreference("last_tcp_server", tcpServer);
