@@ -93,18 +93,22 @@ public class MainActivity extends SampleActivityBase {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void setWifiInterfaceAsDefault() {
-        ConnectivityManager connection_manager =
-                (ConnectivityManager) getApplication().getSystemService(Context.CONNECTIVITY_SERVICE);
+        try {
+            ConnectivityManager connection_manager =
+                    (ConnectivityManager) getApplication().getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        NetworkRequest.Builder request = new NetworkRequest.Builder();
-        request.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
+            NetworkRequest.Builder request = new NetworkRequest.Builder();
+            request.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
 
-        connection_manager.registerNetworkCallback(request.build(), new ConnectivityManager.NetworkCallback() {
+            connection_manager.registerNetworkCallback(request.build(), new ConnectivityManager.NetworkCallback() {
 
-            @Override
-            public void onAvailable(Network network) {
-                ConnectivityManager.setProcessDefaultNetwork(network);
-            }
-        });
+                @Override
+                public void onAvailable(Network network) {
+                    ConnectivityManager.setProcessDefaultNetwork(network);
+                }
+            });
+        }
+        catch(java.lang.NoClassDefFoundError ignore) {
+        }
     }
 }
