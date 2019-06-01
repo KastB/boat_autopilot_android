@@ -115,6 +115,7 @@ public class GraphFragment extends MyFragment {
                 new DataSet("Ziel", "m_goal", Color.BLACK, false, 5, 3),
                 new DataSet("Kurs", "yaw", Color.DKGRAY, false, 5, 3),
                 new DataSet("Geschwindigkeit", "gps_vel", Color.GREEN, false, 5, 3, true),
+                new DataSet("VMG", "vmg", Color.YELLOW, false, 5, 3, true),
                 new DataSet("Windrichtung", "m_wind.apparentAngle", Color.BLUE, false, 5, 3),
                 new DataSet("Windgeschwindigkeit", "tws", Color.CYAN, false, 5, 3, true),
                 new DataSet("TWD", "twd", Color.MAGENTA, false, 5, 3, true),

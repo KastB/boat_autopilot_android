@@ -41,7 +41,7 @@ import de.kast.android.autopilot.Constants;
 
 public class AutopilotService extends Service {
 
-    static String mHeader = "Millis,m_currentPosition,m_pressedButtonDebug,m_bytesToSent,CurrentPosition,CurrentDirection,TargetPosition,MSStopped,startButton,stopButton,parkingButton,diagA,diagB,m_P,m_I,m_D,m_goalType,m_goal,m_lastError,m_errorSum,m_lastFilteredYaw,UI,yaw,roll,pitch,freq,magMin[0],magMin[1],magMin[2],magMax[0],magMax[1],magMax[2],m_speed,m_speed.tripMileage,m_speed.totalMileage,m_speed.waterTemp,m_lampIntensity,m_wind.apparentAngle,m_wind.apparentSpeed,m_wind.displayInKnots,m_wind.displayInMpS,m_depth.anchorAlarm,m_depth.deepAlarm,m_depth.defective,m_depth.depthBelowTransductor,m_depth.metricUnits,m_depth.shallowAlarm,m_depth.unknown,Position,twd,tws,gps_vel";
+    static String mHeader = "Millis,m_currentPosition,CurrentPosition,LastSpeed,TargetPosition,startButton,stopButton,parkingButton,DiagA,DiagB,m_P,m_I,m_D,m_goalType,m_goal,m_lastError,m_errorSum,m_lastFilteredYaw,UI,yaw,roll,pitch,freq,magMin[0],magMin[1],magMin[2],magMax[0],magMax[1],magMax[2],m_speed,m_speed.tripMileage,m_speed.totalMileage,m_speed.waterTemp,m_lampIntensity,m_wind.apparentAngle,m_wind.apparentSpeed,m_wind.displayInKnots,m_wind.displayInMpS,m_depth.anchorAlarm,m_depth.deepAlarm,m_depth.defective,m_depth.depthBelowTransductor,m_depth.metricUnits,m_depth.shallowAlarm,m_depth.unknown,GPS,m_voltage,m_current,m_power,twd,tws,gps_vel,vmg";
     String[] mParts;
 
     public static final String AUTOPILOT_INTENT = "autopilot_intent";
@@ -75,6 +75,7 @@ public class AutopilotService extends Service {
     private int mLastType = STATE_NONE;
     private File mLogFile;
     private FileOutputStream mLogFileStream;
+    private HashMap<String, Boolean> mNormalizeMap;
 
     /**
      * Constructor. Prepares a new sessions.
@@ -89,6 +90,13 @@ public class AutopilotService extends Service {
         mDeviceName = "";
         mLogFile = null;
         mLogFileStream = null;
+        mNormalizeMap = new HashMap<>();
+        mNormalizeMap.put("m_goal", true);
+        mNormalizeMap.put("m_lastError", true);
+        mNormalizeMap.put("m_lastFilteredYaw", true);
+        mNormalizeMap.put("yaw", true);
+        mNormalizeMap.put("m_wind.apparentAngle", true);
+        mNormalizeMap.put("twd", true);
     }
 
     @Nullable
@@ -306,7 +314,7 @@ public class AutopilotService extends Service {
     }
 
     public HashMap<String, Double> decodeRawData(String line) throws IndexOutOfBoundsException {
-        String[] parts = line.split("\t");
+        String[] parts = line.split(",");
         HashMap<String, Double> result;
         double value;
 
@@ -317,6 +325,9 @@ public class AutopilotService extends Service {
         for(int i = 0; i < mParts.length; i++) {
             try {
                 value = Double.parseDouble(parts[i]);
+                if (mNormalizeMap.containsKey(mParts[i])) {
+                    value = normalize(value);
+                }
             }
             catch (java.lang.NumberFormatException e){
                 value = 0.0;
@@ -352,6 +363,16 @@ public class AutopilotService extends Service {
             byte[] send = message.getBytes();
             AutopilotService.getInstance().write(send);
         }
+    }
+
+    private double normalize(double in) {
+        while (in > 180.0) {
+            in -= 360.0;
+        }
+        while (in < -180.0) {
+            in += 180.0;
+        }
+        return in;
     }
 
     public static AutopilotService getInstance() {

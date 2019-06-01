@@ -77,8 +77,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="@string/weight_label"
                 android:text="@string/goal"
-                android:textAlignment="gravity"
-                android:gravity="center"
                 android:textSize="21dp"
                 android:textStyle="bold"
                 android:typeface="normal" />
@@ -98,6 +96,7 @@
                 android:labelFor="@+id/error"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:layout_weight="@string/weight_label"
                 android:text="@string/error"
                 android:textSize="21dp"
@@ -250,6 +249,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="@string/weight_label"
+                android:gravity="center"
                 android:text="@string/rudder_position"
                 android:textSize="21dp"
                 android:textStyle="bold" />

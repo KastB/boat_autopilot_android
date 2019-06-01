@@ -78,6 +78,7 @@
     <string name="weight_value">1</string>
     <string name="shutdown_server">Server herunterfahren</string>
     <string name="reboot_server">Server neustarten</string>
+    <string name="vmg">VMG [kn]:</string>
 
 
 </resources>

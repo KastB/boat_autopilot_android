@@ -36,7 +36,8 @@ public class TnBFullFragment extends TextAndButtonsFragment {
         R.id.roll,
         R.id.pitch,
         R.id.trip_milage,
-        R.id.total_milage
+        R.id.total_milage,
+        R.id.vmg
     };
     public TnBFullFragment() {
         super(mTextViewIds, mButtonIds);

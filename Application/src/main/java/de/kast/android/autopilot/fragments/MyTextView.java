@@ -23,6 +23,11 @@ public class MyTextView {
     }
 
     void setText(HashMap<String, Double> data) {
-        mTextView.setText(String.format(mFormatString, data.get(mDataKey)));
+        try {
+            mTextView.setText(String.format(mFormatString, data.get(mDataKey)));
+        } catch (Exception ignored) {
+             // System.out.println(e.toString());
+        }
+
     }
 }

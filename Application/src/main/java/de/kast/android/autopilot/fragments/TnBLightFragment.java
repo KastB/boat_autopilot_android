@@ -30,7 +30,8 @@ public class TnBLightFragment extends TextAndButtonsFragment {
         R.id.gps_speed,
         R.id.yaw,
         R.id.depth,
-        R.id.rudder_position
+        R.id.rudder_position,
+        R.id.vmg
     };
     public TnBLightFragment() {
         super(mTextViewIds, mButtonIds);
