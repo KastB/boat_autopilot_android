@@ -79,6 +79,9 @@
     <string name="shutdown_server">Server herunterfahren</string>
     <string name="reboot_server">Server neustarten</string>
     <string name="vmg">VMG [kn]:</string>
+    <string name="power">Leistung [W]:</string>
+    <string name="voltage">Spannung [V]:</string>
+    <string name="current">Strom [A]:</string>
 
 
 </resources>

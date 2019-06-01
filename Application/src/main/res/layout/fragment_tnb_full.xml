@@ -368,17 +368,17 @@
             android:layout_weight="1">
 
             <TextView
-                android:id="@+id/label_trip_milage"
-                android:labelFor="@+id/trip_milage"
+                android:id="@+id/label_voltage"
+                android:labelFor="@+id/voltage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="@string/weight_label"
-                android:text="@string/trip_milage"
+                android:text="@string/voltage"
                 android:textSize="21dp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/trip_milage"
+                android:id="@+id/voltage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -388,19 +388,19 @@
                 android:textSize="21dp" />
 
             <TextView
-                android:id="@+id/label_total_milage"
-                android:labelFor="@+id/total_milage"
+                android:id="@+id/label_current"
+                android:labelFor="@+id/current"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="@string/weight_label"
-                android:text="@string/total_milage"
+                android:text="@string/current"
                 android:textAlignment="center"
                 android:textSize="21dp"
                 android:textStyle="bold"
                 android:typeface="normal" />
 
             <TextView
-                android:id="@+id/total_milage"
+                android:id="@+id/current"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -440,26 +440,26 @@
                 android:textSize="21dp" />
 
             <TextView
-                android:id="@+id/label_spacer3"
-                android:labelFor="@+id/spacer2"
+                android:id="@+id/label_power"
+                android:labelFor="@+id/power"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/heading"
+                android:text= "@string/power"
                 android:textSize="22dp"
                 android:textStyle="bold"
                 android:layout_weight="0"
-                android:visibility="invisible" />
+                android:visibility="visible" />
 
             <TextView
-                android:id="@+id/spacer3"
+                android:id="@+id/power"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="end"
-                android:text="@string/spacer4"
+                android:gravity="center"
+                android:text="-"
                 android:textAlignment="viewEnd"
                 android:textSize="22dp"
                 android:layout_weight="1"
-                android:visibility="invisible" />
+                android:visibility="visible" />
 
         </TableRow>
 

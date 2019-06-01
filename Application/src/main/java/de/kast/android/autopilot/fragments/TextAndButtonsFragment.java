@@ -76,8 +76,9 @@ public abstract class TextAndButtonsFragment extends MyFragment {
         tfs.put(R.id.integral, new MyTextView(R.id.integral,"%.0f", "m_errorSum"));
         tfs.put(R.id.roll, new MyTextView(R.id.roll,"%.1f", "roll"));
         tfs.put(R.id.pitch, new MyTextView(R.id.pitch,"%.1f", "pitch"));
-        tfs.put(R.id.trip_milage, new MyTextView(R.id.trip_milage,"%.1f", "m_speed.tripMileage"));
-        tfs.put(R.id.total_milage, new MyTextView(R.id.total_milage,"%.1f", "m_speed.totalMileage"));
+        tfs.put(R.id.voltage, new MyTextView(R.id.voltage,"%.1f", "m_voltage"));
+        tfs.put(R.id.current, new MyTextView(R.id.current,"%.1f", "m_current"));
+        tfs.put(R.id.power, new MyTextView(R.id.power,"%.1f", "m_power"));
 
 
         SparseArray<MyButton> bts = new SparseArray<>();

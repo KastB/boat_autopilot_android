@@ -35,8 +35,9 @@ public class TnBFullFragment extends TextAndButtonsFragment {
         R.id.integral,
         R.id.roll,
         R.id.pitch,
-        R.id.trip_milage,
-        R.id.total_milage,
+        R.id.current,
+        R.id.voltage,
+        R.id.power,
         R.id.vmg
     };
     public TnBFullFragment() {

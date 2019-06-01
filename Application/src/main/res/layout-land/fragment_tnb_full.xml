@@ -358,17 +358,17 @@
             android:layout_weight="1">
 
             <TextView
-                android:id="@+id/label_trip_milage"
-                android:labelFor="@+id/trip_milage"
+                android:id="@+id/label_voltage"
+                android:labelFor="@+id/voltage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="@string/weight_label"
-                android:text="@string/trip_milage"
+                android:text="@string/voltage"
                 android:textSize="21dp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/trip_milage"
+                android:id="@+id/voltage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="@string/weight_value"
@@ -378,19 +378,19 @@
                 android:textSize="21dp" />
 
             <TextView
-                android:id="@+id/label_total_milage"
-                android:labelFor="@+id/total_milage"
+                android:id="@+id/label_power"
+                android:labelFor="@+id/power"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="@string/weight_label"
-                android:text="@string/total_milage"
+                android:text="@string/power"
                 android:textAlignment="gravity"
                 android:textSize="21dp"
                 android:textStyle="bold"
                 android:typeface="normal" />
 
             <TextView
-                android:id="@+id/total_milage"
+                android:id="@+id/power"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="@string/weight_value"
