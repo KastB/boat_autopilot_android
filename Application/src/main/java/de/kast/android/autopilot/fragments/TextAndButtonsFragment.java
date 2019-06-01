@@ -40,10 +40,12 @@ public abstract class TextAndButtonsFragment extends MyFragment {
         View.OnClickListener temporaryUnlockOnClickListener = new View.OnClickListener() {
             public void onClick(View v) {
                 final ArrayList<MyButton> temporaryEnableButtons = new ArrayList<>();
-                Collections.addAll(temporaryEnableButtons, mBts);
 
-                for (MyButton b: temporaryEnableButtons) {
-                    b.mButton.setEnabled(true);
+                for (MyButton b: mBts) {
+                    if (!b.mButton.isEnabled()) {
+                        b.mButton.setEnabled(true);
+                        temporaryEnableButtons.add(b);
+                    }
                 }
 
                 new CountDownTimer(3000, 10) {
@@ -66,6 +68,7 @@ public abstract class TextAndButtonsFragment extends MyFragment {
         tfs.put(R.id.true_wind_speed, new MyTextView(R.id.true_wind_speed,"%.1f", "tws"));
         tfs.put(R.id.apparent_wind_angle, new MyTextView(R.id.apparent_wind_angle,"%.0f", "m_wind.apparentAngle"));
         tfs.put(R.id.gps_speed, new MyTextView(R.id.gps_speed,"%.1f", "gps_vel"));
+        tfs.put(R.id.vmg, new MyTextView(R.id.vmg,"%.1f", "vmg"));
         tfs.put(R.id.yaw, new MyTextView(R.id.yaw,"%.0f", "yaw"));
         tfs.put(R.id.depth, new MyTextView(R.id.depth,"%.1f", "m_depth.depthBelowTransductor"));
         tfs.put(R.id.water_temp, new MyTextView(R.id.water_temp,"%.1f", "m_speed.waterTemp"));
