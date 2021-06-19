@@ -20,6 +20,9 @@ import de.kast.android.autopilot.R;
 public class DataUpdateReceiverFragment extends BroadcastReceiver {
     private MyFragment mFragment;
 
+    public DataUpdateReceiverFragment() {
+        mFragment = null;
+    }
     public DataUpdateReceiverFragment(MyFragment fragment) {
         mFragment = fragment;
     }
